@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROBOVERSE.ENGINEERING — Competition Robotics</title>
+  <meta name="description" content="Competition-grade robots, drones and RC kits. Built for builders who demand excellence.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Custom Cursor (desktop only) -->
+  <div id="cursor" aria-hidden="true"></div>
+  <div id="cursor-dot" aria-hidden="true"></div>
+
+  <!-- ── NAVIGATION ─────────────────────────────────────────────── -->
+  <nav id="nav">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <span class="logo-icon">◉</span>
+        ROBOVERSE.ENGINEERING
+      </a>
+      <div class="nav-links">
+        <a href="#products">Shop</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <button class="nav-cta btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+        Order Now →
+      </button>
+      <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <div class="mobile-links">
+        <a href="#products">Shop</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a href="#contact" class="mobile-cta">Order Now →</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ── HERO ───────────────────────────────────────────────────── -->
+    <section id="hero">
+      <div class="hero-bg">
+        <div class="dot-grid"></div>
+        <div class="hero-glow"></div>
+        <div class="scan-line"></div>
+        <canvas id="particle-canvas"></canvas>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-eyebrow">── ROBOVERSE.ENGINEERING v5.0</div>
+
+        <h1 id="hero-title">
+          <span class="line italic-line">MACHINES</span>
+          <span class="line">BUILT TO</span>
+          <span class="line grad-line">DOMINATE</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Competition-grade robots, drones & autonomous kits engineered for
+          builders who demand excellence. Robo soccer to swarm intelligence — covered.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+            Explore Arsenal →
+          </button>
+          <button class="btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+            Watch in Action ▶
+          </button>
+        </div>
+      </div>
+
+      <!-- Ticker -->
+      <div class="hero-ticker">
+        <div class="ticker-track">
+          <div class="ticker-inner">
+            <span>⚽ ROBO SOCCER</span><span class="dot">•</span>
+            <span>🚁 DRONES</span><span class="dot">•</span>
+            <span>🦾 ROBOTIC ARMS</span><span class="dot">•</span>
+            <span>🤖 LINE TRACERS</span><span class="dot">•</span>
+            <span>🏎️ RC CARS</span><span class="dot">•</span>
+            <span>🔬 SWARM BOTS</span><span class="dot">•</span>
+            <span>⚽ ROBO SOCCER</span><span class="dot">•</span>
+            <span>🚁 DRONES</span><span class="dot">•</span>
+            <span>🦾 ROBOTIC ARMS</span><span class="dot">•</span>
+            <span>🤖 LINE TRACERS</span><span class="dot">•</span>
+            <span>🏎️ RC CARS</span><span class="dot">•</span>
+            <span>🔬 SWARM BOTS</span><span class="dot">•</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll hint -->
+      <div class="hero-scroll">
+        <span>SCROLL</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ── PRODUCTS ───────────────────────────────────────────────── -->
+    <section id="products">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">━━ 01 / ARSENAL</span>
+          <h2>The Machine<br><em>Arsenal.</em></h2>
+        </div>
+        <div class="products-grid" id="products-grid">
+          <!-- Injected by main.js from products.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MARQUEE DIVIDER ────────────────────────────────────────── -->
+    <div class="marquee-divider">
+      <div class="marquee-row">
+        <div class="marquee-content">
+          <span class="marquee-item">✓ PRECISION ENGINEERED</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ COMPETITION READY</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ 48H DISPATCH</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ 1 YEAR WARRANTY</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ PRECISION ENGINEERED</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ COMPETITION READY</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ 48H DISPATCH</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">✓ 1 YEAR WARRANTY</span>
+          <span class="marquee-sep">•</span>
+        </div>
+      </div>
+      <div class="marquee-row reverse">
+        <div class="marquee-content">
+          <span class="marquee-item">⚡ BATTLE TESTED</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ HAND-CALIBRATED</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ MADE FOR WINNERS</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ INDIA BUILT</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ BATTLE TESTED</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ HAND-CALIBRATED</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ MADE FOR WINNERS</span>
+          <span class="marquee-sep">•</span>
+          <span class="marquee-item">⚡ INDIA BUILT</span>
+          <span class="marquee-sep">•</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STATS ──────────────────────────────────────────────────── -->
+    <div class="stats-strip">
+      <div class="stat-block">
+        <div class="stat-row">
+          <span class="stat-number" data-target="850">0</span>
+          <span class="stat-suffix">+</span>
+        </div>
+        <div class="stat-label">HAPPY BUILDERS</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-row">
+          <span class="stat-number" data-target="48">0</span>
+          <span class="stat-suffix">h</span>
+        </div>
+        <div class="stat-label">DISPATCH TIME</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-row">
+          <span class="stat-number" data-target="12">0</span>
+          <span class="stat-suffix">+</span>
+        </div>
+        <div class="stat-label">PRODUCTS</div>
+      </div>
+    </div>
+
+    <!-- ── ABOUT ──────────────────────────────────────────────────── -->
+    <section id="about">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-left">
+            <span class="section-tag">━━ 02 / ORIGIN</span>
+            <h2>Built by<br>builders,<br><em>for builders.</em></h2>
+          </div>
+          <div class="about-right">
+            <p class="about-desc">
+              We founded ROBOVERSE.ENGINEERING because competition robotics deserves better.
+              No more overpriced, underpowered kits that fail at crucial moments. Every machine
+              we deliver is rigorously tested, precisely calibrated, and battle-hardened for
+              real competition.
+            </p>
+            <div class="pillars">
+              <div class="pillar">
+                <span class="pillar-num">01.</span>
+                <h3 class="pillar-title">Competition-First Design</h3>
+              </div>
+              <div class="pillar">
+                <span class="pillar-num">02.</span>
+                <h3 class="pillar-title">Battle-Tested Hardware</h3>
+              </div>
+              <div class="pillar">
+                <span class="pillar-num">03.</span>
+                <h3 class="pillar-title">Builder Community</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D Drone Viewer (replaces video) -->
+        <div class="drone-viewer" id="drone-viewer">
+          <canvas id="drone-canvas"></canvas>
+          <div class="drone-overlay">
+            <span class="drone-label">[ ◉ ROBOVERSE — INTERACTIVE 3D ]</span>
+            <span class="drone-hint">↗ Move cursor to control</span>
+          </div>
+          <div class="drone-fallback">
+            <!-- Shown if Three.js fails to load -->
+            <div class="fallback-glow"></div>
+            <span class="fallback-text">ROBOVERSE.ENGINEERING</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACT ────────────────────────────────────────────────── -->
+    <section id="contact">
+      <div class="container">
+        <div class="contact-grid">
+
+          <div class="contact-left">
+            <span class="section-tag">━━ 03 / CONNECT</span>
+            <h2>Start Your<br><em>Journey.</em></h2>
+            <p class="contact-manifesto">
+              Ready to dominate the arena? Fill the form and we'll open WhatsApp
+              with your inquiry pre-written — just hit send.
+            </p>
+            <div class="wa-badge">
+              <span class="wa-icon">💬</span>
+              <div>
+                <div class="wa-label">DIRECT WHATSAPP</div>
+                <!-- ⬇ OWNER: change this number -->
+                <div class="wa-num" id="wa-display">+91 XXXXX XXXXX</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-right">
+            <form id="contact-form" novalidate>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="f-name">YOUR NAME</label>
+                  <input type="text" id="f-name" name="name" placeholder="Rahul Sharma" required>
+                </div>
+                <div class="form-field">
+                  <label for="f-phone">YOUR PHONE</label>
+                  <input type="tel" id="f-phone" name="phone" placeholder="+91 98765 43210" required>
+                </div>
+              </div>
+              <div class="form-field">
+                <label for="f-product">WHICH PRODUCT?</label>
+                <select id="f-product" name="product" required>
+                  <option value="">Select a product...</option>
+                  <!-- Populated by main.js -->
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="f-msg">MESSAGE</label>
+                <textarea id="f-msg" name="message" placeholder="Bulk inquiries, custom orders, or just say hi!" rows="4"></textarea>
+              </div>
+              <button type="submit" class="btn-primary full">
+                <span class="btn-text">Send via WhatsApp 💬</span>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-top">
+        <a href="#" class="logo">
+          <span class="logo-icon">◉</span>
+          ROBOVERSE.ENGINEERING
+        </a>
+        <div class="footer-nav">
+          <a href="#products">Shop</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+      <div class="footer-mid">
+        <p class="footer-tagline">Competition robotics for builders who demand excellence.</p>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="year"></span> ROBOVERSE.ENGINEERING · Built with precision 🚀</p>
+        <p>MADE FOR WINNERS · INDIA BUILT</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Scripts — order matters -->
+  <script src="products.js"></script>
+  <script src="main.js"></script>
+  <!-- Three.js for drone (loads async so it doesn't block) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="drone.js"></script>
+
+</body>
+</html>
