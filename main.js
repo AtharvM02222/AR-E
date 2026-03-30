@@ -301,7 +301,7 @@ function initThreeHero() {
     renderer.setSize(W, H);
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.3; // Make slightly brighter
+    renderer.toneMappingExposure = 1.6; // High contrast
     if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
     container.appendChild(renderer.domElement);
   } catch (e) {
@@ -311,7 +311,7 @@ function initThreeHero() {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 2000);
-  camera.position.set(0, 30, 220); // Closer view to appreciate the drone properly
+  camera.position.set(0, 30, 220); 
   camera.lookAt(0, 0, 0);
 
   /* ── ENVIRONMENT MAP FOR DRONE REFLECTIONS ── */
@@ -339,7 +339,7 @@ function initThreeHero() {
         vec3 col = mix(bot, mid, smoothstep(-1.0, 0.0, y));
         col = mix(col, top, smoothstep(0.0, 1.0, y));
         float spot = smoothstep(0.8, 1.0, dot(normalize(vWorldPosition), normalize(vec3(1.0, 0.8, 0.5))));
-        col += vec3(0.5) * spot;
+        col += vec3(0.8) * spot; // Stronger reflections for Gridcorp/metallic style
         gl_FragColor = vec4(col, 1.0);
       }
     `
@@ -350,15 +350,15 @@ function initThreeHero() {
   /* ── LIGHTS ── */
   scene.add(new THREE.AmbientLight(0xffffff, 0.15));
 
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
   keyLight.position.set(60, 100, 120);
   scene.add(keyLight);
 
-  const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.0);
+  const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.5);
   rimLight.position.set(-80, 60, -60);
   scene.add(rimLight);
 
-  const underLight = new THREE.PointLight(0x00ff88, 1.2, 300);
+  const underLight = new THREE.PointLight(0x00ff88, 1.8, 300);
   underLight.position.set(0, -60, 40);
   scene.add(underLight);
 
@@ -373,8 +373,16 @@ function initThreeHero() {
 
   const droneGroup = new THREE.Group();
   
-  // Right side of screen position! (Same as widget)
-  let baseX = W > 1000 ? W * 0.18 : W > 700 ? W * 0.10 : 0;
+  // DYNAMIC CALCULATION FOR 3D WORLD COORDINATES (RIGHT SIDE)
+  const calculateBaseX = (cam) => {
+    const vFov = cam.fov * Math.PI / 180;
+    const visibleHeight = 2 * Math.tan(vFov / 2) * cam.position.z;
+    const visibleWidth = visibleHeight * cam.aspect;
+    // We want the drone to be on the right side of the screen, around 70% from center towards edge
+    return (visibleWidth / 2) * 0.65;
+  };
+  
+  let baseX = calculateBaseX(camera);
   droneGroup.position.set(baseX, -10, 0); 
   
   const dBody = new THREE.Mesh(new THREE.CapsuleGeometry(9, 24, 16, 32), bodyMat);
@@ -457,8 +465,16 @@ function initThreeHero() {
     droneGroup.add(mesh);
   });
 
-  droneGroup.scale.setScalar(1.6);
+  droneGroup.scale.setScalar(W < 900 ? 1.0 : 1.4);
   scene.add(droneGroup);
+
+  /* ── GRID/ORBIT EFFECT (Gridcorp Inspiration) ── */
+  // Add a sleek cinematic technological grid hovering behind the drone
+  const gridHelper = new THREE.PolarGridHelper(150, 16, 8, 36, 0x00ff88, 0x222244);
+  gridHelper.position.set(baseX, -25, -40);
+  gridHelper.material.transparent = true;
+  gridHelper.material.opacity = 0.15;
+  scene.add(gridHelper);
 
   /* ── BACKGROUND DUST ── */
   const DUST = getAdaptiveCount(700, 350, 150);
@@ -498,17 +514,17 @@ function initThreeHero() {
       smxN += (mxN - smxN) * 0.04;
       smyN += (myN - smyN) * 0.04;
 
-      // Drone sweeps organically around "baseX" location, effectively replacing core behavior with more movement
-      const sweepX = Math.sin(t * 0.4) * 45;
-      const sweepY = Math.sin(t * 0.7) * 12;
-      const sweepZ = Math.cos(t * 0.5) * 15;
+      // Organic hover
+      const sweepX = Math.sin(t * 0.4) * 25;
+      const sweepY = Math.sin(t * 0.7) * 8;
+      const sweepZ = Math.cos(t * 0.5) * 10;
       
       droneGroup.position.x = baseX + sweepX + smxN * 20;
       droneGroup.position.y = sweepY - smyN * 15;
       droneGroup.position.z = sweepZ;
 
-      const velocityX = Math.cos(t * 0.4) * 45 * 0.4;
-      const targetRoll = -velocityX * 0.02;
+      const velocityX = Math.cos(t * 0.4) * 25 * 0.4;
+      const targetRoll = -velocityX * 0.03;
 
       droneGroup.rotation.y = -0.3 + smxN * 0.3;
       droneGroup.rotation.x = -0.1 + (smyN * -0.2);
@@ -516,9 +532,13 @@ function initThreeHero() {
 
       dRotors.forEach((r, i) => r.rotation.y += 0.4 + (i * 0.06));
 
+      // Grid rotation
+      gridHelper.rotation.y = t * 0.05;
+      gridHelper.position.x = baseX + smxN * 10;
+
       camera.position.x = smxN * 10;
       camera.position.y = 30 + smyN * -10;
-      camera.lookAt(0, 0, 0);
+      camera.lookAt(baseX * 0.3, 0, 0);
 
       renderer.render(scene, camera);
     }
@@ -530,8 +550,8 @@ function initThreeHero() {
     camera.aspect = W2 / H2;
     camera.updateProjectionMatrix();
     renderer.setSize(W2, H2);
-    baseX = W2 > 1000 ? W2 * 0.18 : W2 > 700 ? W2 * 0.10 : 0;
-    droneGroup.scale.setScalar(W2 < 900 ? 1.2 : 1.6);
+    baseX = calculateBaseX(camera);
+    droneGroup.scale.setScalar(W2 < 900 ? 1.0 : 1.4);
   }), { passive: true });
 
   animate();
