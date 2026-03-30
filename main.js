@@ -288,11 +288,11 @@ function initThreeHero() {
   }
   const container = document.getElementById('hero-3d');
   if (!container) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.innerWidth < 768) return;
 
-  const W = container.clientWidth;
-  const H = container.clientHeight;
+  // Cross-browser bugfix: Safari/Brave can sometimes calculate clientWidth as 0 on initial tick for abspos elements
+  const rect = container.getBoundingClientRect();
+  const W = rect.width || window.innerWidth;
+  const H = rect.height || window.innerHeight;
 
   let renderer;
   try {
