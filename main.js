@@ -237,6 +237,83 @@ function initHeroUI() {
   loop();
 }
 
+function initThreeHero() {
+  // Require THREE from CDN; fail gracefully if not available
+  if (typeof THREE === 'undefined') return;
+  const container = document.getElementById('hero-3d');
+  if (!container) return;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  const w = container.clientWidth, h = container.clientHeight;
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(w, h);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(48, w / h, 0.1, 1000);
+  camera.position.set(0, 0, 120);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+  dir.position.set(5, 10, 7.5);
+  scene.add(ambient, dir);
+
+  const geo = new THREE.IcosahedronGeometry(32, 2);
+  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff88, metalness: 0.25, roughness: 0.35, emissive: 0x002211 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.scale.set(0.8,0.8,0.8);
+  scene.add(mesh);
+
+  // subtle particle field
+  const ptsGeo = new THREE.BufferGeometry();
+  const count = 220;
+  const positions = new Float32Array(count * 3);
+  for (let i = 0; i < count; i++) {
+    positions[i*3] = (Math.random() - 0.5) * 800;
+    positions[i*3+1] = (Math.random() - 0.5) * 400;
+    positions[i*3+2] = (Math.random() - 0.5) * 400;
+  }
+  ptsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const ptsMat = new THREE.PointsMaterial({ color: 0x00ff88, size: 2, transparent: true, opacity: 0.08 });
+  const points = new THREE.Points(ptsGeo, ptsMat);
+  scene.add(points);
+
+  let px = 0, py = 0;
+  container.addEventListener('pointermove', e => {
+    const r = container.getBoundingClientRect();
+    px = (e.clientX - r.left) / r.width - 0.5;
+    py = (e.clientY - r.top) / r.height - 0.5;
+  }, { passive: true });
+
+  container.addEventListener('pointerleave', () => { px = 0; py = 0; });
+
+  let visible = !document.hidden;
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+  const animate = () => {
+    if (visible) {
+      mesh.rotation.x += 0.006;
+      mesh.rotation.y += 0.008;
+      mesh.rotation.x += px * 0.02;
+      mesh.rotation.y += py * 0.02;
+      points.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
+  };
+
+  window.addEventListener('resize', () => {
+    const W = container.clientWidth, H = container.clientHeight;
+    camera.aspect = W / H; camera.updateProjectionMatrix(); renderer.setSize(W, H);
+  }, { passive: true });
+
+  animate();
+}
+
 function mkParticle(w, h) {
   return {
     x:  Math.random() * w,
