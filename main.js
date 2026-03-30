@@ -76,6 +76,13 @@ function initNavigation() {
 
   // Mobile menu toggle
   if (toggle && menu) {
+    const closeMobileMenu = () => {
+      menu.classList.remove('open');
+      toggle.classList.remove('active');
+      toggle.setAttribute('aria-expanded', false);
+      menu.setAttribute('aria-hidden', true);
+    };
+
     toggle.addEventListener('click', () => {
       const open = menu.classList.toggle('open');
       toggle.classList.toggle('active', open);
@@ -85,12 +92,19 @@ function initNavigation() {
 
     // Close on link click
     menu.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => {
-        menu.classList.remove('open');
-        toggle.classList.remove('active');
-        toggle.setAttribute('aria-expanded', false);
-        menu.setAttribute('aria-hidden', true);
-      });
+      a.addEventListener('click', closeMobileMenu);
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && menu.classList.contains('open')) closeMobileMenu();
+    });
+
+    // Close when clicking outside the menu (on small screens)
+    document.addEventListener('click', e => {
+      if (!menu.contains(e.target) && !toggle.contains(e.target) && menu.classList.contains('open')) {
+        closeMobileMenu();
+      }
     });
   }
 }
@@ -132,7 +146,11 @@ function initHero() {
   let mx = -1000, my = -1000;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
 
+  let particleVisible = !document.hidden;
+  document.addEventListener('visibilitychange', () => { particleVisible = !document.hidden; });
+
   const draw = () => {
+    if (!particleVisible) { requestAnimationFrame(draw); return; }
     ctx.clearRect(0, 0, w, h);
     particles.forEach(p => {
       p.x += p.vx; p.y += p.vy;

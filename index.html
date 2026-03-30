@@ -277,7 +277,7 @@
                 </div>
                 <div class="form-field">
                   <label for="f-phone">YOUR PHONE</label>
-                  <input type="tel" id="f-phone" name="phone" placeholder="+91 98765 43210" required>
+                  <input type="tel" id="f-phone" name="phone" placeholder="+91 98765 43210" inputmode="tel" pattern="[0-9+\s()\-]{6,}" aria-required="true" required>
                 </div>
               </div>
               <div class="form-field">
@@ -333,9 +333,9 @@
   <!-- Scripts — order matters -->
   <script src="products.js" defer></script>
   <script src="main.js" defer></script>
-  <!-- Three.js for drone (loads async so it doesn't block) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="drone.js"></script>
+  <!-- Three.js for drone (deferred) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+  <script src="drone.js" defer></script>
 
 </body>
 </html>

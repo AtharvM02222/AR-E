@@ -580,3 +580,12 @@ footer { border-top: 1px solid var(--border); padding: 5rem 0 2.5rem; background
   .hero-ticker { display: none; }
   .drone-viewer { aspect-ratio: 1/1; }
 }
+
+/* Accessibility: keyboard focus + reduced motion */
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0 !important; animation-delay: 0 !important; transition-duration: 0 !important; scroll-behavior: auto !important; }
+  #particle-canvas, .ticker-inner, .marquee-content, .scan-line, .hero-eyebrow, #hero-title .line, .hero-subtitle, .hero-actions { display: none !important; }
+}
+
