@@ -268,14 +268,89 @@
                         <stop offset="0%" stop-color="#00ff88" stop-opacity="1"/>
                         <stop offset="100%" stop-color="#3b82f6" stop-opacity="1"/>
                       </linearGradient>
+                      <radialGradient id="metallic" cx="40%" cy="40%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
+                        <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05"/>
+                        <stop offset="100%" stop-color="#000000" stop-opacity="0.2"/>
+                      </radialGradient>
+                      <filter id="glow">
+                        <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                        <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
                     </defs>
+                    
+                    <!-- Outer frame -->
                     <rect x="2" y="2" width="216" height="216" rx="18" stroke="url(#g1)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
-                    <g transform="translate(38,38)">
-                      <circle cx="72" cy="32" r="24" stroke="url(#g1)" stroke-width="2.5" fill="rgba(0,0,0,0.2)"/>
-                      <rect x="18" y="68" width="108" height="56" rx="8" fill="rgba(0,0,0,0.15)" stroke="rgba(255,255,255,0.03)"/>
-                      <circle cx="36" cy="96" r="6" fill="#00ff88"/>
-                      <circle cx="60" cy="96" r="6" fill="#3b82f6"/>
-                      <circle cx="84" cy="96" r="6" fill="#a855f7"/>
+                    
+                    <!-- Main drone body -->
+                    <g transform="translate(60, 50)">
+                      <!-- Center body with metallic effect -->
+                      <ellipse cx="50" cy="50" rx="28" ry="32" fill="#1a1a2e" stroke="url(#g1)" stroke-width="2"/>
+                      <ellipse cx="50" cy="50" rx="28" ry="32" fill="url(#metallic)" opacity="0.6"/>
+                      
+                      <!-- Camera gimbal -->
+                      <circle cx="50" cy="68" r="8" fill="rgba(0,0,0,0.4)" stroke="#00ff88" stroke-width="1.5"/>
+                      <circle cx="50" cy="68" r="5" fill="rgba(0, 255, 136, 0.3)"/>
+                      
+                      <!-- Top antenna/sensor -->
+                      <rect x="47" y="12" width="6" height="12" rx="3" fill="#3b82f6" opacity="0.7"/>
+                      
+                      <!-- Motor arms - Left & Right -->
+                      <g id="motor-group">
+                        <!-- Left arm -->
+                        <line x1="15" y1="50" x2="2" y2="50" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Left motor housing -->
+                        <circle cx="2" cy="50" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
+                        <circle cx="2" cy="50" r="7" fill="url(#metallic)" opacity="0.5"/>
+                        <!-- Left propeller -->
+                        <g transform="translate(2, 50)" filter="url(#glow)">
+                          <ellipse cx="0" cy="-12" rx="3" ry="14" fill="#00ff88" opacity="0.4" transform="rotate(-25)"/>
+                          <ellipse cx="0" cy="12" rx="3" ry="14" fill="#3b82f6" opacity="0.4" transform="rotate(-25)"/>
+                        </g>
+                        
+                        <!-- Right arm -->
+                        <line x1="85" y1="50" x2="98" y2="50" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Right motor housing -->
+                        <circle cx="98" cy="50" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
+                        <circle cx="98" cy="50" r="7" fill="url(#metallic)" opacity="0.5"/>
+                        <!-- Right propeller -->
+                        <g transform="translate(98, 50)" filter="url(#glow)">
+                          <ellipse cx="0" cy="-12" rx="3" ry="14" fill="#3b82f6" opacity="0.4" transform="rotate(25)"/>
+                          <ellipse cx="0" cy="12" rx="3" ry="14" fill="#00ff88" opacity="0.4" transform="rotate(25)"/>
+                        </g>
+                      </g>
+                      
+                      <!-- Top & Bottom arms (front & back) -->
+                      <g>
+                        <!-- Front arm -->
+                        <line x1="50" y1="20" x2="50" y2="4" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Front motor -->
+                        <circle cx="50" cy="4" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
+                        <circle cx="50" cy="4" r="7" fill="url(#metallic)" opacity="0.5"/>
+                        <!-- Front propeller -->
+                        <g transform="translate(50, 4)" filter="url(#glow)">
+                          <ellipse cx="-12" cy="0" rx="14" ry="3" fill="#00ff88" opacity="0.4" transform="rotate(-35)"/>
+                          <ellipse cx="12" cy="0" rx="14" ry="3" fill="#3b82f6" opacity="0.4" transform="rotate(-35)"/>
+                        </g>
+                        
+                        <!-- Rear arm -->
+                        <line x1="50" y1="80" x2="50" y2="96" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Rear motor -->
+                        <circle cx="50" cy="96" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
+                        <circle cx="50" cy="96" r="7" fill="url(#metallic)" opacity="0.5"/>
+                        <!-- Rear propeller -->
+                        <g transform="translate(50, 96)" filter="url(#glow)">
+                          <ellipse cx="-12" cy="0" rx="14" ry="3" fill="#3b82f6" opacity="0.4" transform="rotate(35)"/>
+                          <ellipse cx="12" cy="0" rx="14" ry="3" fill="#00ff88" opacity="0.4" transform="rotate(35)"/>
+                        </g>
+                      </g>
+                      
+                      <!-- Status indicator lights -->
+                      <circle cx="40" cy="42" r="2.5" fill="#00ff88" opacity="0.8" filter="url(#glow)"/>
+                      <circle cx="60" cy="42" r="2.5" fill="#3b82f6" opacity="0.8" filter="url(#glow)"/>
                     </g>
                   </svg>
                 </div>
