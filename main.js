@@ -393,6 +393,15 @@ function renderProducts() {
       selectProduct(p.name);
     });
 
+    // 3D preview button (if present)
+    const b3d = card.querySelector('.btn-3d');
+    if (b3d) {
+      b3d.addEventListener('click', () => {
+        // pass the product object (p) so open3DPreview can use p.model
+        open3DPreview(p);
+      });
+    }
+
     grid.appendChild(card);
 
     // Populate contact form select

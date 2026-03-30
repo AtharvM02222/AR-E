@@ -30,6 +30,7 @@ var PRODUCTS = [
     price: 4999,
     icon:  "🚁",
     image: "",
+    model: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb",
     badge: "NEW"
   },
   {
@@ -48,6 +49,7 @@ var PRODUCTS = [
     price: 6499,
     icon:  "🦾",
     image: "",
+    model: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Cube/glTF-Binary/Cube.glb",
     badge: "PRO"
   },
   {
