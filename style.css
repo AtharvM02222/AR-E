@@ -535,6 +535,18 @@ footer { border-top: 1px solid var(--border); padding: 5rem 0 2.5rem; background
 #toast.show { transform: translateY(0); }
 #toast.error { border-color: #ef4444; }
 
+/* ── SW UPDATE PROMPT ───────────────────────────────────────────── */
+.sw-update {
+  position: fixed; left: 1.5rem; bottom: 1.5rem; z-index: 4000;
+  background: var(--bg-2); border: 1px solid var(--accent); border-radius: 12px;
+  padding: .6rem .9rem; box-shadow: 0 12px 36px rgba(0,0,0,.45);
+  display: flex; align-items: center; gap: .8rem; color: var(--text); min-width: 240px;
+}
+.sw-update-inner { display:flex; align-items:center; justify-content:space-between; width:100%; gap:.8rem; }
+.sw-update-text { font-family: var(--font-mono); font-size: .9rem; color: var(--text-2); font-weight:700; }
+.sw-update-actions { display:flex; gap:.5rem; align-items:center; }
+@media (max-width: 768px) { .sw-update { left: .9rem; right: .9rem; bottom: 1rem; min-width: auto; } }
+
 /* ── SCROLL REVEAL ───────────────────────────────────────────────── */
 .will-reveal {
   opacity: 0; transform: translateY(22px);

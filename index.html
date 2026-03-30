@@ -337,6 +337,17 @@
   <!-- Toast -->
   <div id="toast" role="status" aria-live="polite"></div>
 
+  <!-- Service worker update prompt -->
+  <div id="sw-update" class="sw-update" role="status" aria-live="polite" hidden>
+    <div class="sw-update-inner">
+      <span class="sw-update-text">New version available</span>
+      <div class="sw-update-actions">
+        <button type="button" id="sw-refresh" class="btn-primary">Refresh</button>
+        <button type="button" id="sw-dismiss" class="btn-ghost">Later</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts — order matters -->
   <script src="products.js" defer></script>
   <script src="main.js" defer></script>

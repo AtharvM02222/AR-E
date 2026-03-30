@@ -386,16 +386,44 @@ function registerServiceWorker() {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then(reg => {
         console.log('Service worker registered:', reg);
-        // Notify users when a new SW is installed and waiting
-        if (reg.waiting) showToast('Update available — refresh to apply');
+
+        const promptForUpdate = (registration) => {
+          const el = document.getElementById('sw-update');
+          if (!el) { showToast('Update available — refresh to apply'); return; }
+          el.hidden = false;
+          const refreshBtn = document.getElementById('sw-refresh');
+          const dismissBtn = document.getElementById('sw-dismiss');
+
+          const onRefresh = () => {
+            if (registration.waiting) {
+              // Tell SW to activate immediately
+              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+              showToast('Updating…');
+            }
+          };
+
+          refreshBtn && refreshBtn.addEventListener('click', onRefresh, { once: true });
+          dismissBtn && dismissBtn.addEventListener('click', () => { el.hidden = true; });
+
+          // When the new SW takes control, reload to apply update
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+          }, { once: true });
+        };
+
+        if (reg.waiting) {
+          promptForUpdate(reg);
+        }
+
         reg.addEventListener('updatefound', () => {
           const inst = reg.installing;
           inst.addEventListener('statechange', () => {
             if (inst.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast('New version available — refresh to update');
+              promptForUpdate(reg);
             }
           });
         });
+
       }).catch(err => console.warn('SW registration failed:', err));
     });
   }
