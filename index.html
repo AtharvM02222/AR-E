@@ -239,6 +239,50 @@
 
         <!-- Static hero media (3D viewer removed) -->
         <div class="drone-static" id="drone-static" role="img" aria-label="AR ENTERPRISE">
+          <!-- New hero UI: left copy + right feature card -->
+          <div class="hero-ui">
+            <div class="hero-ui-left">
+              <h3 class="hero-ui-kicker">Next‑Gen Robotics</h3>
+              <h2 class="hero-ui-head">AR ENTERPRISE — Performance Machines</h2>
+              <p class="hero-ui-lead">Competition‑grade robots, drones and kits engineered for builders who want to win. Lightweight, modular and battle‑tested.</p>
+              <div class="hero-ui-cta">
+                <button type="button" class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Explore Arsenal →</button>
+                <button type="button" class="btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get a Quote</button>
+              </div>
+            </div>
+            <div class="hero-ui-right">
+              <div class="feature-card">
+                <div class="feature-media" aria-hidden="true">
+                  <!-- decorative SVG placeholder (no watermark, no external embeds) -->
+                  <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="feature-svg">
+                    <defs>
+                      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#00ff88" stop-opacity="1"/>
+                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="1"/>
+                      </linearGradient>
+                    </defs>
+                    <rect x="2" y="2" width="216" height="216" rx="18" stroke="url(#g1)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
+                    <g transform="translate(38,38)">
+                      <circle cx="72" cy="32" r="24" stroke="url(#g1)" stroke-width="2.5" fill="rgba(0,0,0,0.2)"/>
+                      <rect x="18" y="68" width="108" height="56" rx="8" fill="rgba(0,0,0,0.15)" stroke="rgba(255,255,255,0.03)"/>
+                      <circle cx="36" cy="96" r="6" fill="#00ff88"/>
+                      <circle cx="60" cy="96" r="6" fill="#3b82f6"/>
+                      <circle cx="84" cy="96" r="6" fill="#a855f7"/>
+                    </g>
+                  </svg>
+                </div>
+                <div class="feature-body">
+                  <div class="feature-title">Battle‑tested flight controller</div>
+                  <div class="feature-desc">Low‑latency control, hardware fail‑safe and hot‑swap motors. Ready for competition use.</div>
+                  <div class="feature-meta">
+                    <span class="pill">48H Dispatch</span>
+                    <span class="pill">1‑Year Warranty</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
           <div class="static-placeholder">
             <div class="fallback-glow"></div>
             <span class="fallback-text">AR ENTERPRISE</span>
