@@ -10,7 +10,7 @@ const PRECACHE_URLS = [
   './style.css',
   './main.js',
   './products.js',
-  './drone.js',
+  /* './drone.js', 3D viewer removed */
   './favicon.svg'
 ];
 

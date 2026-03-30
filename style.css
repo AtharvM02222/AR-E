@@ -384,51 +384,18 @@ section { padding: 9rem 0; }
 .pillar-num   { font-family: var(--font-mono); font-size: .66rem; color: var(--accent); letter-spacing: .18em; font-weight: 700; }
 .pillar-title { font-size: 1rem; font-weight: 500; color: var(--text); margin-top: .35rem; }
 
-/* ── DRONE VIEWER ─────────────────────────────────────────────────
-   Replaces the video panel — Three.js renders here
-   ──────────────────────────────────────────────────────────────── */
-.drone-viewer {
-  position: relative;
-  width: 100%; aspect-ratio: 16 / 9;
-  border-radius: 20px; overflow: hidden;
-  border: 1px solid var(--border);
-  background: var(--bg-2);
-  /* Subtle inner glow */
+/* ── STATIC HERO MEDIA ───────────────────────────────────────────── */
+.drone-static {
+  position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 20px; overflow: hidden;
+  border: 1px solid var(--border); background: var(--bg-2); display:flex; align-items:center; justify-content:center;
   box-shadow: inset 0 0 80px rgba(0,255,136,.03), 0 0 0 1px rgba(0,255,136,.06);
 }
-#drone-canvas {
-  display: block; width: 100%; height: 100%;
-  /* Transparent bg so site bg shows through */
-  background: transparent;
-}
-
-/* Overlay labels */
-.drone-overlay {
-  position: absolute; inset: 0; pointer-events: none;
-  display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
-  padding: 2rem 2.5rem;
-  background: linear-gradient(to top, rgba(3,7,18,.7) 0%, transparent 50%);
-}
-.drone-label {
-  font-family: var(--font-mono); font-size: .65rem; color: var(--text-2); letter-spacing: .2em;
-}
-.drone-hint {
-  font-family: var(--font-mono); font-size: .58rem; color: var(--text-3); letter-spacing: .15em; margin-top: .4rem;
-}
-
-/* Fallback (shown if Three.js fails) */
-.drone-fallback {
-  position: absolute; inset: 0; display: none;
-  align-items: center; justify-content: center; flex-direction: column; gap: 2rem;
-  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,255,136,.08) 0%, transparent 70%);
-}
-.fallback-glow {
-  width: 80px; height: 80px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,255,136,.4), transparent 70%);
-  animation: breathe 3s ease-in-out infinite;
-}
+.static-placeholder { display:flex; flex-direction:column; align-items:center; gap:1rem; padding:2.5rem; text-align:center; }
+.fallback-glow { width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, rgba(0,255,136,.4), transparent 70%); animation: breathe 3s ease-in-out infinite; }
 @keyframes breathe { 0%,100% { transform:scale(1); opacity:.6; } 50% { transform:scale(1.3); opacity:1; } }
-.fallback-text { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .3em; color: var(--text-3); }
+.fallback-text { font-family: var(--font-mono); font-size: 1rem; letter-spacing: .18em; color: var(--text); }
+.static-sub { font-family: var(--font-sans); color: var(--text-2); font-size: .95rem; margin-top: .25rem; }
+
 
 /* ── CONTACT ─────────────────────────────────────────────────────── */
 #contact {

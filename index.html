@@ -237,17 +237,12 @@
           </div>
         </div>
 
-        <!-- 3D Drone Viewer (replaces video) -->
-        <div class="drone-viewer" id="drone-viewer">
-          <canvas id="drone-canvas"></canvas>
-          <div class="drone-overlay">
-            <span class="drone-label">[ ◉ AR ENTERPRISE — INTERACTIVE 3D ]</span>
-            <span class="drone-hint">↗ Move cursor to control</span>
-          </div>
-          <div class="drone-fallback">
-            <!-- Shown if Three.js fails to load -->
+        <!-- Static hero media (3D viewer removed) -->
+        <div class="drone-static" id="drone-static" role="img" aria-label="AR ENTERPRISE">
+          <div class="static-placeholder">
             <div class="fallback-glow"></div>
             <span class="fallback-text">AR ENTERPRISE</span>
+            <p class="static-sub">Interactive 3D viewer removed. High‑res media coming soon.</p>
           </div>
         </div>
       </div>
@@ -340,9 +335,7 @@
   <!-- Scripts — order matters -->
   <script src="products.js" defer></script>
   <script src="main.js" defer></script>
-  <!-- Three.js for drone (deferred) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-  <script src="drone.js" defer></script>
+
 
 </body>
 </html>
