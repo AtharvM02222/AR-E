@@ -376,13 +376,31 @@
   <!-- Toast -->
   <div id="toast" role="status" aria-live="polite"></div>
 
-  <!-- Video Modal -->
-  <div id="video-modal" class="modal" aria-hidden="true" aria-label="Watch video">
+  <!-- Video / Promo Modal (video removed - promotional card) -->
+  <div id="video-modal" class="modal" aria-hidden="true" aria-label="Watch demo">
     <div class="modal-backdrop" id="video-backdrop"></div>
     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="video-title">
-      <button type="button" class="modal-close" id="video-close" aria-label="Close video">✕</button>
-      <h2 id="video-title" class="visually-hidden">AR ENTERPRISE — Watch in Action</h2>
-      <video id="hero-video" src="title.mp4" controls playsinline preload="metadata" style="max-width:100%;border-radius:10px;"></video>
+      <button type="button" class="modal-close" id="video-close" aria-label="Close">✕</button>
+      <h2 id="video-title">AR ENTERPRISE — Watch Demo</h2>
+      <div class="modal-promo">
+        <svg width="120" height="120" viewBox="0 0 120 120" class="promo-svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00ff88"/>
+              <stop offset="100%" stop-color="#3b82f6"/>
+            </linearGradient>
+          </defs>
+          <rect x="6" y="6" width="108" height="108" rx="14" fill="rgba(255,255,255,0.02)" stroke="url(#pg)" stroke-width="2"/>
+          <circle cx="60" cy="44" r="18" fill="rgba(0,0,0,0.18)" stroke="url(#pg)" stroke-width="1.8"/>
+        </svg>
+        <div class="modal-copy">
+          <p class="modal-lead">Video has been removed. Request a live demo or explore our product line — no watermarks, no external embeds.</p>
+          <div class="modal-cta-wrap">
+            <button type="button" id="modal-cta-contact" class="btn-primary">Request Demo</button>
+            <button type="button" id="modal-cta-products" class="btn-ghost">Explore Arsenal</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -463,20 +463,19 @@ function initVideoModal() {
   const modal = document.getElementById('video-modal');
   const backdrop = document.getElementById('video-backdrop');
   const close = document.getElementById('video-close');
-  const video = document.getElementById('hero-video');
+  const ctaContact = document.getElementById('modal-cta-contact');
+  const ctaProducts = document.getElementById('modal-cta-products');
   if (!btn || !modal) return;
 
   const open = () => {
     modal.setAttribute('aria-hidden','false');
     document.body.style.overflow = 'hidden';
-    try { if (video) { video.currentTime = 0; video.muted = false; video.play().catch(()=>{}); } } catch(e){}
     if (close) close.focus();
   };
 
   const closeModal = () => {
     modal.setAttribute('aria-hidden','true');
     document.body.style.overflow = '';
-    try { if (video) { video.pause(); video.currentTime = 0; } } catch(e){}
     btn.focus();
   };
 
@@ -484,7 +483,17 @@ function initVideoModal() {
   if (close) close.addEventListener('click', closeModal);
   if (backdrop) backdrop.addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal(); });
-  if (video) video.addEventListener('ended', closeModal);
+
+  if (ctaContact) ctaContact.addEventListener('click', () => {
+    closeModal();
+    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => { const nameEl = document.getElementById('f-name'); if (nameEl) nameEl.focus({ preventScroll: true }); }, 600);
+  });
+
+  if (ctaProducts) ctaProducts.addEventListener('click', () => {
+    closeModal();
+    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+  });
 }
 
 function showToast(msg, isError) {
