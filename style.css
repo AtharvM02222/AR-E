@@ -1907,3 +1907,49 @@ footer {
     margin: 0 auto 3.5rem;
   }
 }
+
+
+/* ══ HERO 3D UPGRADE — append to END of style.css ══════════════ */
+
+/* 1. Never let canvas block clicks/events on the text */
+.hero-3d { pointer-events: none !important; }
+
+/* 2. Left-align text so 3D has room on the right */
+.hero-content {
+  text-align: left;
+  padding-left: 2%;
+  margin-left: 0;
+  margin-right: auto;
+  width: min(90%, 700px);
+}
+.hero-eyebrow   { text-align: left; }
+#hero-title     { text-align: left; }
+.hero-subtitle  { text-align: left; margin-left: 0; margin-right: auto; max-width: 520px; }
+.hero-actions   { justify-content: flex-start; }
+
+/* 3. JS-failure safety net — if 'revealed' never fires, fade text
+      in after 2 s using a pure-CSS animation so the page isn't
+      permanently blank. */
+.js .hero-eyebrow:not(.revealed),
+.js #hero-title:not(.revealed) .line,
+.js .hero-subtitle:not(.revealed),
+.js .hero-actions:not(.revealed) {
+  animation: heroFallback 0.8s ease forwards;
+  animation-delay: 2s;
+}
+@keyframes heroFallback {
+  to { opacity: 1 !important; transform: translateY(0) !important; filter: blur(0) !important; }
+}
+
+/* 4. Restore mobile layout */
+@media (max-width: 767px) {
+  .hero-content {
+    text-align: center;
+    padding-left: 0;
+    width: min(90%, 560px);
+    margin: 0 auto;
+  }
+  #hero-title, .hero-eyebrow, .hero-subtitle { text-align: center; }
+  .hero-actions   { justify-content: center; }
+  .hero-subtitle  { margin: 0 auto 3.5rem; }
+}
