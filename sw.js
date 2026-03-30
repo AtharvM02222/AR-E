@@ -1,4 +1,4 @@
-/* ROBOVERSE.ENGINEERING — Service Worker (simple, safe)
+/* AR ENTERPRISE — Service Worker (simple, safe)
    Caches core assets and serves an offline fallback for navigation requests.
 */
 

@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   ROBOVERSE.ENGINEERING — main.js  v5.0
+   AR ENTERPRISE — main.js
    Sections:
    1. CURSOR
    2. NAVIGATION
@@ -367,7 +367,7 @@ function initForm() {
     }
 
     const text = [
-      `Hi! I found *ROBOVERSE.ENGINEERING* 🤖`,
+      `Hi! I found *AR ENTERPRISE* 🤖`,
       ``,
       `*Name:* ${name}`,
       `*Phone:* ${phone}`,

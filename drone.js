@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   ROBOVERSE.ENGINEERING — drone.js
+   AR ENTERPRISE — drone.js
    Procedural Three.js Quadcopter — No model files needed
    Replaces the Spline iframe — fully self-contained
    ════════════════════════════════════════════════════════════════ */
