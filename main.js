@@ -142,6 +142,27 @@ function initHero() {
   const canvas = document.getElementById('particle-canvas');
   if (!canvas) return;
 
+  // Add smooth scroll handler for internal nav links to avoid sharp jumps
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      if (!href || href === '#' ) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      smoothScrollTo(target);
+      // close mobile menu if open
+      const menu = document.getElementById('mobile-menu');
+      const toggle = document.getElementById('mobile-toggle');
+      if (menu && menu.classList.contains('open')) {
+        menu.classList.remove('open'); toggle.classList.remove('active'); toggle.setAttribute('aria-expanded', false); menu.setAttribute('aria-hidden', true);
+      }
+    });
+  });
+
+  // Initialize scroll parallax
+  initScrollParallax();
+
   const ctx = canvas.getContext('2d');
   let w, h;
 
@@ -228,7 +249,7 @@ function initHeroUI() {
     const rotX = (-ty * 6).toFixed(2);
     const rotY = (tx * 6).toFixed(2);
 
-    feature.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(${(-ty * 6)}px)`;
+    try { feature.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(${(-ty * 6)}px)`; } catch(e){}
     if (left) left.style.transform = `translate3d(${tx * 12}px, ${ty * 8}px, 0)`;
 
     requestAnimationFrame(loop);
@@ -420,19 +441,58 @@ function getBentoClass(p, i) {
   return 'std';
 }
 
+function smoothScrollTo(el) {
+  if (!el) return;
+  const nav = document.getElementById('nav');
+  const navH = nav ? nav.offsetHeight : 0;
+  const top = el.getBoundingClientRect().top + window.scrollY - Math.round(navH * 1.05);
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
 function selectProduct(name) {
   const s = document.getElementById('f-product');
   if (s) s.value = name;
-  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+  smoothScrollTo(document.getElementById('contact'));
   // Focus the name input after the scroll for a smoother ordering flow
   setTimeout(() => {
     const nameEl = document.getElementById('f-name');
     if (nameEl) nameEl.focus({ preventScroll: true });
-  }, 600);
+  }, 700);
   showToast(`Selected: ${name} ✓`);
 }
 
 /* ─── 5. STATS ──────────────────────────────────────────────────── */
+function initScrollParallax() {
+  const hero = document.getElementById('hero');
+  const heroBg = document.querySelector('.hero-bg');
+  const heroContent = document.querySelector('.hero-content');
+  const hero3d = document.getElementById('hero-3d');
+  const fg = document.getElementById('hero-foreground');
+  if (!hero) return;
+
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const onScroll = () => {
+    lastY = window.scrollY;
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const sc = Math.max(0, lastY);
+        const heroRect = hero.getBoundingClientRect();
+        const offset = Math.min(Math.max(sc / 3, 0), 200);
+        if (heroBg) heroBg.style.transform = `translateY(${offset * 0.08}px)`;
+        if (heroContent) heroContent.style.transform = `translateY(${offset * 0.02}px)`;
+        if (hero3d) hero3d.style.transform = `translateY(${offset * 0.012}px) translateZ(0)`;
+        if (fg) fg.style.transform = `translateY(${Math.min(offset * -0.12, 0)}px)`;
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+}
+
 function initStats() {
   const els = document.querySelectorAll('.stat-number');
   if (!els.length) return;
