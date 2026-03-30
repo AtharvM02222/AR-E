@@ -1,15 +1,15 @@
-/* AR ENTERPRISE — Service Worker (simple, safe)
+/* AR ENTERPRISE — Service Worker v4 (cross-browser)
    Caches core assets and serves an offline fallback for navigation requests.
 */
 
-const CACHE_NAME = 'roboverse-static-v3';
+const CACHE_NAME = 'are-static-v4';
 const PRECACHE_URLS = [
   './',
-  './index.html?v=1.2',
+  './index.html',
   './offline.html',
-  './style.css?v=1.2',
-  './main.js?v=1.2',
-  './products.js?v=1.2',
+  './style.css?v=2.0',
+  './main.js?v=2.0',
+  './products.js?v=2.0',
   './favicon.svg'
 ];
 

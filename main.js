@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   AR ENTERPRISE — main.js  v2.0
+   AR ENTERPRISE — main.js  v3.0  (cross-browser + performance)
    ════════════════════════════════════════════════════════════════ */
 
 const OWNER_WA_NUMBER = '918595237299';
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initHero();
   initHeroUI();
-  initThreeHero();   // ← upgraded 3D Combat Core
+  initThreeHero();
   initUIWidgets();
   initVideoModal();
   renderProducts();
@@ -25,6 +25,32 @@ document.addEventListener('DOMContentLoaded', () => {
   try { registerServiceWorker(); } catch (_) { }
 });
 
+/* ─── STUB: missing function definitions (prevents ReferenceError) ── */
+function injectStructuredData() {
+  /* Structured data injection — placeholder for future SEO enhancement */
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "AR ENTERPRISE",
+    "description": "Competition-grade robots, drones and RC kits.",
+    "url": window.location.origin
+  });
+  document.head.appendChild(script);
+}
+
+function initDroneFallbackCheck() {
+  /* Check if the hero 3D rendered; if not, ensure fallback is visible */
+  const hero3d = document.getElementById('hero-3d');
+  if (!hero3d) return;
+  setTimeout(() => {
+    if (!hero3d.querySelector('canvas')) {
+      hero3d.style.display = 'none';
+    }
+  }, 3000);
+}
+
 /* ─── 1. CURSOR ────────────────────────────────────────────────── */
 function initCursor() {
   if (!window.matchMedia('(pointer: fine)').matches) return;
@@ -33,7 +59,7 @@ function initCursor() {
   if (!cursor || !cursorDot) return;
 
   let mx = 0, my = 0, cx = 0, cy = 0, targetX = 0, targetY = 0, isMagnetic = false;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
 
   const loop = () => {
     if (isMagnetic) {
@@ -154,21 +180,33 @@ function initHero() {
   if (!ctx) return;
   let w, h;
   const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
-  window.addEventListener('resize', resize, { passive: true });
+  window.addEventListener('resize', throttleRAF(resize), { passive: true });
   resize();
 
-  const COUNT = 55;
+  /* Adaptive particle count based on device capability */
+  const COUNT = getAdaptiveCount(55, 30, 18);
   const particles = Array.from({ length: COUNT }, () => mkParticle(w, h));
   let mx = -1000, my = -1000;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+
+  /* Gate particles with IntersectionObserver — stop when hero is off-screen */
+  let heroVisible = true;
+  const heroSection = document.getElementById('hero');
+  if (heroSection && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(entries => {
+      heroVisible = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    obs.observe(heroSection);
+  }
 
   let particleVisible = !document.hidden;
   document.addEventListener('visibilitychange', () => { particleVisible = !document.hidden; });
 
   const draw = () => {
-    if (!particleVisible) { requestAnimationFrame(draw); return; }
+    if (!particleVisible || !heroVisible) { requestAnimationFrame(draw); return; }
     ctx.clearRect(0, 0, w, h);
-    particles.forEach(p => {
+    for (let j = 0; j < particles.length; j++) {
+      const p = particles[j];
       p.x += p.vx; p.y += p.vy;
       const dx = p.x - mx, dy = p.y - my;
       const d = Math.sqrt(dx * dx + dy * dy);
@@ -179,7 +217,7 @@ function initHero() {
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${p.o})`;
       ctx.fill();
-    });
+    }
     requestAnimationFrame(draw);
   };
   draw();
@@ -215,7 +253,7 @@ function initHeroUI() {
   loop();
 }
 
-/* ─── 3D COMBAT CORE HERO ─────────────────────────────────────── */
+/* ─── 3D COMBAT CORE HERO (cross-browser + performance) ────────── */
 function initThreeHero() {
   if (typeof THREE === 'undefined') return;
   const container = document.getElementById('hero-3d');
@@ -228,10 +266,16 @@ function initThreeHero() {
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(W, H);
     renderer.setClearColor(0x000000, 0);
+    /* Cross-browser: use outputColorSpace if available (Three.js r152+), fallback to outputEncoding */
+    if ('outputColorSpace' in renderer) {
+      renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
+    } else if ('outputEncoding' in renderer) {
+      renderer.outputEncoding = THREE.sRGBEncoding || 3001;
+    }
     container.appendChild(renderer.domElement);
   } catch (e) {
     console.warn('3D Hero blocked or unsupported in this browser.', e);
@@ -263,7 +307,6 @@ function initThreeHero() {
   scene.add(group);
 
   /* ── CORE ── */
-  // Solid
   const coreGeo = new THREE.IcosahedronGeometry(52, 1);
   const coreMat = new THREE.MeshStandardMaterial({
     color: 0x050e1a,
@@ -354,7 +397,7 @@ function initThreeHero() {
   for (let i = 0; i < moduleCount; i++) {
     const sz = SIZES[i];
     const col = COLORS[i % 3];
-    const tier = Math.floor(i / 4); // 0=inner, 1=mid, 2=outer
+    const tier = Math.floor(i / 4);
     const baseR = 100 + tier * 38;
 
     const geo = new THREE.BoxGeometry(sz, sz * 0.55, sz * 0.38);
@@ -394,8 +437,8 @@ function initThreeHero() {
     beams.push({ line, modIdx: i * 2 });
   }
 
-  /* ── PARTICLE HALO (sphere shell) ── */
-  const HALO_COUNT = 1200;
+  /* ── PARTICLE HALO (adaptive count) ── */
+  const HALO_COUNT = getAdaptiveCount(1200, 600, 300);
   const haloPos = new Float32Array(HALO_COUNT * 3);
   for (let i = 0; i < HALO_COUNT; i++) {
     const theta = Math.random() * Math.PI * 2;
@@ -414,8 +457,8 @@ function initThreeHero() {
   const haloParticles = new THREE.Points(haloPartGeo, haloPartMat);
   group.add(haloParticles);
 
-  /* ── SCENE-WIDE BACKGROUND DUST ── */
-  const DUST = 700;
+  /* ── SCENE-WIDE BACKGROUND DUST (adaptive count) ── */
+  const DUST = getAdaptiveCount(700, 350, 150);
   const dustPos = new Float32Array(DUST * 3);
   for (let i = 0; i < DUST; i++) {
     dustPos[i * 3] = (Math.random() - 0.5) * 2200;
@@ -440,9 +483,19 @@ function initThreeHero() {
   let visible = !document.hidden;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
+  /* ── VISIBILITY GATE: stop rendering when hero is off-screen ── */
+  let heroInView = true;
+  const heroEl = document.getElementById('hero');
+  if (heroEl && 'IntersectionObserver' in window) {
+    const obs = new IntersectionObserver(entries => {
+      heroInView = entries[0].isIntersecting;
+    }, { threshold: 0, rootMargin: '100px' });
+    obs.observe(heroEl);
+  }
+
   /* ── ANIMATION LOOP ── */
   const animate = () => {
-    if (visible) {
+    if (visible && heroInView) {
       const t = Date.now() * 0.001;
 
       // Smooth mouse
@@ -461,16 +514,15 @@ function initThreeHero() {
       wire2.rotation.y += 0.004;
       wire2.rotation.z -= 0.002;
 
-      const pulse = 1 + Math.sin(t * 2.8) * 0.05;
       haloMat.opacity = 0.04 + Math.sin(t * 3) * 0.02;
       coreMat.emissiveIntensity = 1.2 + Math.sin(t * 4) * 0.4;
       lGreen.intensity = 10 + Math.sin(t * 5) * 3;
 
       // Rings spin
-      rings.forEach(r => {
-        r.mesh.rotation.z += r.sz;
-        r.mesh.rotation.x += r.sx;
-      });
+      for (let i = 0; i < rings.length; i++) {
+        rings[i].mesh.rotation.z += rings[i].sz;
+        rings[i].mesh.rotation.x += rings[i].sx;
+      }
 
       // Scan ring sweep
       scanRing.rotation.x = t * 1.6;
@@ -481,22 +533,24 @@ function initThreeHero() {
       scan2Ring.material.opacity = 0.4 + Math.sin(t * 7 + 1) * 0.35;
 
       // Modules orbit
-      modules.forEach(m => {
+      for (let i = 0; i < modules.length; i++) {
+        const m = modules[i];
         m.angle += m.speed;
         m.mesh.position.x = Math.cos(m.angle) * m.radius;
         m.mesh.position.z = Math.sin(m.angle) * m.radius * 0.35;
         m.mesh.rotation.x += 0.014;
         m.mesh.rotation.y += 0.020;
-      });
+      }
 
       // Energy beams update
-      beams.forEach(b => {
+      for (let i = 0; i < beams.length; i++) {
+        const b = beams[i];
         const arr = b.line.geometry.attributes.position.array;
         const mp = modules[b.modIdx].mesh.position;
         arr[3] = mp.x; arr[4] = mp.y; arr[5] = mp.z;
         b.line.geometry.attributes.position.needsUpdate = true;
         b.line.material.opacity = 0.08 + Math.sin(t * 6 + b.modIdx) * 0.07;
-      });
+      }
 
       // Halo slow rotation + breathe
       haloParticles.rotation.y += 0.0008;
@@ -508,13 +562,13 @@ function initThreeHero() {
     requestAnimationFrame(animate);
   };
 
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', throttleRAF(() => {
     const W = container.clientWidth, H = container.clientHeight;
     camera.aspect = W / H;
     camera.updateProjectionMatrix();
     renderer.setSize(W, H);
     group.position.x = W > 1000 ? W * 0.20 : W > 700 ? W * 0.12 : 0;
-  }, { passive: true });
+  }), { passive: true });
 
   animate();
 }
@@ -642,6 +696,11 @@ function initScrollParallax() {
 function initStats() {
   const els = document.querySelectorAll('.stat-number');
   if (!els.length) return;
+  if (!('IntersectionObserver' in window)) {
+    /* Fallback for very old browsers: just set the values */
+    els.forEach(el => { el.textContent = (+el.dataset.target).toLocaleString('en-IN'); });
+    return;
+  }
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { countUp(e.target, +e.target.dataset.target); obs.unobserve(e.target); } });
   }, { threshold: 0.6 });
@@ -660,6 +719,11 @@ function countUp(el, target) {
 
 /* ─── 6. SCROLL REVEALS ─────────────────────────────────────────── */
 function initScrollReveals() {
+  if (!('IntersectionObserver' in window)) {
+    /* Fallback: just show everything immediately */
+    document.querySelectorAll('.will-reveal').forEach(el => el.classList.add('revealed'));
+    return;
+  }
   const obs = new IntersectionObserver((entries, observer) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
   }, { threshold: 0.12 });
@@ -712,10 +776,13 @@ function registerServiceWorker() {
       navigator.serviceWorker.register('sw.js').then(reg => {
         if (reg.waiting) showToast('Update available — refresh to apply');
         reg.addEventListener('updatefound', () => {
-          reg.installing.addEventListener('statechange', () => {
-            if (reg.installing?.state === 'installed' && navigator.serviceWorker.controller)
-              showToast('New version available — refresh to update');
-          });
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller)
+                showToast('New version available — refresh to update');
+            });
+          }
         });
       }).catch(err => console.warn('SW failed:', err));
     });
@@ -768,10 +835,15 @@ function open3DPreview(product) {
 
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-    renderer.outputEncoding = THREE.sRGBEncoding;
+    /* Cross-browser color space */
+    if ('outputColorSpace' in renderer) {
+      renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
+    } else if ('outputEncoding' in renderer) {
+      renderer.outputEncoding = THREE.sRGBEncoding || 3001;
+    }
     viewer.innerHTML = '';
     viewer.appendChild(renderer.domElement);
   } catch (e) {
@@ -819,21 +891,23 @@ function open3DPreview(product) {
   }, { passive: true });
   viewer.addEventListener('pointerleave', () => { px = 0; py = 0; });
 
-  let visible = !document.hidden;
-  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+  let previewVisible = !document.hidden;
+  const visHandler = () => { previewVisible = !document.hidden; };
+  document.addEventListener('visibilitychange', visHandler);
 
-  const animate = () => {
-    if (visible && activeObject) {
+  const animatePreview = () => {
+    if (previewVisible && activeObject) {
       activeObject.rotation.y += 0.01 + px * 0.02;
       activeObject.rotation.x += 0.005 + py * 0.01;
       renderer.render(scene, camera);
     }
-    window._previewRAF = requestAnimationFrame(animate);
+    window._previewRAF = requestAnimationFrame(animatePreview);
   };
-  animate();
+  animatePreview();
 
   const cleanup = () => {
     cancelAnimationFrame(window._previewRAF);
+    document.removeEventListener('visibilitychange', visHandler);
     try { renderer.dispose(); } catch (e) { }
     viewer.innerHTML = '';
   };
@@ -844,11 +918,11 @@ function open3DPreview(product) {
   backdrop?.addEventListener('click', closeModal);
   const esc = e => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') { closeModal(); document.removeEventListener('keydown', esc); } };
   document.addEventListener('keydown', esc);
-  window.addEventListener('resize', () => {
+  window.addEventListener('resize', throttleRAF(() => {
     renderer.setSize(viewer.clientWidth, viewer.clientHeight);
     camera.aspect = viewer.clientWidth / viewer.clientHeight;
     camera.updateProjectionMatrix();
-  }, { passive: true });
+  }), { passive: true });
 }
 
 function showToast(msg, isError) {
@@ -858,4 +932,30 @@ function showToast(msg, isError) {
   t.className = isError ? 'error show' : 'show';
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.className = '', 3200);
+}
+
+/* ─── 9. PERFORMANCE UTILITIES ─────────────────────────────────── */
+
+/** Throttle a callback to run at most once per animation frame */
+function throttleRAF(fn) {
+  let ticking = false;
+  return function () {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(() => {
+        fn();
+        ticking = false;
+      });
+    }
+  };
+}
+
+/** Return adaptive counts based on device capability (high / mid / low) */
+function getAdaptiveCount(high, mid, low) {
+  /* Use hardware concurrency + devicePixelRatio as a rough proxy for GPU power */
+  const cores = navigator.hardwareConcurrency || 4;
+  const dpr = window.devicePixelRatio || 1;
+  if (cores >= 8 && dpr <= 2) return high;
+  if (cores >= 4) return mid;
+  return low;
 }

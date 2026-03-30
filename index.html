@@ -6,6 +6,7 @@
   <title>AR ENTERPRISE — Competition Robotics</title>
   <meta name="description" content="Competition-grade robots, drones and RC kits. Built for builders who demand excellence.">
   <meta name="theme-color" content="#030712">
+  <meta name="color-scheme" content="dark">
   <meta name="robots" content="index,follow">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <meta property="og:title" content="AR ENTERPRISE — Competition Robotics">
@@ -19,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=1.2">
+  <link rel="stylesheet" href="style.css?v=2.0">
 </head>
 <body>
 
@@ -417,9 +418,9 @@
 
   <!-- Scripts — order matters -->
   <script src="https://unpkg.com/three@0.158.0/build/three.min.js" defer></script>
-  <script src="https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js" defer></script>
-  <script src="products.js?v=1.2" defer></script>
-  <script src="main.js?v=1.2" defer></script>
+  <script src="https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js" defer onerror="console.warn('GLTFLoader unavailable')"></script>
+  <script src="products.js?v=2.0" defer></script>
+  <script src="main.js?v=2.0" defer></script>
 
 
 </body>
