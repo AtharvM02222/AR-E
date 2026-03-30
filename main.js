@@ -307,94 +307,90 @@ function initThreeHero() {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 2000);
-  camera.position.set(0, 0, 300);
+  camera.position.set(0, 0, 350);
 
   // Lights
   scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-  const dir = new THREE.DirectionalLight(0x00ff88, 1.5);
-  dir.position.set(5, 10, 7.5);
+  const dir = new THREE.DirectionalLight(0x00ff88, 2.5);
+  dir.position.set(50, 50, 75);
   scene.add(dir);
-  const dir2 = new THREE.DirectionalLight(0x3b82f6, 1.0);
-  dir2.position.set(-8, -4, 3);
+  const dir2 = new THREE.DirectionalLight(0x3b82f6, 1.5);
+  dir2.position.set(-50, -50, 30);
   scene.add(dir2);
-  const pLight = new THREE.PointLight(0xa855f7, 2, 500);
-  pLight.position.set(0, 50, 50);
-  scene.add(pLight);
+  const spot = new THREE.SpotLight(0xa855f7, 4, 1000, 0.4, 0.5);
+  spot.position.set(0, 200, 100);
+  scene.add(spot);
 
-  // Main Assembly: Core + Rings + Outer Fragments
+  // Main Robotic Structure (Spline-style)
   const group = new THREE.Group();
-  group.position.set(180, 0, -50);
+  group.position.set(w > 768 ? 180 : 0, 0, -50);
   scene.add(group);
 
-  // Core Octahedron
-  const coreGeo = new THREE.OctahedronGeometry(60, 0);
+  // Core Sphere (Glowing)
+  const coreGeo = new THREE.IcosahedronGeometry(60, 2);
   const coreMat = new THREE.MeshStandardMaterial({
-    color: 0x00ff88, metalness: 0.8, roughness: 0.1,
-    emissive: 0x00ff88, emissiveIntensity: 0.2
+    color: 0x030712, metalness: 0.9, roughness: 0.1,
+    emissive: 0x00ff88, emissiveIntensity: 0.8
   });
   const core = new THREE.Mesh(coreGeo, coreMat);
   group.add(core);
 
-  // Wireframe Core
-  const coreWire = new THREE.Mesh(coreGeo, new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.15 }));
-  group.add(coreWire);
+  // Inner Glow
+  const glowGeo = new THREE.SphereGeometry(58, 32, 32);
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 });
+  const glow = new THREE.Mesh(glowGeo, glowMat);
+  group.add(glow);
 
-  // Outer Rings
+  // Floating Mechanical Plates
+  const plateGeo = new THREE.BoxGeometry(40, 4, 20);
+  const plateMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.9, roughness: 0.2 });
+  const plates = [];
+  for (let i = 0; i < 18; i++) {
+    const plate = new THREE.Mesh(plateGeo, plateMat);
+    const angle = (i / 18) * Math.PI * 2;
+    const dist = 90;
+    plate.position.set(Math.cos(angle) * dist, Math.sin(angle) * dist, (Math.random() - 0.5) * 40);
+    plate.rotation.set(Math.random(), Math.random(), Math.random());
+    group.add(plate);
+    plates.push({ mesh: plate, angle, speed: 0.005 + Math.random() * 0.01, dist });
+  }
+
+  // Outer Orbital Rings (Robotic Precision)
   const rings = [];
   for (let i = 0; i < 3; i++) {
-    const rGeo = new THREE.TorusGeometry(85 + i * 15, 0.8, 16, 100);
-    const rMat = new THREE.MeshStandardMaterial({ color: i === 1 ? 0x3b82f6 : 0x00ff88, transparent: true, opacity: 0.4 });
+    const rGeo = new THREE.TorusGeometry(120 + i * 30, 0.6, 16, 120);
+    const rMat = new THREE.MeshStandardMaterial({ color: i === 1 ? 0x3b82f6 : 0x00ff88, transparent: true, opacity: 0.3 });
     const ring = new THREE.Mesh(rGeo, rMat);
-    ring.rotation.x = Math.random() * Math.PI;
-    ring.rotation.y = Math.random() * Math.PI;
+    ring.rotation.x = Math.PI / 2;
+    ring.rotation.y = (i * Math.PI) / 3;
     group.add(ring);
     rings.push(ring);
   }
 
-  // Floating Fragments
-  const fragGeo = new THREE.IcosahedronGeometry(12, 0);
-  const fragMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.7, roughness: 0.2 });
-  const fragments = [];
-  for (let i = 0; i < 12; i++) {
-    const frag = new THREE.Mesh(fragGeo, fragMat);
-    const angle = (i / 12) * Math.PI * 2;
-    const dist = 140;
-    frag.position.set(Math.cos(angle) * dist, Math.sin(angle) * dist, (Math.random() - 0.5) * 50);
-    frag.rotation.set(Math.random(), Math.random(), Math.random());
-    group.add(frag);
-    fragments.push(frag);
-  }
+  // Tech Grid Background (Faint 3D Grid)
+  const gridGeo = new THREE.PlaneGeometry(2000, 2000, 40, 40);
+  const gridMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.03 });
+  const techGrid = new THREE.Mesh(gridGeo, gridMat);
+  techGrid.position.z = -400;
+  scene.add(techGrid);
 
-  // Sparkles (Starfield)
-  const sparkGeo = new THREE.BufferGeometry();
-  const sparkCount = 400;
-  const sparkPos = new Float32Array(sparkCount * 3);
-  const sparkVels = new Float32Array(sparkCount * 3);
-  for (let i = 0; i < sparkCount; i++) {
-    sparkPos[i*3] = (Math.random() - 0.5) * 1500;
-    sparkPos[i*3+1] = (Math.random() - 0.5) * 1000;
-    sparkPos[i*3+2] = (Math.random() - 0.5) * 800;
-    sparkVels[i*3] = (Math.random() - 0.5) * 0.2;
-    sparkVels[i*3+1] = (Math.random() - 0.5) * 0.2;
-    sparkVels[i*3+2] = (Math.random() - 0.5) * 0.2;
+  // Floating Data Particles
+  const partGeo = new THREE.BufferGeometry();
+  const partCount = 500;
+  const partPos = new Float32Array(partCount * 3);
+  const partVels = new Float32Array(partCount * 3);
+  for (let i = 0; i < partCount; i++) {
+    partPos[i*3] = (Math.random() - 0.5) * 2000;
+    partPos[i*3+1] = (Math.random() - 0.5) * 1200;
+    partPos[i*3+2] = (Math.random() - 0.5) * 1000;
+    partVels[i*3] = (Math.random() - 0.5) * 0.4;
+    partVels[i*3+1] = (Math.random() - 0.5) * 0.4;
+    partVels[i*3+2] = (Math.random() - 0.5) * 0.4;
   }
-  sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
-  const sparkMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
-  const sparkles = new THREE.Points(sparkGeo, sparkMat);
-  scene.add(sparkles);
-
-  // Background Beams
-  const beamCount = 6;
-  const beams = [];
-  for (let i = 0; i < beamCount; i++) {
-    const bGeo = new THREE.BoxGeometry(2, 600, 2);
-    const bMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.05 });
-    const beam = new THREE.Mesh(bGeo, bMat);
-    beam.position.set((Math.random() - 0.5) * 1200, (Math.random() - 0.5) * 800, -300);
-    beam.rotation.z = (Math.random() - 0.5) * 0.5;
-    scene.add(beam);
-    beams.push({ mesh: beam, speed: 0.5 + Math.random() * 1.5 });
-  }
+  partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
+  const partMat = new THREE.PointsMaterial({ color: 0x00ff88, size: 1.5, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending });
+  const particles = new THREE.Points(partGeo, partMat);
+  scene.add(particles);
 
   let px = 0, py = 0;
   container.addEventListener('pointermove', e => {
@@ -410,41 +406,39 @@ function initThreeHero() {
     if (visible) {
       const time = Date.now() * 0.001;
       
-      group.rotation.y += 0.003 + px * 0.02;
-      group.rotation.x += 0.002 + py * 0.02;
+      group.rotation.y += 0.002 + px * 0.01;
+      group.rotation.x += 0.001 + py * 0.01;
       
       core.rotation.y -= 0.01;
-      coreWire.rotation.y -= 0.01;
+      glow.scale.setScalar(1 + Math.sin(time * 2) * 0.05);
+      
+      plates.forEach(p => {
+        p.angle += p.speed;
+        p.mesh.position.x = Math.cos(p.angle) * p.dist;
+        p.mesh.position.y = Math.sin(p.angle) * p.dist;
+        p.mesh.rotation.x += 0.01;
+        p.mesh.rotation.y += 0.015;
+      });
       
       rings.forEach((r, i) => {
-        r.rotation.x += 0.005 * (i + 1);
-        r.rotation.y += 0.003 * (i + 1);
+        r.rotation.z += 0.004 * (i + 1);
+        r.rotation.x += 0.002 * (i + 1);
       });
       
-      fragments.forEach((f, i) => {
-        f.position.y += Math.sin(time + i) * 0.15;
-        f.rotation.x += 0.01;
-        f.rotation.y += 0.015;
-      });
-      
-      // Animate sparkles
-      const positions = sparkles.geometry.attributes.position.array;
-      for (let i = 0; i < sparkCount; i++) {
-        positions[i*3] += sparkVels[i*3];
-        positions[i*3+1] += sparkVels[i*3+1];
-        positions[i*3+2] += sparkVels[i*3+2];
+      techGrid.position.x = px * 100;
+      techGrid.position.y = -py * 100;
+
+      // Animate particles
+      const positions = particles.geometry.attributes.position.array;
+      for (let i = 0; i < partCount; i++) {
+        positions[i*3] += partVels[i*3];
+        positions[i*3+1] += partVels[i*3+1];
+        positions[i*3+2] += partVels[i*3+2];
         
-        if (Math.abs(positions[i*3]) > 800) positions[i*3] *= -0.98;
-        if (Math.abs(positions[i*3+1]) > 500) positions[i*3+1] *= -0.98;
+        if (Math.abs(positions[i*3]) > 1000) positions[i*3] *= -0.99;
+        if (Math.abs(positions[i*3+1]) > 600) positions[i*3+1] *= -0.99;
       }
-      sparkles.geometry.attributes.position.needsUpdate = true;
-      
-      // Animate beams
-      beams.forEach(b => {
-        b.mesh.position.y -= b.speed;
-        if (b.mesh.position.y < -600) b.mesh.position.y = 600;
-        b.mesh.material.opacity = 0.02 + Math.sin(time * 2 + b.mesh.position.x) * 0.03;
-      });
+      particles.geometry.attributes.position.needsUpdate = true;
 
       renderer.render(scene, camera);
     }
@@ -454,6 +448,7 @@ function initThreeHero() {
   window.addEventListener('resize', () => {
     const W = container.clientWidth, H = container.clientHeight;
     camera.aspect = W / H; camera.updateProjectionMatrix(); renderer.setSize(W, H);
+    group.position.set(W > 768 ? 180 : 0, 0, -50);
   }, { passive: true });
 
   animate();
