@@ -395,10 +395,22 @@ function registerServiceWorker() {
           const dismissBtn = document.getElementById('sw-dismiss');
 
           const onRefresh = () => {
-            if (registration.waiting) {
+            if (registration && registration.waiting) {
               // Tell SW to activate immediately
               registration.waiting.postMessage({ type: 'SKIP_WAITING' });
               showToast('Updating…');
+            } else if (registration) {
+              // Fallback: try to update registration and then reload
+              showToast('Checking for update…');
+              registration.update().then(() => {
+                setTimeout(() => window.location.reload(), 900);
+              }).catch(() => {
+                showToast('Could not update — reloading', true);
+                setTimeout(() => window.location.reload(), 900);
+              });
+            } else {
+              // As a last resort, reload the page
+              window.location.reload();
             }
           };
 
