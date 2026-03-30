@@ -348,28 +348,29 @@ function initThreeHero() {
   scene.environment = pmrem.fromScene(envScene, 0.04).texture;
 
   /* ── LIGHTS ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.15));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.2));
 
-  const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 2.4);
   keyLight.position.set(60, 100, 120);
   scene.add(keyLight);
 
-  const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.5);
+  const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.8);
   rimLight.position.set(-80, 60, -60);
   scene.add(rimLight);
 
-  const underLight = new THREE.PointLight(0x00ff88, 1.8, 300);
+  const underLight = new THREE.PointLight(0x00ff88, 2.2, 350);
   underLight.position.set(0, -60, 40);
   scene.add(underLight);
 
-  const accentLight = new THREE.PointLight(0xa855f7, 2, 400);
+  const accentLight = new THREE.PointLight(0xa855f7, 2.4, 450);
   accentLight.position.set(100, 30, -80);
   scene.add(accentLight);
 
   /* ── DRONE ONLY ── */
-  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.98, roughness: 0.04 });
-  const darkMat = new THREE.MeshStandardMaterial({ color: 0x050505, metalness: 0.95, roughness: 0.08 });
-  const glossMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 1.0, roughness: 0.01 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0f1419, metalness: 0.98, roughness: 0.03, emissive: 0x1a3a4a, emissiveIntensity: 0.15 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x050505, metalness: 0.95, roughness: 0.08, emissive: 0x0a1a1a, emissiveIntensity: 0.08 });
+  const glossMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, metalness: 1.0, roughness: 0.01, emissive: 0x2a4a6e, emissiveIntensity: 0.12 });
+  const accentMat = new THREE.MeshStandardMaterial({ color: 0x003366, metalness: 0.9, roughness: 0.05, emissive: 0x00ff88, emissiveIntensity: 0.25 });
 
   const droneGroup = new THREE.Group();
   
@@ -389,9 +390,22 @@ function initThreeHero() {
   dBody.rotation.z = Math.PI / 2;
   dBody.scale.set(1, 0.5, 0.65);
   droneGroup.add(dBody);
+  
+  // Body accent stripe with glow
+  const accentStripe = new THREE.Mesh(new THREE.BoxGeometry(24, 0.8, 0.6), accentMat);
+  accentStripe.position.set(0, 1.5, 0);
+  droneGroup.add(accentStripe);
 
   const canopy = new THREE.Mesh(new THREE.SphereGeometry(7, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), new THREE.MeshPhysicalMaterial({
-    color: 0x0a0a0a, metalness: 0.3, roughness: 0.01, clearcoat: 1.0, clearcoatRoughness: 0.02, transparent: true, opacity: 0.85,
+    color: 0x1a1a3a, 
+    metalness: 0.25, 
+    roughness: 0.0, 
+    clearcoat: 1.0, 
+    clearcoatRoughness: 0.01, 
+    transparent: true, 
+    opacity: 0.8,
+    emissive: 0x003388,
+    emissiveIntensity: 0.15
   }));
   canopy.position.set(5, 4, 0);
   canopy.scale.set(0.8, 0.45, 0.75);
@@ -401,10 +415,22 @@ function initThreeHero() {
   dPlate.position.set(0, -3.5, 0);
   droneGroup.add(dPlate);
 
-  const lens = new THREE.Mesh(new THREE.SphereGeometry(2, 12, 12), new THREE.MeshPhysicalMaterial({ color: 0x111122, metalness: 0.4, roughness: 0.0, clearcoat: 1.0 }));
+  const lens = new THREE.Mesh(new THREE.SphereGeometry(2, 12, 12), new THREE.MeshPhysicalMaterial({ 
+    color: 0x0a1a2a, 
+    metalness: 0.5, 
+    roughness: 0.0, 
+    clearcoat: 1.0,
+    emissive: 0x0066ff,
+    emissiveIntensity: 0.35
+  }));
   lens.position.set(13, -1, 0);
   lens.scale.set(0.7, 0.5, 0.7);
   droneGroup.add(lens);
+  
+  // Lens glow light
+  const lensLight = new THREE.PointLight(0x0066ff, 2, 60);
+  lensLight.position.set(13, -1, 0);
+  droneGroup.add(lensLight);
 
   const dRotors = [];
   [
@@ -421,6 +447,15 @@ function initThreeHero() {
     motor.position.set(arm.x, 1.5, arm.z);
     droneGroup.add(motor);
     
+    // Motor cooling fins with accent glow
+    const finMat = new THREE.MeshStandardMaterial({ color: 0x1a2a3a, metalness: 0.85, roughness: 0.1, emissive: 0x0055ff, emissiveIntensity: 0.15 });
+    for (let f = 0; f < 6; f++) {
+      const fin = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.8, 3.5), finMat);
+      fin.position.set(arm.x, 1.5, arm.z);
+      fin.rotation.y = (Math.PI / 3) * f;
+      droneGroup.add(fin);
+    }
+    
     const cap = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 3.8, 1.2, 20), darkMat);
     cap.position.set(arm.x, 4, arm.z);
     droneGroup.add(cap);
@@ -431,12 +466,33 @@ function initThreeHero() {
     droneGroup.add(guard);
     
     const bladeGroup = new THREE.Group();
-    const bladeMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8, roughness: 0.15, transparent: true, opacity: 0.6 });
-    for (let b = 0; b < 2; b++) {
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 2.4), bladeMat);
-      blade.rotation.y = (Math.PI / 2) * b;
-      bladeGroup.add(blade);
-    }
+    const bladeMat = new THREE.MeshStandardMaterial({ 
+      color: 0x2a3a4a, 
+      metalness: 0.75, 
+      roughness: 0.12, 
+      transparent: true, 
+      opacity: 0.75,
+      emissive: 0x00aa44,
+      emissiveIntensity: 0.3
+    });
+    const bladeMat2 = new THREE.MeshStandardMaterial({ 
+      color: 0x1a2a4a, 
+      metalness: 0.75, 
+      roughness: 0.12, 
+      transparent: true, 
+      opacity: 0.75,
+      emissive: 0x3366ff,
+      emissiveIntensity: 0.3
+    });
+    // Create two-color propeller (X pattern with alternating colors)
+    const blade1 = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 2.4), bladeMat);
+    blade1.rotation.y = 0;
+    bladeGroup.add(blade1);
+    
+    const blade2 = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 2.4), bladeMat2);
+    blade2.rotation.y = Math.PI / 2;
+    bladeGroup.add(blade2);
+    
     bladeGroup.position.set(arm.x, 4.5, arm.z);
     droneGroup.add(bladeGroup);
     dRotors.push(bladeGroup);
@@ -456,13 +512,24 @@ function initThreeHero() {
   });
 
   const dLedGeo = new THREE.SphereGeometry(0.5, 8, 8);
-  [
-    { pos: [22, 1, 22], color: 0x00ff88 }, { pos: [22, 1, -22], color: 0x00ff88 },
-    { pos: [-22, 1, 22], color: 0xff3b3b }, { pos: [-22, 1, -22], color: 0xff3b3b },
-  ].forEach(led => {
-    const mesh = new THREE.Mesh(dLedGeo, new THREE.MeshBasicMaterial({ color: led.color }));
-    mesh.position.set(...led.pos);
-    droneGroup.add(mesh);
+  const ledPositions = [
+    { pos: [22, 1, 22], color: 0x00ff88, lightColor: 0x00ff88 },
+    { pos: [22, 1, -22], color: 0x00ff88, lightColor: 0x00ff88 },
+    { pos: [-22, 1, 22], color: 0x00ff88, lightColor: 0x00ff88 },
+    { pos: [-22, 1, -22], color: 0xff3b3b, lightColor: 0xff3b3b },
+  ];
+  
+  ledPositions.forEach(led => {
+    // LED mesh with emissive glow
+    const ledMesh = new THREE.Mesh(dLedGeo, new THREE.MeshBasicMaterial({ color: led.color }));
+    ledMesh.position.set(...led.pos);
+    ledMesh.scale.setScalar(1.2);
+    droneGroup.add(ledMesh);
+    
+    // Add point light for each LED
+    const ledLight = new THREE.PointLight(led.lightColor, 1.5, 50);
+    ledLight.position.set(...led.pos);
+    droneGroup.add(ledLight);
   });
 
   droneGroup.scale.setScalar(W < 900 ? 1.0 : 1.4);
