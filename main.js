@@ -300,210 +300,212 @@ function initThreeHero() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(W, H);
     renderer.setClearColor(0x000000, 0);
-    /* Cross-browser: use outputColorSpace if available (Three.js r152+), fallback to outputEncoding */
-    if ('outputColorSpace' in renderer) {
-      renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
-    } else if ('outputEncoding' in renderer) {
-      renderer.outputEncoding = THREE.sRGBEncoding || 3001;
-    }
+    // Use ACES filmic for a cinematic, photorealistic look
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.4;
+    // Cross-browser colorspace
+    if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
+    else if ('outputEncoding' in renderer) renderer.outputEncoding = THREE.sRGBEncoding || 3001;
     container.appendChild(renderer.domElement);
   } catch (e) {
-    console.warn('3D Hero blocked or unsupported in this browser.', e);
+    console.warn('3D Hero blocked or unsupported.', e);
     return;
   }
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 3000);
-  camera.position.set(0, 0, 420);
+  const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 2000);
+  camera.position.set(0, 50, 220);
+  camera.lookAt(0, 10, 0);
+
+  /* ── ENVIRONMENT MAP (for sleek metallic reflections) ── */
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envScene = new THREE.Scene();
+  const envGeo = new THREE.SphereGeometry(100, 32, 32);
+  const envMat = new THREE.ShaderMaterial({
+    side: THREE.BackSide,
+    uniforms: {},
+    vertexShader: `
+      varying vec3 vWorldPosition;
+      void main() {
+        vec4 worldPos = modelMatrix * vec4(position, 1.0);
+        vWorldPosition = worldPos.xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vWorldPosition;
+      void main() {
+        float y = normalize(vWorldPosition).y;
+        vec3 top = vec3(0.02, 0.02, 0.04);
+        vec3 mid = vec3(0.04, 0.04, 0.06);
+        vec3 bot = vec3(0.01, 0.01, 0.015);
+        vec3 col = mix(bot, mid, smoothstep(-1.0, 0.0, y));
+        col = mix(col, top, smoothstep(0.0, 1.0, y));
+        float spot1 = smoothstep(0.8, 1.0, dot(normalize(vWorldPosition), normalize(vec3(1.0, 0.8, 0.5))));
+        float spot2 = smoothstep(0.85, 1.0, dot(normalize(vWorldPosition), normalize(vec3(-0.6, 0.5, -0.8))));
+        col += vec3(0.3) * spot1 + vec3(0.15, 0.15, 0.2) * spot2;
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `
+  });
+  envScene.add(new THREE.Mesh(envGeo, envMat));
+  const envRT = pmrem.fromScene(envScene, 0.04);
+  scene.environment = envRT.texture;
 
   /* ── LIGHTS ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.1));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
 
-  const lGreen = new THREE.PointLight(0x00ff88, 12, 600);
-  lGreen.position.set(0, 0, 80);
-  scene.add(lGreen);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
+  keyLight.position.set(60, 100, 120);
+  scene.add(keyLight);
 
-  const lBlue = new THREE.PointLight(0x3b82f6, 6, 500);
-  lBlue.position.set(-180, 120, 60);
-  scene.add(lBlue);
+  const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.0);
+  rimLight.position.set(-80, 60, -60);
+  scene.add(rimLight);
 
-  const lPurple = new THREE.PointLight(0xa855f7, 4, 400);
-  lPurple.position.set(160, -140, 100);
-  scene.add(lPurple);
+  const underLight = new THREE.PointLight(0x00ff88, 1.2, 300);
+  underLight.position.set(0, -60, 40);
+  scene.add(underLight);
 
-  /* ── MAIN GROUP — offset right on desktop ── */
-  const group = new THREE.Group();
-  group.position.set(W > 1000 ? W * 0.20 : W > 700 ? W * 0.12 : 0, 0, 0);
-  scene.add(group);
+  const accentLight = new THREE.PointLight(0xa855f7, 2, 400);
+  accentLight.position.set(100, 30, -80);
+  scene.add(accentLight);
 
-  /* ── CORE ── */
-  const coreGeo = new THREE.IcosahedronGeometry(52, 1);
-  const coreMat = new THREE.MeshStandardMaterial({
-    color: 0x050e1a,
-    metalness: 0.98,
-    roughness: 0.04,
-    emissive: 0x00ff88,
-    emissiveIntensity: 1.4,
+  /* ── MATERIALS ── */
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x0a0a0a, metalness: 0.98, roughness: 0.04,
   });
-  const core = new THREE.Mesh(coreGeo, coreMat);
-  group.add(core);
-
-  // Wireframe shell
-  const wireGeo = new THREE.IcosahedronGeometry(55, 1);
-  const wireMat = new THREE.MeshBasicMaterial({
-    color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.28,
-    blending: THREE.AdditiveBlending,
+  const darkMat = new THREE.MeshStandardMaterial({
+    color: 0x050505, metalness: 0.95, roughness: 0.08,
   });
-  const wire = new THREE.Mesh(wireGeo, wireMat);
-  group.add(wire);
-
-  // Outer dodecahedron wireframe (secondary layer, blue)
-  const wire2Geo = new THREE.DodecahedronGeometry(65, 0);
-  const wire2Mat = new THREE.MeshBasicMaterial({
-    color: 0x3b82f6, wireframe: true, transparent: true, opacity: 0.12,
-    blending: THREE.AdditiveBlending,
+  const glossMat = new THREE.MeshStandardMaterial({
+    color: 0x111111, metalness: 1.0, roughness: 0.01,
   });
-  const wire2 = new THREE.Mesh(wire2Geo, wire2Mat);
-  group.add(wire2);
 
-  // Glow halo (backside sphere)
-  const haloGeo = new THREE.SphereGeometry(78, 32, 32);
-  const haloMat = new THREE.MeshBasicMaterial({
-    color: 0x00ff88, transparent: true, opacity: 0.05,
-    side: THREE.BackSide, blending: THREE.AdditiveBlending,
+  /* ── DRONE GROUP ── */
+  const drone = new THREE.Group();
+  
+  // Base x offset based on screen size (right side of screen initially)
+  let baseX = W > 1000 ? W * 0.15 : W > 700 ? W * 0.08 : 0;
+
+  // Central body
+  const bodyGeo = new THREE.CapsuleGeometry(9, 24, 16, 32);
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.rotation.z = Math.PI / 2;
+  body.scale.set(1, 0.5, 0.65);
+  drone.add(body);
+
+  // Top canopy (glass-like)
+  const canopyGeo = new THREE.SphereGeometry(7, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.45);
+  const canopyMat = new THREE.MeshPhysicalMaterial({
+    color: 0x0a0a0a, metalness: 0.3, roughness: 0.01,
+    clearcoat: 1.0, clearcoatRoughness: 0.02, transparent: true, opacity: 0.85,
   });
-  group.add(new THREE.Mesh(haloGeo, haloMat));
+  const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+  canopy.position.set(5, 4, 0);
+  canopy.scale.set(0.8, 0.45, 0.75);
+  drone.add(canopy);
 
-  // Second larger halo
-  const halo2Geo = new THREE.SphereGeometry(105, 32, 32);
-  const halo2Mat = new THREE.MeshBasicMaterial({
-    color: 0x3b82f6, transparent: true, opacity: 0.025,
-    side: THREE.BackSide, blending: THREE.AdditiveBlending,
-  });
-  group.add(new THREE.Mesh(halo2Geo, halo2Mat));
+  // Bottom plate
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(30, 1.5, 15), darkMat);
+  plate.position.set(0, -3.5, 0);
+  drone.add(plate);
 
-  /* ── ORBITAL RINGS ── */
-  const RINGS = [
-    { r: 108, tube: 0.9, color: 0x00ff88, opacity: 0.75, rx: 0.3, ry: 0, rz: 0, sz: 0.007, sx: 0.002 },
-    { r: 145, tube: 0.55, color: 0x3b82f6, opacity: 0.55, rx: 1.25, ry: 0.2, rz: 0.4, sz: -0.005, sx: 0.003 },
-    { r: 182, tube: 0.4, color: 0xa855f7, opacity: 0.40, rx: 0.7, ry: 0.9, rz: 1.0, sz: 0.003, sx: -0.002 },
+  // Camera lens
+  const lensMat = new THREE.MeshPhysicalMaterial({ color: 0x111122, metalness: 0.4, roughness: 0.0, clearcoat: 1.0 });
+  const lens = new THREE.Mesh(new THREE.SphereGeometry(2, 12, 12), lensMat);
+  lens.position.set(13, -1, 0);
+  lens.scale.set(0.7, 0.5, 0.7);
+  drone.add(lens);
+
+  // 4 Arms
+  const armData = [
+    { x: 22, z: 22, angle: Math.PI / 4 },
+    { x: 22, z: -22, angle: -Math.PI / 4 },
+    { x: -22, z: 22, angle: (Math.PI * 3) / 4 },
+    { x: -22, z: -22, angle: -(Math.PI * 3) / 4 },
   ];
-  const rings = RINGS.map(d => {
-    const geo = new THREE.TorusGeometry(d.r, d.tube, 16, 160);
-    const mat = new THREE.MeshBasicMaterial({
-      color: d.color, transparent: true, opacity: d.opacity,
-      blending: THREE.AdditiveBlending,
+
+  const rotors = [];
+  armData.forEach((arm) => {
+    const armLen = Math.sqrt(arm.x * arm.x + arm.z * arm.z) * 0.5;
+    const armMesh = new THREE.Mesh(new THREE.BoxGeometry(armLen, 2.2, 3.2), bodyMat);
+    armMesh.position.set(arm.x * 0.5, 0.5, arm.z * 0.5);
+    armMesh.rotation.y = arm.angle;
+    drone.add(armMesh);
+    
+    const motor = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 4.2, 4.5, 20), glossMat);
+    motor.position.set(arm.x, 1.5, arm.z);
+    drone.add(motor);
+    
+    // Motor cap
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 3.8, 1.2, 20), darkMat);
+    cap.position.set(arm.x, 4, arm.z);
+    drone.add(cap);
+
+    // Guard ring
+    const guard = new THREE.Mesh(new THREE.TorusGeometry(12, 0.8, 6, 40), darkMat);
+    guard.position.set(arm.x, 3, arm.z);
+    guard.rotation.x = Math.PI / 2;
+    drone.add(guard);
+    
+    // Rotor blades (2-blade prop)
+    const bladeMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8, roughness: 0.15, transparent: true, opacity: 0.6 });
+    const bladeGroup = new THREE.Group();
+    for (let b = 0; b < 2; b++) {
+      const blade = new THREE.Mesh(new THREE.BoxGeometry(20, 0.3, 2.4), bladeMat);
+      blade.rotation.y = (Math.PI / 2) * b;
+      bladeGroup.add(blade);
+    }
+    bladeGroup.position.set(arm.x, 4.5, arm.z);
+    drone.add(bladeGroup);
+    rotors.push(bladeGroup);
+  });
+
+  // Landing gear
+  [-7, 7].forEach(z => {
+    const skid = new THREE.Mesh(new THREE.CapsuleGeometry(0.5, 14, 4, 8), darkMat);
+    skid.position.set(0, -9, z);
+    skid.rotation.z = Math.PI / 2;
+    drone.add(skid);
+    [-5, 5].forEach(x => {
+      const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 5, 6), darkMat);
+      strut.position.set(x, -6.5, z);
+      strut.rotation.z = x > 0 ? -0.08 : 0.08;
+      drone.add(strut);
     });
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.rotation.set(d.rx, d.ry, d.rz);
-    group.add(mesh);
-    return { mesh, ...d };
   });
 
-  /* ── SCANNING RING ── */
-  const scanGeo = new THREE.TorusGeometry(62, 0.35, 8, 80);
-  const scanMat = new THREE.MeshBasicMaterial({
-    color: 0x00ff88, transparent: true, opacity: 0.9,
-    blending: THREE.AdditiveBlending,
+  // LED indicators
+  const ledGeo = new THREE.SphereGeometry(0.5, 8, 8);
+  [
+    { pos: [22, 1, 22], color: 0x00ff88 }, { pos: [22, 1, -22], color: 0x00ff88 },
+    { pos: [-22, 1, 22], color: 0xff3b3b }, { pos: [-22, 1, -22], color: 0xff3b3b },
+  ].forEach(led => {
+    const mesh = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: led.color }));
+    mesh.position.set(...led.pos);
+    drone.add(mesh);
   });
-  const scanRing = new THREE.Mesh(scanGeo, scanMat);
-  group.add(scanRing);
 
-  // Inner scan ring (faster, blue)
-  const scan2Geo = new THREE.TorusGeometry(56, 0.25, 6, 64);
-  const scan2Mat = new THREE.MeshBasicMaterial({
-    color: 0x3b82f6, transparent: true, opacity: 0.7,
-    blending: THREE.AdditiveBlending,
-  });
-  const scan2Ring = new THREE.Mesh(scan2Geo, scan2Mat);
-  group.add(scan2Ring);
+  drone.scale.setScalar(1.2);
+  scene.add(drone);
 
-  /* ── MECHANICAL MODULES ── */
-  const SIZES = [18, 14, 10, 14, 10, 18, 10, 14, 18, 10, 14, 10];
-  const COLORS = [0x00ff88, 0x3b82f6, 0xa855f7];
-  const moduleCount = 12;
-  const modules = [];
-
-  for (let i = 0; i < moduleCount; i++) {
-    const sz = SIZES[i];
-    const col = COLORS[i % 3];
-    const tier = Math.floor(i / 4);
-    const baseR = 100 + tier * 38;
-
-    const geo = new THREE.BoxGeometry(sz, sz * 0.55, sz * 0.38);
-    const mat = new THREE.MeshStandardMaterial({
-      color: col,
-      metalness: 0.92,
-      roughness: 0.08,
-      emissive: col,
-      emissiveIntensity: 0.3,
-    });
-    const mesh = new THREE.Mesh(geo, mat);
-    const initAngle = (i / moduleCount) * Math.PI * 2;
-    mesh.position.set(
-      Math.cos(initAngle) * baseR,
-      (Math.random() - 0.5) * 90,
-      Math.sin(initAngle) * baseR * 0.35,
-    );
-    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-    group.add(mesh);
-    modules.push({ mesh, angle: initAngle, radius: baseR, speed: 0.003 + i * 0.0005, yOff: mesh.position.y });
-  }
-
-  /* ── ENERGY BEAMS (core → modules) ── */
-  const beams = [];
-  for (let i = 0; i < 6; i++) {
-    const geo = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, 0, 0),
-      modules[i * 2].mesh.position.clone(),
-    ]);
-    const mat = new THREE.LineBasicMaterial({
-      color: i % 2 === 0 ? 0x00ff88 : 0x3b82f6,
-      transparent: true, opacity: 0.12,
-      blending: THREE.AdditiveBlending,
-    });
-    const line = new THREE.Line(geo, mat);
-    group.add(line);
-    beams.push({ line, modIdx: i * 2 });
-  }
-
-  /* ── PARTICLE HALO (adaptive count) ── */
-  const HALO_COUNT = getAdaptiveCount(1200, 600, 300);
-  const haloPos = new Float32Array(HALO_COUNT * 3);
-  for (let i = 0; i < HALO_COUNT; i++) {
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    const r = 180 + Math.random() * 180;
-    haloPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    haloPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    haloPos[i * 3 + 2] = r * Math.cos(phi);
-  }
-  const haloPartGeo = new THREE.BufferGeometry();
-  haloPartGeo.setAttribute('position', new THREE.BufferAttribute(haloPos, 3));
-  const haloPartMat = new THREE.PointsMaterial({
-    color: 0x00ff88, size: 1.6, transparent: true, opacity: 0.30,
-    blending: THREE.AdditiveBlending, sizeAttenuation: true,
-  });
-  const haloParticles = new THREE.Points(haloPartGeo, haloPartMat);
-  group.add(haloParticles);
-
-  /* ── SCENE-WIDE BACKGROUND DUST (adaptive count) ── */
-  const DUST = getAdaptiveCount(700, 350, 150);
-  const dustPos = new Float32Array(DUST * 3);
-  for (let i = 0; i < DUST; i++) {
-    dustPos[i * 3] = (Math.random() - 0.5) * 2200;
-    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 1400;
-    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 900 - 200;
+  // ── DUST PARTICLES ──
+  const dustCount = 600;
+  const dPos = new Float32Array(dustCount * 3);
+  for (let i = 0; i < dustCount; i++) {
+    dPos[i * 3]     = (Math.random() - 0.5) * 800;
+    dPos[i * 3 + 1] = (Math.random() - 0.5) * 600;
+    dPos[i * 3 + 2] = (Math.random() - 0.5) * 400 - 80;
   }
   const dustGeo = new THREE.BufferGeometry();
-  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
   const dustMat = new THREE.PointsMaterial({
-    color: 0xffffff, size: 0.7, transparent: true, opacity: 0.10,
-    sizeAttenuation: true,
+    color: 0xffffff, size: 0.8, transparent: true, opacity: 0.12, sizeAttenuation: true,
   });
   scene.add(new THREE.Points(dustGeo, dustMat));
 
-  /* ── MOUSE PARALLAX ── */
+  // ── MOUSE PARALLAX & VISIBILITY ──
   let mxN = 0, myN = 0, smxN = 0, smyN = 0;
   document.addEventListener('mousemove', e => {
     mxN = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -513,79 +515,47 @@ function initThreeHero() {
   let visible = !document.hidden;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-  /* ── VISIBILITY GATE: stop rendering when hero is off-screen ── */
   let heroInView = true;
   const heroEl = document.getElementById('hero');
   if (heroEl && 'IntersectionObserver' in window) {
-    const obs = new IntersectionObserver(entries => {
-      heroInView = entries[0].isIntersecting;
-    }, { threshold: 0, rootMargin: '100px' });
+    const obs = new IntersectionObserver(entries => { heroInView = entries[0].isIntersecting; }, { threshold: 0, rootMargin: '100px' });
     obs.observe(heroEl);
   }
 
-  /* ── ANIMATION LOOP ── */
+  // ── ANIMATION LOOP ──
+  let t = 0;
   const animate = () => {
     if (visible && heroInView) {
-      const t = Date.now() * 0.001;
+      t += 0.016;
 
-      // Smooth mouse
-      smxN += (mxN - smxN) * 0.04;
-      smyN += (myN - smyN) * 0.04;
+      smxN += (mxN - smxN) * 0.025;
+      smyN += (myN - smyN) * 0.025;
 
-      // Group tilt based on mouse
-      group.rotation.y = smxN * 0.25;
-      group.rotation.x = -smyN * 0.12;
+      // Drone organic flight path
+      // Slow sweeps left to right and up/down
+      const sweepBaseX = Math.sin(t * 0.25) * 65; 
+      const sweepBaseY = Math.sin(t * 0.4) * 15;
+      const sweepBaseZ = Math.cos(t * 0.35) * 25;
+      
+      const flightRotY = Math.sin(t * 0.6) * 0.25;
+      const velocityX = Math.cos(t * 0.25) * 65 * 0.25; // derivative of sin(t * 0.25) * 65
+      const targetRollZ = -velocityX * 0.06; // banked turn based on velocity
+      
+      drone.position.x = baseX + sweepBaseX + smxN * 20;
+      drone.position.y = 15 + sweepBaseY + smyN * -10;
+      drone.position.z = sweepBaseZ + Math.sin(t * 1.1) * 10;
 
-      // Core rotate + pulse
-      core.rotation.y += 0.007;
-      core.rotation.z += 0.003;
-      wire.rotation.y -= 0.005;
-      wire.rotation.x += 0.003;
-      wire2.rotation.y += 0.004;
-      wire2.rotation.z -= 0.002;
+      // Drone rotation logic: tilt into turns + mouse follow
+      drone.rotation.y = -0.3 + flightRotY + smxN * 0.35;
+      drone.rotation.x = -0.1 + (smyN * -0.2);
+      // Smooth interpolation for roll to avoid snapping
+      drone.rotation.z += (targetRollZ + (smxN * -0.15) - drone.rotation.z) * 0.05;
 
-      haloMat.opacity = 0.04 + Math.sin(t * 3) * 0.02;
-      coreMat.emissiveIntensity = 1.2 + Math.sin(t * 4) * 0.4;
-      lGreen.intensity = 10 + Math.sin(t * 5) * 3;
+      rotors.forEach((r, i) => r.rotation.y += 0.5 + (i * 0.08));
 
-      // Rings spin
-      for (let i = 0; i < rings.length; i++) {
-        rings[i].mesh.rotation.z += rings[i].sz;
-        rings[i].mesh.rotation.x += rings[i].sx;
-      }
-
-      // Scan ring sweep
-      scanRing.rotation.x = t * 1.6;
-      scanRing.rotation.y = t * 0.6;
-      scanRing.material.opacity = 0.5 + Math.sin(t * 5) * 0.4;
-      scan2Ring.rotation.x = -t * 2.4;
-      scan2Ring.rotation.z = t * 1.1;
-      scan2Ring.material.opacity = 0.4 + Math.sin(t * 7 + 1) * 0.35;
-
-      // Modules orbit
-      for (let i = 0; i < modules.length; i++) {
-        const m = modules[i];
-        m.angle += m.speed;
-        m.mesh.position.x = Math.cos(m.angle) * m.radius;
-        m.mesh.position.z = Math.sin(m.angle) * m.radius * 0.35;
-        m.mesh.rotation.x += 0.014;
-        m.mesh.rotation.y += 0.020;
-      }
-
-      // Energy beams update
-      for (let i = 0; i < beams.length; i++) {
-        const b = beams[i];
-        const arr = b.line.geometry.attributes.position.array;
-        const mp = modules[b.modIdx].mesh.position;
-        arr[3] = mp.x; arr[4] = mp.y; arr[5] = mp.z;
-        b.line.geometry.attributes.position.needsUpdate = true;
-        b.line.material.opacity = 0.08 + Math.sin(t * 6 + b.modIdx) * 0.07;
-      }
-
-      // Halo slow rotation + breathe
-      haloParticles.rotation.y += 0.0008;
-      haloParticles.rotation.x += 0.0003;
-      haloPartMat.size = 1.5 + Math.sin(t * 2) * 0.3;
+      camera.position.x = smxN * 8;
+      camera.position.y = 30 + smyN * -8;
+      camera.lookAt(0, 10, 0);
 
       renderer.render(scene, camera);
     }
@@ -593,11 +563,11 @@ function initThreeHero() {
   };
 
   window.addEventListener('resize', throttleRAF(() => {
-    const W = container.clientWidth, H = container.clientHeight;
-    camera.aspect = W / H;
+    const w = container.clientWidth, h = container.clientHeight;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(W, H);
-    group.position.x = W > 1000 ? W * 0.20 : W > 700 ? W * 0.12 : 0;
+    renderer.setSize(w, h);
+    baseX = w > 1000 ? w * 0.15 : w > 700 ? w * 0.08 : 0;
   }), { passive: true });
 
   animate();
