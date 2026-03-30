@@ -1,31 +1,17 @@
 /* ════════════════════════════════════════════════════════════════
-   AR ENTERPRISE — main.js
-   Sections:
-   1. CURSOR
-   2. NAVIGATION
-   3. HERO (particles + text reveal)
-   4. PRODUCTS (render bento grid)
-   5. STATS (number ticker)
-   6. SCROLL REVEALS
-   7. FORM (WhatsApp redirect)
-   8. UTILS
+   AR ENTERPRISE — main.js  v2.0
    ════════════════════════════════════════════════════════════════ */
 
-/* ── OWNER CONFIG ────────────────────────────────────────────────
-   Change the number below to your WhatsApp number (with country
-   code, no spaces, no + sign). Example: 919876543210
-   ──────────────────────────────────────────────────────────────── */
-const OWNER_WA_NUMBER = '918595237299'; // ← CHANGE THIS
+const OWNER_WA_NUMBER = '918595237299';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Add a marker class to indicate JS is running; keeps hero content visible if JS fails
-  try { document.documentElement.classList.add('js'); } catch (e) { /* noop */ }
+  try { document.documentElement.classList.add('js'); } catch (e) { }
 
   initCursor();
   initNavigation();
   initHero();
   initHeroUI();
-  initThreeHero();
+  initThreeHero();   // ← upgraded 3D Combat Core
   initUIWidgets();
   initVideoModal();
   renderProducts();
@@ -34,25 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initForm();
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Inject structured data for SEO and ensure drone fallback is checked
-  try { injectStructuredData(); } catch (err) { /* noop */ }
-  try { initDroneFallbackCheck(); } catch (err) { /* noop */ }
-  try { registerServiceWorker(); } catch (err) { /* noop */ }
+  try { injectStructuredData(); } catch (_) { }
+  try { initDroneFallbackCheck(); } catch (_) { }
+  try { registerServiceWorker(); } catch (_) { }
 });
 
 /* ─── 1. CURSOR ────────────────────────────────────────────────── */
 function initCursor() {
-  // Skip on touch devices
   if (!window.matchMedia('(pointer: fine)').matches) return;
-
-  const cursor    = document.getElementById('cursor');
+  const cursor = document.getElementById('cursor');
   const cursorDot = document.getElementById('cursor-dot');
   if (!cursor || !cursorDot) return;
 
-  let mx = 0, my = 0, cx = 0, cy = 0;
-  let targetX = 0, targetY = 0;
-  let isMagnetic = false;
-
+  let mx = 0, my = 0, cx = 0, cy = 0, targetX = 0, targetY = 0, isMagnetic = false;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 
   const loop = () => {
@@ -63,7 +43,7 @@ function initCursor() {
       cx += (mx - cx) * 0.12;
       cy += (my - cy) * 0.12;
     }
-    cursor.style.transform    = `translate(${cx - 20}px, ${cy - 20}px)`;
+    cursor.style.transform = `translate(${cx - 20}px, ${cy - 20}px)`;
     cursorDot.style.transform = `translate(${mx - 3}px,  ${my - 3}px)`;
     requestAnimationFrame(loop);
   };
@@ -81,7 +61,6 @@ function initCursor() {
       }
     }
   }, true);
-
   document.body.addEventListener('pointerout', e => {
     if (e.target.closest('a, button, .product-card, input, select, textarea')) {
       cursor.classList.remove('hover');
@@ -92,16 +71,14 @@ function initCursor() {
 
 /* ─── 2. NAVIGATION ─────────────────────────────────────────────── */
 function initNavigation() {
-  const nav    = document.getElementById('nav');
+  const nav = document.getElementById('nav');
   const toggle = document.getElementById('mobile-toggle');
-  const menu   = document.getElementById('mobile-menu');
+  const menu = document.getElementById('mobile-menu');
 
-  // Glassmorphism on scroll
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 60);
   }, { passive: true });
 
-  // Mobile menu toggle
   if (toggle && menu) {
     const closeMobileMenu = () => {
       menu.classList.remove('open');
@@ -109,103 +86,78 @@ function initNavigation() {
       toggle.setAttribute('aria-expanded', false);
       menu.setAttribute('aria-hidden', true);
     };
-
     toggle.addEventListener('click', () => {
       const open = menu.classList.toggle('open');
       toggle.classList.toggle('active', open);
       toggle.setAttribute('aria-expanded', open);
       menu.setAttribute('aria-hidden', !open);
     });
-
-    // Close on link click
-    menu.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', closeMobileMenu);
-    });
-
-    // Close on Escape
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileMenu));
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape' && menu.classList.contains('open')) closeMobileMenu();
     });
-
-    // Close when clicking outside the menu (on small screens)
     document.addEventListener('click', e => {
-      if (!menu.contains(e.target) && !toggle.contains(e.target) && menu.classList.contains('open')) {
+      if (!menu.contains(e.target) && !toggle.contains(e.target) && menu.classList.contains('open'))
         closeMobileMenu();
-      }
     });
   }
 }
 
 /* ─── 3. HERO ───────────────────────────────────────────────────── */
 function initHero() {
-  // Text reveal — staggered via CSS transition-delay
-  const title    = document.getElementById('hero-title');
-  const eyebrow  = document.querySelector('.hero-eyebrow');
+  const title = document.getElementById('hero-title');
+  const eyebrow = document.querySelector('.hero-eyebrow');
   const subtitle = document.querySelector('.hero-subtitle');
-  const actions  = document.querySelector('.hero-actions');
+  const actions = document.querySelector('.hero-actions');
 
   setTimeout(() => {
-    if (title)    title.classList.add('revealed');
-    if (eyebrow)  eyebrow.classList.add('revealed');
-    if (actions)  actions.classList.add('revealed');
-    
-    // Typewriter for subtitle
+    if (title) title.classList.add('revealed');
+    if (eyebrow) eyebrow.classList.add('revealed');
+    if (actions) actions.classList.add('revealed');
     if (subtitle) {
       const text = subtitle.textContent.trim();
       subtitle.textContent = '';
       subtitle.classList.add('revealed');
       let i = 0;
       const type = () => {
-        if (i < text.length) {
-          subtitle.textContent += text.charAt(i);
-          i++;
-          setTimeout(type, 15);
-        }
+        if (i < text.length) { subtitle.textContent += text.charAt(i++); setTimeout(type, 15); }
       };
       setTimeout(type, 800);
     }
   }, 80);
 
-  // Particle canvas (desktop only)
   if (window.innerWidth < 768) return;
 
   const canvas = document.getElementById('particle-canvas');
   if (!canvas) return;
 
-  // Add smooth scroll handler for internal nav links to avoid sharp jumps
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const href = a.getAttribute('href');
-      if (!href || href === '#' ) return;
+      if (!href || href === '#') return;
       const target = document.querySelector(href);
       if (!target) return;
       e.preventDefault();
       smoothScrollTo(target);
-      // close mobile menu if open
       const menu = document.getElementById('mobile-menu');
       const toggle = document.getElementById('mobile-toggle');
       if (menu && menu.classList.contains('open')) {
-        menu.classList.remove('open'); toggle.classList.remove('active'); toggle.setAttribute('aria-expanded', false); menu.setAttribute('aria-hidden', true);
+        menu.classList.remove('open'); toggle.classList.remove('active');
+        toggle.setAttribute('aria-expanded', false); menu.setAttribute('aria-hidden', true);
       }
     });
   });
 
-  // Initialize scroll parallax
   initScrollParallax();
 
   const ctx = canvas.getContext('2d');
   let w, h;
-
-  const resize = () => {
-    w = canvas.width  = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-  };
+  const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
   window.addEventListener('resize', resize, { passive: true });
   resize();
 
   const COUNT = 55;
   const particles = Array.from({ length: COUNT }, () => mkParticle(w, h));
-
   let mx = -1000, my = -1000;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
 
@@ -217,20 +169,11 @@ function initHero() {
     ctx.clearRect(0, 0, w, h);
     particles.forEach(p => {
       p.x += p.vx; p.y += p.vy;
-
-      // Mouse repel
       const dx = p.x - mx, dy = p.y - my;
-      const d  = Math.sqrt(dx * dx + dy * dy);
-      if (d < 130) {
-        const f = (130 - d) / 130;
-        p.x += (dx / d) * f * 2.2;
-        p.y += (dy / d) * f * 2.2;
-      }
-
-      // Wrap
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < 130) { const f = (130 - d) / 130; p.x += (dx / d) * f * 2.2; p.y += (dy / d) * f * 2.2; }
       if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
       if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
-
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fillStyle = `rgba(255,255,255,${p.o})`;
@@ -241,204 +184,317 @@ function initHero() {
   draw();
 }
 
-// Lightweight hero UI interactivity: pointer parallax + reveal
 function initHeroUI() {
   const container = document.querySelector('.drone-static') || document.getElementById('hero');
   const feature = document.querySelector('.feature-card');
   const left = document.querySelector('.hero-ui-left');
   const ui = document.querySelector('.hero-ui');
 
-  // Reveal immediately if we don't have the small UI pieces
-  if (ui && !feature) ui.classList.add('revealed');
-
+  if (ui && !feature) { ui.classList.add('revealed'); return; }
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!feature || prefersReduced) {
-    if (ui) ui.classList.add('revealed');
-    return;
-  }
-
-  // Skip on coarse pointers (touch)
-  if (!window.matchMedia('(pointer: fine)').matches) {
-    if (ui) ui.classList.add('revealed');
-    return;
+  if (!feature || prefersReduced || !window.matchMedia('(pointer: fine)').matches) {
+    if (ui) ui.classList.add('revealed'); return;
   }
 
   let px = 0, py = 0, tx = 0, ty = 0;
-
   container.addEventListener('pointermove', e => {
     const r = container.getBoundingClientRect();
     px = (e.clientX - r.left) / r.width - 0.5;
     py = (e.clientY - r.top) / r.height - 0.5;
   }, { passive: true });
-
   container.addEventListener('pointerleave', () => { px = 0; py = 0; });
 
   const loop = () => {
-    tx += (px - tx) * 0.08;
-    ty += (py - ty) * 0.08;
-    const rotX = (-ty * 6).toFixed(2);
-    const rotY = (tx * 6).toFixed(2);
-
-    try { feature.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(${(-ty * 6)}px)`; } catch(e){}
+    tx += (px - tx) * 0.08; ty += (py - ty) * 0.08;
+    try { feature.style.transform = `rotateX(${(-ty * 6).toFixed(2)}deg) rotateY(${(tx * 6).toFixed(2)}deg) translateY(${(-ty * 6)}px)`; } catch (e) { }
     if (left) left.style.transform = `translate3d(${tx * 12}px, ${ty * 8}px, 0)`;
-
     requestAnimationFrame(loop);
   };
-
-  // Reveal now that we have interactivity
   setTimeout(() => ui && ui.classList.add('revealed'), 120);
   loop();
 }
 
+/* ─── 3D COMBAT CORE HERO ─────────────────────────────────────── */
 function initThreeHero() {
   if (typeof THREE === 'undefined') return;
   const container = document.getElementById('hero-3d');
   if (!container) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.innerWidth < 768) return;
 
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefersReduced) return;
+  const W = container.clientWidth;
+  const H = container.clientHeight;
 
-  const w = container.clientWidth, h = container.clientHeight;
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(w, h);
-  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.setSize(W, H);
+  renderer.setClearColor(0x000000, 0);
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 2000);
-  camera.position.set(0, 0, 350);
+  const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 3000);
+  camera.position.set(0, 0, 420);
 
-  // Lights
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-  const dir = new THREE.DirectionalLight(0x00ff88, 2.5);
-  dir.position.set(50, 50, 75);
-  scene.add(dir);
-  const dir2 = new THREE.DirectionalLight(0x3b82f6, 1.5);
-  dir2.position.set(-50, -50, 30);
-  scene.add(dir2);
-  const spot = new THREE.SpotLight(0xa855f7, 4, 1000, 0.4, 0.5);
-  spot.position.set(0, 200, 100);
-  scene.add(spot);
+  /* ── LIGHTS ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.1));
 
-  // Main Robotic Structure (Spline-style)
+  const lGreen = new THREE.PointLight(0x00ff88, 12, 600);
+  lGreen.position.set(0, 0, 80);
+  scene.add(lGreen);
+
+  const lBlue = new THREE.PointLight(0x3b82f6, 6, 500);
+  lBlue.position.set(-180, 120, 60);
+  scene.add(lBlue);
+
+  const lPurple = new THREE.PointLight(0xa855f7, 4, 400);
+  lPurple.position.set(160, -140, 100);
+  scene.add(lPurple);
+
+  /* ── MAIN GROUP — offset right on desktop ── */
   const group = new THREE.Group();
-  group.position.set(w > 768 ? 180 : 0, 0, -50);
+  group.position.set(W > 1000 ? W * 0.20 : W > 700 ? W * 0.12 : 0, 0, 0);
   scene.add(group);
 
-  // Core Sphere (Glowing)
-  const coreGeo = new THREE.IcosahedronGeometry(60, 2);
+  /* ── CORE ── */
+  // Solid
+  const coreGeo = new THREE.IcosahedronGeometry(52, 1);
   const coreMat = new THREE.MeshStandardMaterial({
-    color: 0x030712, metalness: 0.9, roughness: 0.1,
-    emissive: 0x00ff88, emissiveIntensity: 0.8
+    color: 0x050e1a,
+    metalness: 0.98,
+    roughness: 0.04,
+    emissive: 0x00ff88,
+    emissiveIntensity: 1.4,
   });
   const core = new THREE.Mesh(coreGeo, coreMat);
   group.add(core);
 
-  // Inner Glow
-  const glowGeo = new THREE.SphereGeometry(58, 32, 32);
-  const glowMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.2 });
-  const glow = new THREE.Mesh(glowGeo, glowMat);
-  group.add(glow);
+  // Wireframe shell
+  const wireGeo = new THREE.IcosahedronGeometry(55, 1);
+  const wireMat = new THREE.MeshBasicMaterial({
+    color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.28,
+    blending: THREE.AdditiveBlending,
+  });
+  const wire = new THREE.Mesh(wireGeo, wireMat);
+  group.add(wire);
 
-  // Floating Mechanical Plates
-  const plateGeo = new THREE.BoxGeometry(40, 4, 20);
-  const plateMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.9, roughness: 0.2 });
-  const plates = [];
-  for (let i = 0; i < 18; i++) {
-    const plate = new THREE.Mesh(plateGeo, plateMat);
-    const angle = (i / 18) * Math.PI * 2;
-    const dist = 90;
-    plate.position.set(Math.cos(angle) * dist, Math.sin(angle) * dist, (Math.random() - 0.5) * 40);
-    plate.rotation.set(Math.random(), Math.random(), Math.random());
-    group.add(plate);
-    plates.push({ mesh: plate, angle, speed: 0.005 + Math.random() * 0.01, dist });
+  // Outer dodecahedron wireframe (secondary layer, blue)
+  const wire2Geo = new THREE.DodecahedronGeometry(65, 0);
+  const wire2Mat = new THREE.MeshBasicMaterial({
+    color: 0x3b82f6, wireframe: true, transparent: true, opacity: 0.12,
+    blending: THREE.AdditiveBlending,
+  });
+  const wire2 = new THREE.Mesh(wire2Geo, wire2Mat);
+  group.add(wire2);
+
+  // Glow halo (backside sphere)
+  const haloGeo = new THREE.SphereGeometry(78, 32, 32);
+  const haloMat = new THREE.MeshBasicMaterial({
+    color: 0x00ff88, transparent: true, opacity: 0.05,
+    side: THREE.BackSide, blending: THREE.AdditiveBlending,
+  });
+  group.add(new THREE.Mesh(haloGeo, haloMat));
+
+  // Second larger halo
+  const halo2Geo = new THREE.SphereGeometry(105, 32, 32);
+  const halo2Mat = new THREE.MeshBasicMaterial({
+    color: 0x3b82f6, transparent: true, opacity: 0.025,
+    side: THREE.BackSide, blending: THREE.AdditiveBlending,
+  });
+  group.add(new THREE.Mesh(halo2Geo, halo2Mat));
+
+  /* ── ORBITAL RINGS ── */
+  const RINGS = [
+    { r: 108, tube: 0.9, color: 0x00ff88, opacity: 0.75, rx: 0.3, ry: 0, rz: 0, sz: 0.007, sx: 0.002 },
+    { r: 145, tube: 0.55, color: 0x3b82f6, opacity: 0.55, rx: 1.25, ry: 0.2, rz: 0.4, sz: -0.005, sx: 0.003 },
+    { r: 182, tube: 0.4, color: 0xa855f7, opacity: 0.40, rx: 0.7, ry: 0.9, rz: 1.0, sz: 0.003, sx: -0.002 },
+  ];
+  const rings = RINGS.map(d => {
+    const geo = new THREE.TorusGeometry(d.r, d.tube, 16, 160);
+    const mat = new THREE.MeshBasicMaterial({
+      color: d.color, transparent: true, opacity: d.opacity,
+      blending: THREE.AdditiveBlending,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.rotation.set(d.rx, d.ry, d.rz);
+    group.add(mesh);
+    return { mesh, ...d };
+  });
+
+  /* ── SCANNING RING ── */
+  const scanGeo = new THREE.TorusGeometry(62, 0.35, 8, 80);
+  const scanMat = new THREE.MeshBasicMaterial({
+    color: 0x00ff88, transparent: true, opacity: 0.9,
+    blending: THREE.AdditiveBlending,
+  });
+  const scanRing = new THREE.Mesh(scanGeo, scanMat);
+  group.add(scanRing);
+
+  // Inner scan ring (faster, blue)
+  const scan2Geo = new THREE.TorusGeometry(56, 0.25, 6, 64);
+  const scan2Mat = new THREE.MeshBasicMaterial({
+    color: 0x3b82f6, transparent: true, opacity: 0.7,
+    blending: THREE.AdditiveBlending,
+  });
+  const scan2Ring = new THREE.Mesh(scan2Geo, scan2Mat);
+  group.add(scan2Ring);
+
+  /* ── MECHANICAL MODULES ── */
+  const SIZES = [18, 14, 10, 14, 10, 18, 10, 14, 18, 10, 14, 10];
+  const COLORS = [0x00ff88, 0x3b82f6, 0xa855f7];
+  const moduleCount = 12;
+  const modules = [];
+
+  for (let i = 0; i < moduleCount; i++) {
+    const sz = SIZES[i];
+    const col = COLORS[i % 3];
+    const tier = Math.floor(i / 4); // 0=inner, 1=mid, 2=outer
+    const baseR = 100 + tier * 38;
+
+    const geo = new THREE.BoxGeometry(sz, sz * 0.55, sz * 0.38);
+    const mat = new THREE.MeshStandardMaterial({
+      color: col,
+      metalness: 0.92,
+      roughness: 0.08,
+      emissive: col,
+      emissiveIntensity: 0.3,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    const initAngle = (i / moduleCount) * Math.PI * 2;
+    mesh.position.set(
+      Math.cos(initAngle) * baseR,
+      (Math.random() - 0.5) * 90,
+      Math.sin(initAngle) * baseR * 0.35,
+    );
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    group.add(mesh);
+    modules.push({ mesh, angle: initAngle, radius: baseR, speed: 0.003 + i * 0.0005, yOff: mesh.position.y });
   }
 
-  // Outer Orbital Rings (Robotic Precision)
-  const rings = [];
-  for (let i = 0; i < 3; i++) {
-    const rGeo = new THREE.TorusGeometry(120 + i * 30, 0.6, 16, 120);
-    const rMat = new THREE.MeshStandardMaterial({ color: i === 1 ? 0x3b82f6 : 0x00ff88, transparent: true, opacity: 0.3 });
-    const ring = new THREE.Mesh(rGeo, rMat);
-    ring.rotation.x = Math.PI / 2;
-    ring.rotation.y = (i * Math.PI) / 3;
-    group.add(ring);
-    rings.push(ring);
+  /* ── ENERGY BEAMS (core → modules) ── */
+  const beams = [];
+  for (let i = 0; i < 6; i++) {
+    const geo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, 0, 0),
+      modules[i * 2].mesh.position.clone(),
+    ]);
+    const mat = new THREE.LineBasicMaterial({
+      color: i % 2 === 0 ? 0x00ff88 : 0x3b82f6,
+      transparent: true, opacity: 0.12,
+      blending: THREE.AdditiveBlending,
+    });
+    const line = new THREE.Line(geo, mat);
+    group.add(line);
+    beams.push({ line, modIdx: i * 2 });
   }
 
-  // Tech Grid Background (Faint 3D Grid)
-  const gridGeo = new THREE.PlaneGeometry(2000, 2000, 40, 40);
-  const gridMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.03 });
-  const techGrid = new THREE.Mesh(gridGeo, gridMat);
-  techGrid.position.z = -400;
-  scene.add(techGrid);
-
-  // Floating Data Particles
-  const partGeo = new THREE.BufferGeometry();
-  const partCount = 500;
-  const partPos = new Float32Array(partCount * 3);
-  const partVels = new Float32Array(partCount * 3);
-  for (let i = 0; i < partCount; i++) {
-    partPos[i*3] = (Math.random() - 0.5) * 2000;
-    partPos[i*3+1] = (Math.random() - 0.5) * 1200;
-    partPos[i*3+2] = (Math.random() - 0.5) * 1000;
-    partVels[i*3] = (Math.random() - 0.5) * 0.4;
-    partVels[i*3+1] = (Math.random() - 0.5) * 0.4;
-    partVels[i*3+2] = (Math.random() - 0.5) * 0.4;
+  /* ── PARTICLE HALO (sphere shell) ── */
+  const HALO_COUNT = 1200;
+  const haloPos = new Float32Array(HALO_COUNT * 3);
+  for (let i = 0; i < HALO_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 180 + Math.random() * 180;
+    haloPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    haloPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    haloPos[i * 3 + 2] = r * Math.cos(phi);
   }
-  partGeo.setAttribute('position', new THREE.BufferAttribute(partPos, 3));
-  const partMat = new THREE.PointsMaterial({ color: 0x00ff88, size: 1.5, transparent: true, opacity: 0.2, blending: THREE.AdditiveBlending });
-  const particles = new THREE.Points(partGeo, partMat);
-  scene.add(particles);
+  const haloPartGeo = new THREE.BufferGeometry();
+  haloPartGeo.setAttribute('position', new THREE.BufferAttribute(haloPos, 3));
+  const haloPartMat = new THREE.PointsMaterial({
+    color: 0x00ff88, size: 1.6, transparent: true, opacity: 0.30,
+    blending: THREE.AdditiveBlending, sizeAttenuation: true,
+  });
+  const haloParticles = new THREE.Points(haloPartGeo, haloPartMat);
+  group.add(haloParticles);
 
-  let px = 0, py = 0;
-  container.addEventListener('pointermove', e => {
-    const r = container.getBoundingClientRect();
-    px = (e.clientX - r.left) / r.width - 0.5;
-    py = (e.clientY - r.top) / r.height - 0.5;
+  /* ── SCENE-WIDE BACKGROUND DUST ── */
+  const DUST = 700;
+  const dustPos = new Float32Array(DUST * 3);
+  for (let i = 0; i < DUST; i++) {
+    dustPos[i * 3] = (Math.random() - 0.5) * 2200;
+    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 1400;
+    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 900 - 200;
+  }
+  const dustGeo = new THREE.BufferGeometry();
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({
+    color: 0xffffff, size: 0.7, transparent: true, opacity: 0.10,
+    sizeAttenuation: true,
+  });
+  scene.add(new THREE.Points(dustGeo, dustMat));
+
+  /* ── MOUSE PARALLAX ── */
+  let mxN = 0, myN = 0, smxN = 0, smyN = 0;
+  document.addEventListener('mousemove', e => {
+    mxN = (e.clientX / window.innerWidth - 0.5) * 2;
+    myN = (e.clientY / window.innerHeight - 0.5) * 2;
   }, { passive: true });
 
   let visible = !document.hidden;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
+  /* ── ANIMATION LOOP ── */
   const animate = () => {
     if (visible) {
-      const time = Date.now() * 0.001;
-      
-      group.rotation.y += 0.002 + px * 0.01;
-      group.rotation.x += 0.001 + py * 0.01;
-      
-      core.rotation.y -= 0.01;
-      glow.scale.setScalar(1 + Math.sin(time * 2) * 0.05);
-      
-      plates.forEach(p => {
-        p.angle += p.speed;
-        p.mesh.position.x = Math.cos(p.angle) * p.dist;
-        p.mesh.position.y = Math.sin(p.angle) * p.dist;
-        p.mesh.rotation.x += 0.01;
-        p.mesh.rotation.y += 0.015;
-      });
-      
-      rings.forEach((r, i) => {
-        r.rotation.z += 0.004 * (i + 1);
-        r.rotation.x += 0.002 * (i + 1);
-      });
-      
-      techGrid.position.x = px * 100;
-      techGrid.position.y = -py * 100;
+      const t = Date.now() * 0.001;
 
-      // Animate particles
-      const positions = particles.geometry.attributes.position.array;
-      for (let i = 0; i < partCount; i++) {
-        positions[i*3] += partVels[i*3];
-        positions[i*3+1] += partVels[i*3+1];
-        positions[i*3+2] += partVels[i*3+2];
-        
-        if (Math.abs(positions[i*3]) > 1000) positions[i*3] *= -0.99;
-        if (Math.abs(positions[i*3+1]) > 600) positions[i*3+1] *= -0.99;
-      }
-      particles.geometry.attributes.position.needsUpdate = true;
+      // Smooth mouse
+      smxN += (mxN - smxN) * 0.04;
+      smyN += (myN - smyN) * 0.04;
+
+      // Group tilt based on mouse
+      group.rotation.y = smxN * 0.25;
+      group.rotation.x = -smyN * 0.12;
+
+      // Core rotate + pulse
+      core.rotation.y += 0.007;
+      core.rotation.z += 0.003;
+      wire.rotation.y -= 0.005;
+      wire.rotation.x += 0.003;
+      wire2.rotation.y += 0.004;
+      wire2.rotation.z -= 0.002;
+
+      const pulse = 1 + Math.sin(t * 2.8) * 0.05;
+      haloMat.opacity = 0.04 + Math.sin(t * 3) * 0.02;
+      coreMat.emissiveIntensity = 1.2 + Math.sin(t * 4) * 0.4;
+      lGreen.intensity = 10 + Math.sin(t * 5) * 3;
+
+      // Rings spin
+      rings.forEach(r => {
+        r.mesh.rotation.z += r.sz;
+        r.mesh.rotation.x += r.sx;
+      });
+
+      // Scan ring sweep
+      scanRing.rotation.x = t * 1.6;
+      scanRing.rotation.y = t * 0.6;
+      scanRing.material.opacity = 0.5 + Math.sin(t * 5) * 0.4;
+      scan2Ring.rotation.x = -t * 2.4;
+      scan2Ring.rotation.z = t * 1.1;
+      scan2Ring.material.opacity = 0.4 + Math.sin(t * 7 + 1) * 0.35;
+
+      // Modules orbit
+      modules.forEach(m => {
+        m.angle += m.speed;
+        m.mesh.position.x = Math.cos(m.angle) * m.radius;
+        m.mesh.position.z = Math.sin(m.angle) * m.radius * 0.35;
+        m.mesh.rotation.x += 0.014;
+        m.mesh.rotation.y += 0.020;
+      });
+
+      // Energy beams update
+      beams.forEach(b => {
+        const arr = b.line.geometry.attributes.position.array;
+        const mp = modules[b.modIdx].mesh.position;
+        arr[3] = mp.x; arr[4] = mp.y; arr[5] = mp.z;
+        b.line.geometry.attributes.position.needsUpdate = true;
+        b.line.material.opacity = 0.08 + Math.sin(t * 6 + b.modIdx) * 0.07;
+      });
+
+      // Halo slow rotation + breathe
+      haloParticles.rotation.y += 0.0008;
+      haloParticles.rotation.x += 0.0003;
+      haloPartMat.size = 1.5 + Math.sin(t * 2) * 0.3;
 
       renderer.render(scene, camera);
     }
@@ -447,8 +503,10 @@ function initThreeHero() {
 
   window.addEventListener('resize', () => {
     const W = container.clientWidth, H = container.clientHeight;
-    camera.aspect = W / H; camera.updateProjectionMatrix(); renderer.setSize(W, H);
-    group.position.set(W > 768 ? 180 : 0, 0, -50);
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+    group.position.x = W > 1000 ? W * 0.20 : W > 700 ? W * 0.12 : 0;
   }, { passive: true });
 
   animate();
@@ -456,37 +514,31 @@ function initThreeHero() {
 
 function mkParticle(w, h) {
   return {
-    x:  Math.random() * w,
-    y:  Math.random() * h,
+    x: Math.random() * w,
+    y: Math.random() * h,
     vx: (Math.random() - 0.5) * 0.35,
     vy: (Math.random() - 0.5) * 0.35,
-    r:  0.8 + Math.random() * 0.6,
-    o:  0.08 + Math.random() * 0.25,
+    r: 0.8 + Math.random() * 0.6,
+    o: 0.08 + Math.random() * 0.25,
   };
 }
 
 /* ─── 4. PRODUCTS ───────────────────────────────────────────────── */
 function renderProducts() {
-  const grid   = document.getElementById('products-grid');
+  const grid = document.getElementById('products-grid');
   const select = document.getElementById('f-product');
-
-  // BUG FIX: use typeof check, not window.PRODUCTS
   if (!grid || typeof PRODUCTS === 'undefined') return;
 
   PRODUCTS.forEach((p, i) => {
-    const cls     = getBentoClass(p, i);
+    const cls = getBentoClass(p, i);
     const featured = (p.badge === 'PRO' || p.badge === 'BESTSELLER') ? 'featured' : '';
 
     const card = document.createElement('div');
     card.className = `product-card ${cls} ${featured}`;
     card.tabIndex = 0;
     card.setAttribute('aria-label', `${p.name} — ${p.tag}`);
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        const btn = card.querySelector('.btn-card');
-        if (btn) btn.click();
-      }
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.querySelector('.btn-card')?.click(); }
     });
 
     const badgeHTML = p.badge
@@ -497,14 +549,10 @@ function renderProducts() {
       ? `<img src="${p.image}" alt="${p.name}" class="p-image" loading="lazy">`
       : `<div class="p-emoji-wrap">${p.icon}</div>`;
 
-    // BUG FIX: ₹ rendered in JS, not CSS ::before (avoids gradient transparency issue)
     const priceFormatted = '₹' + Number(p.price).toLocaleString('en-IN');
 
     card.innerHTML = `
-      <div class="p-header">
-        ${badgeHTML}
-        <span class="p-tag">${p.tag}</span>
-      </div>
+      <div class="p-header">${badgeHTML}<span class="p-tag">${p.tag}</span></div>
       <div class="p-media">${mediaHTML}</div>
       <div class="p-info">
         <h3 class="p-name">${p.name}</h3>
@@ -516,36 +564,21 @@ function renderProducts() {
             <button type="button" class="btn-ghost btn-3d" data-model="${p.model || ''}" aria-label="3D Preview">3D Preview</button>
           </div>
         </div>
-      </div>
-    `;
+      </div>`;
 
-    // Spotlight effect
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
       card.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
       card.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
     });
-
-    // Order button
-    card.querySelector('.btn-card').addEventListener('click', () => {
-      selectProduct(p.name);
-    });
-
-    // 3D preview button (if present)
-    const b3d = card.querySelector('.btn-3d');
-    if (b3d) {
-      b3d.addEventListener('click', () => {
-        // pass the product object (p) so open3DPreview can use p.model
-        open3DPreview(p);
-      });
-    }
+    card.querySelector('.btn-card').addEventListener('click', () => selectProduct(p.name));
+    card.querySelector('.btn-3d')?.addEventListener('click', () => open3DPreview(p));
 
     grid.appendChild(card);
 
-    // Populate contact form select
     if (select) {
       const opt = document.createElement('option');
-      opt.value       = p.name;
+      opt.value = p.name;
       opt.textContent = `${p.name}  —  ₹${Number(p.price).toLocaleString('en-IN')}`;
       select.appendChild(opt);
     }
@@ -554,7 +587,7 @@ function renderProducts() {
 
 function getBentoClass(p, i) {
   if (p.badge === 'BESTSELLER' || p.badge === 'PRO') return 'large';
-  if (p.badge === 'NEW')                              return 'wide';
+  if (p.badge === 'NEW') return 'wide';
   return 'std';
 }
 
@@ -562,19 +595,14 @@ function smoothScrollTo(el) {
   if (!el) return;
   const nav = document.getElementById('nav');
   const navH = nav ? nav.offsetHeight : 0;
-  const top = el.getBoundingClientRect().top + window.scrollY - Math.round(navH * 1.05);
-  window.scrollTo({ top, behavior: 'smooth' });
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - Math.round(navH * 1.05), behavior: 'smooth' });
 }
 
 function selectProduct(name) {
   const s = document.getElementById('f-product');
   if (s) s.value = name;
   smoothScrollTo(document.getElementById('contact'));
-  // Focus the name input after the scroll for a smoother ordering flow
-  setTimeout(() => {
-    const nameEl = document.getElementById('f-name');
-    if (nameEl) nameEl.focus({ preventScroll: true });
-  }, 700);
+  setTimeout(() => { document.getElementById('f-name')?.focus({ preventScroll: true }); }, 700);
   showToast(`Selected: ${name} ✓`);
 }
 
@@ -582,57 +610,42 @@ function selectProduct(name) {
 function initScrollParallax() {
   const hero = document.getElementById('hero');
   const heroBg = document.querySelector('.hero-bg');
-  const heroContent = document.querySelector('.hero-content');
+  const hC = document.querySelector('.hero-content');
   const hero3d = document.getElementById('hero-3d');
-  const fg = document.getElementById('hero-foreground');
   if (!hero) return;
 
-  let lastY = window.scrollY;
-  let ticking = false;
-
+  let lastY = 0, ticking = false;
   const onScroll = () => {
     lastY = window.scrollY;
     if (!ticking) {
       requestAnimationFrame(() => {
         const sc = Math.max(0, lastY);
-        const heroRect = hero.getBoundingClientRect();
-        const offset = Math.min(Math.max(sc / 3, 0), 200);
+        const offset = Math.min(sc / 3, 200);
         if (heroBg) heroBg.style.transform = `translateY(${offset * 0.08}px)`;
-        if (heroContent) heroContent.style.transform = `translateY(${offset * 0.02}px)`;
+        if (hC) hC.style.transform = `translateY(${offset * 0.02}px)`;
         if (hero3d) hero3d.style.transform = `translateY(${offset * 0.012}px) translateZ(0)`;
-        if (fg) fg.style.transform = `translateY(${Math.min(offset * -0.12, 0)}px)`;
         ticking = false;
       });
       ticking = true;
     }
   };
-
   window.addEventListener('scroll', onScroll, { passive: true });
 }
 
 function initStats() {
   const els = document.querySelectorAll('.stat-number');
   if (!els.length) return;
-
   const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        countUp(e.target, +e.target.dataset.target);
-        obs.unobserve(e.target);
-      }
-    });
+    entries.forEach(e => { if (e.isIntersecting) { countUp(e.target, +e.target.dataset.target); obs.unobserve(e.target); } });
   }, { threshold: 0.6 });
-
   els.forEach(el => obs.observe(el));
 }
 
 function countUp(el, target) {
-  const dur   = 1800;
-  const start = performance.now();
-  const run   = now => {
+  const dur = 1800, start = performance.now();
+  const run = now => {
     const p = Math.min((now - start) / dur, 1);
-    const e = 1 - Math.pow(1 - p, 3); // easeOutCubic
-    el.textContent = Math.floor(e * target).toLocaleString('en-IN');
+    el.textContent = Math.floor((1 - Math.pow(1 - p, 3)) * target).toLocaleString('en-IN');
     if (p < 1) requestAnimationFrame(run);
   };
   requestAnimationFrame(run);
@@ -641,63 +654,46 @@ function countUp(el, target) {
 /* ─── 6. SCROLL REVEALS ─────────────────────────────────────────── */
 function initScrollReveals() {
   const obs = new IntersectionObserver((entries, observer) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('revealed');
-        observer.unobserve(e.target);
-      }
-    });
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
   }, { threshold: 0.12 });
 
-  // BUG FIX: exclude #hero — it reveals itself on load, not scroll
-  document.querySelectorAll(
-    '#products, #about, #contact, .product-card, .stat-block, .pillar, .marquee-divider'
-  ).forEach((el, i) => {
+  document.querySelectorAll('#products, #about, #contact, .product-card, .stat-block, .pillar, .marquee-divider').forEach((el, i) => {
     el.classList.add('will-reveal');
     el.style.transitionDelay = `${(i % 4) * 0.08}s`;
     obs.observe(el);
   });
 }
 
-/* ─── 7. FORM — WhatsApp redirect ───────────────────────────────── */
+/* ─── 7. FORM ───────────────────────────────────────────────────── */
 function initForm() {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
-  // Show owner's number in the badge
   const waDisplay = document.getElementById('wa-display');
   if (waDisplay && OWNER_WA_NUMBER !== '91XXXXXXXXXX') {
-    // Format nicely: 919876543210 → +91 98765 43210
     const n = OWNER_WA_NUMBER.replace(/^91/, '');
-    waDisplay.textContent = `+91 ${n.slice(0,5)} ${n.slice(5)}`;
+    waDisplay.textContent = `+91 ${n.slice(0, 5)} ${n.slice(5)}`;
   }
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-
-    const name    = form.querySelector('[name="name"]').value.trim();
-    const phone   = form.querySelector('[name="phone"]').value.trim();
+    const name = form.querySelector('[name="name"]').value.trim();
+    const phone = form.querySelector('[name="phone"]').value.trim();
     const product = form.querySelector('[name="product"]').value;
     const message = form.querySelector('[name="message"]').value.trim();
 
-    if (!name || !phone || !product) {
-      showToast('⚠️ Please fill all required fields.', true);
-      return;
-    }
+    if (!name || !phone || !product) { showToast('⚠️ Please fill all required fields.', true); return; }
 
     const text = [
-      `Hi! I found *AR ENTERPRISE* 🤖`,
-      ``,
+      `Hi! I found *AR ENTERPRISE* 🤖`, ``,
       `*Name:* ${name}`,
       `*Phone:* ${phone}`,
       `*Product:* ${product}`,
       message ? `*Message:* ${message}` : '',
     ].filter(Boolean).join('\n');
 
-    const url = `https://wa.me/${OWNER_WA_NUMBER}?text=${encodeURIComponent(text)}`;
-    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    const win = window.open(`https://wa.me/${OWNER_WA_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     if (win) win.opener = null;
-
     showToast('Opening WhatsApp... 💬');
     form.reset();
   });
@@ -707,32 +703,25 @@ function registerServiceWorker() {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then(reg => {
-        console.log('Service worker registered:', reg);
-        // Show a simple toast when an update is waiting; no banner UI
         if (reg.waiting) showToast('Update available — refresh to apply');
         reg.addEventListener('updatefound', () => {
-          const inst = reg.installing;
-          inst.addEventListener('statechange', () => {
-            if (inst.state === 'installed' && navigator.serviceWorker.controller) {
+          reg.installing.addEventListener('statechange', () => {
+            if (reg.installing?.state === 'installed' && navigator.serviceWorker.controller)
               showToast('New version available — refresh to update');
-            }
           });
         });
-      }).catch(err => console.warn('SW registration failed:', err));
+      }).catch(err => console.warn('SW failed:', err));
     });
   }
 }
 
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
-
-/* ─── 8. UTILS ──────────────────────────────────────────────────── */
 function initUIWidgets() {
-  // Accent switch in nav — toggles CSS theme-alt class
-  const switchEl = document.getElementById('accent-switch');
-  if (switchEl) {
-    switchEl.addEventListener('change', () => {
-      document.documentElement.classList.toggle('theme-alt', switchEl.checked);
-      showToast(switchEl.checked ? '🔵 Blue accent active' : '🟢 Green accent restored');
+  const sw = document.getElementById('accent-switch');
+  if (sw) {
+    sw.addEventListener('change', () => {
+      document.documentElement.classList.toggle('theme-alt', sw.checked);
+      showToast(sw.checked ? '🔵 Blue accent active' : '🟢 Green accent restored');
     });
   }
 }
@@ -742,56 +731,33 @@ function initVideoModal() {
   const modal = document.getElementById('video-modal');
   const backdrop = document.getElementById('video-backdrop');
   const close = document.getElementById('video-close');
-  const ctaContact = document.getElementById('modal-cta-contact');
-  const ctaProducts = document.getElementById('modal-cta-products');
+  const ctaC = document.getElementById('modal-cta-contact');
+  const ctaP = document.getElementById('modal-cta-products');
   if (!btn || !modal) return;
 
-  const open = () => {
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
-    if (close) close.focus();
-  };
-
-  const closeModal = () => {
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-    btn.focus();
-  };
+  const open = () => { modal.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; close?.focus(); };
+  const closeModal = () => { modal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; btn.focus(); };
 
   btn.addEventListener('click', open);
-  if (close) close.addEventListener('click', closeModal);
-  if (backdrop) backdrop.addEventListener('click', closeModal);
+  close?.addEventListener('click', closeModal);
+  backdrop?.addEventListener('click', closeModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal(); });
-
-  if (ctaContact) ctaContact.addEventListener('click', () => {
-    closeModal();
-    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(() => { const nameEl = document.getElementById('f-name'); if (nameEl) nameEl.focus({ preventScroll: true }); }, 600);
-  });
-
-  if (ctaProducts) ctaProducts.addEventListener('click', () => {
-    closeModal();
-    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-  });
+  ctaC?.addEventListener('click', () => { closeModal(); document.getElementById('contact').scrollIntoView({ behavior: 'smooth' }); setTimeout(() => document.getElementById('f-name')?.focus({ preventScroll: true }), 600); });
+  ctaP?.addEventListener('click', () => { closeModal(); document.getElementById('products').scrollIntoView({ behavior: 'smooth' }); });
 }
 
-// 3D Preview: open a modal and render a glTF or fallback mesh
 function open3DPreview(product) {
   const modal = document.getElementById('model-modal');
   const viewer = document.getElementById('model-viewer');
   const backdrop = document.getElementById('model-backdrop');
   const close = document.getElementById('model-close');
   if (!modal || !viewer) return;
-  modal.setAttribute('aria-hidden','false');
+  modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 
-  // cleanup previous
-  if (window._previewCleanup) { try { window._previewCleanup(); } catch(e){} window._previewCleanup = null; }
+  if (window._previewCleanup) { try { window._previewCleanup(); } catch (e) { } window._previewCleanup = null; }
 
-  if (typeof THREE === 'undefined') {
-    viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D not available</div>';
-    return;
-  }
+  if (typeof THREE === 'undefined') { viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D not available</div>'; return; }
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -803,11 +769,10 @@ function open3DPreview(product) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
   camera.position.set(0, 0, 120);
-
-  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
   const dir = new THREE.DirectionalLight(0xffffff, 0.8);
   dir.position.set(5, 10, 7.5);
-  scene.add(ambient, dir);
+  scene.add(dir);
 
   let activeObject = null;
   const loadFallback = () => {
@@ -820,21 +785,17 @@ function open3DPreview(product) {
   const tryLoadGLTF = (url) => {
     if (!url || typeof THREE.GLTFLoader === 'undefined') { loadFallback(); return; }
     try {
-      const loader = new THREE.GLTFLoader();
-      loader.load(url, gltf => {
+      new THREE.GLTFLoader().load(url, gltf => {
         activeObject = gltf.scene;
         scene.add(activeObject);
         const box = new THREE.Box3().setFromObject(activeObject);
         const size = box.getSize(new THREE.Vector3()).length();
-        const center = box.getCenter(new THREE.Vector3());
-        activeObject.position.sub(center);
-        const scale = 90 / Math.max(size, 1);
-        activeObject.scale.setScalar(scale);
-      }, undefined, err => { console.warn('gltf load err', err); loadFallback(); });
-    } catch (e) { console.warn('gltf loader err', e); loadFallback(); }
+        activeObject.position.sub(box.getCenter(new THREE.Vector3()));
+        activeObject.scale.setScalar(90 / Math.max(size, 1));
+      }, undefined, () => loadFallback());
+    } catch (e) { loadFallback(); }
   };
-
-  tryLoadGLTF(product && product.model);
+  tryLoadGLTF(product?.model);
 
   let px = 0, py = 0;
   viewer.addEventListener('pointermove', e => {
@@ -848,11 +809,9 @@ function open3DPreview(product) {
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
   const animate = () => {
-    if (visible) {
-      if (activeObject) {
-        activeObject.rotation.y += 0.01 + px * 0.02;
-        activeObject.rotation.x += 0.005 + py * 0.01;
-      }
+    if (visible && activeObject) {
+      activeObject.rotation.y += 0.01 + px * 0.02;
+      activeObject.rotation.x += 0.005 + py * 0.01;
       renderer.render(scene, camera);
     }
     window._previewRAF = requestAnimationFrame(animate);
@@ -861,31 +820,28 @@ function open3DPreview(product) {
 
   const cleanup = () => {
     cancelAnimationFrame(window._previewRAF);
-    try { renderer.dispose(); } catch (e) {}
-    if (activeObject) try { scene.remove(activeObject); } catch (e) {}
+    try { renderer.dispose(); } catch (e) { }
     viewer.innerHTML = '';
   };
   window._previewCleanup = cleanup;
 
-  const closeModal = () => {
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
-    cleanup();
-  };
-
-  if (close) close.addEventListener('click', closeModal);
-  if (backdrop) backdrop.addEventListener('click', closeModal);
-  const escHandler = (e) => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') { closeModal(); document.removeEventListener('keydown', escHandler); } };
-  document.addEventListener('keydown', escHandler);
-
-  window.addEventListener('resize', () => { if (renderer && viewer) { renderer.setSize(viewer.clientWidth, viewer.clientHeight); camera.aspect = viewer.clientWidth / viewer.clientHeight; camera.updateProjectionMatrix(); } }, { passive: true });
+  const closeModal = () => { modal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; cleanup(); };
+  close?.addEventListener('click', closeModal);
+  backdrop?.addEventListener('click', closeModal);
+  const esc = e => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') { closeModal(); document.removeEventListener('keydown', esc); } };
+  document.addEventListener('keydown', esc);
+  window.addEventListener('resize', () => {
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    camera.aspect = viewer.clientWidth / viewer.clientHeight;
+    camera.updateProjectionMatrix();
+  }, { passive: true });
 }
 
 function showToast(msg, isError) {
   const t = document.getElementById('toast');
   if (!t) return;
   t.textContent = msg;
-  t.className   = isError ? 'error show' : 'show';
+  t.className = isError ? 'error show' : 'show';
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.className = '', 3200);
 }
