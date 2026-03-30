@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Inject structured data for SEO and ensure drone fallback is checked
   try { injectStructuredData(); } catch (err) { /* noop */ }
   try { initDroneFallbackCheck(); } catch (err) { /* noop */ }
+  try { registerServiceWorker(); } catch (err) { /* noop */ }
 });
 
 /* ─── 1. CURSOR ────────────────────────────────────────────────── */
@@ -378,6 +379,26 @@ function initForm() {
     showToast('Opening WhatsApp... 💬');
     form.reset();
   });
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').then(reg => {
+        console.log('Service worker registered:', reg);
+        // Notify users when a new SW is installed and waiting
+        if (reg.waiting) showToast('Update available — refresh to apply');
+        reg.addEventListener('updatefound', () => {
+          const inst = reg.installing;
+          inst.addEventListener('statechange', () => {
+            if (inst.state === 'installed' && navigator.serviceWorker.controller) {
+              showToast('New version available — refresh to update');
+            }
+          });
+        });
+      }).catch(err => console.warn('SW registration failed:', err));
+    });
+  }
 }
 
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
