@@ -278,7 +278,14 @@ function initHeroUI() {
 
 /* ─── 3D COMBAT CORE HERO (cross-browser + performance) ────────── */
 function initThreeHero() {
-  if (typeof THREE === 'undefined') return;
+  if (typeof THREE === 'undefined') {
+    let tries = 0;
+    const poll = setInterval(() => {
+      if (typeof THREE !== 'undefined') { clearInterval(poll); initThreeHero(); }
+      else if (++tries > 30) clearInterval(poll);
+    }, 100);
+    return;
+  }
   const container = document.getElementById('hero-3d');
   if (!container) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -854,7 +861,17 @@ function open3DPreview(product) {
 
   if (window._previewCleanup) { try { window._previewCleanup(); } catch (e) { } window._previewCleanup = null; }
 
-  if (typeof THREE === 'undefined') { viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D not available</div>'; return; }
+  if (typeof THREE === 'undefined') {
+    let tries = 0;
+    const poll = setInterval(() => {
+      if (typeof THREE !== 'undefined') { clearInterval(poll); open3DPreview(product); }
+      else if (++tries > 30) {
+        clearInterval(poll);
+        viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D not available</div>';
+      }
+    }, 100);
+    return;
+  }
 
   let renderer;
   try {
