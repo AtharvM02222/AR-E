@@ -151,6 +151,7 @@ function initHero() {
   initScrollParallax();
 
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
   let w, h;
   const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
   window.addEventListener('resize', resize, { passive: true });
@@ -225,11 +226,17 @@ function initThreeHero() {
   const W = container.clientWidth;
   const H = container.clientHeight;
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(W, H);
-  renderer.setClearColor(0x000000, 0);
-  container.appendChild(renderer.domElement);
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(W, H);
+    renderer.setClearColor(0x000000, 0);
+    container.appendChild(renderer.domElement);
+  } catch (e) {
+    console.warn('3D Hero blocked or unsupported in this browser.', e);
+    return;
+  }
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 3000);
@@ -759,12 +766,19 @@ function open3DPreview(product) {
 
   if (typeof THREE === 'undefined') { viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D not available</div>'; return; }
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  viewer.innerHTML = '';
-  viewer.appendChild(renderer.domElement);
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    viewer.innerHTML = '';
+    viewer.appendChild(renderer.domElement);
+  } catch (e) {
+    viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D Preview blocked by browser privacy settings.</div>';
+    console.warn('3D Preview blocked or unsupported.', e);
+    return;
+  }
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
