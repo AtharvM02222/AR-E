@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCursor();
   initNavigation();
   initHero();
+  initHeroUI();
   renderProducts();
   initStats();
   initScrollReveals();
@@ -184,6 +185,55 @@ function initHero() {
     requestAnimationFrame(draw);
   };
   draw();
+}
+
+// Lightweight hero UI interactivity: pointer parallax + reveal
+function initHeroUI() {
+  const container = document.querySelector('.drone-static') || document.getElementById('hero');
+  const feature = document.querySelector('.feature-card');
+  const left = document.querySelector('.hero-ui-left');
+  const ui = document.querySelector('.hero-ui');
+
+  // Reveal immediately if we don't have the small UI pieces
+  if (ui && !feature) ui.classList.add('revealed');
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!feature || prefersReduced) {
+    if (ui) ui.classList.add('revealed');
+    return;
+  }
+
+  // Skip on coarse pointers (touch)
+  if (!window.matchMedia('(pointer: fine)').matches) {
+    if (ui) ui.classList.add('revealed');
+    return;
+  }
+
+  let px = 0, py = 0, tx = 0, ty = 0;
+
+  container.addEventListener('pointermove', e => {
+    const r = container.getBoundingClientRect();
+    px = (e.clientX - r.left) / r.width - 0.5;
+    py = (e.clientY - r.top) / r.height - 0.5;
+  }, { passive: true });
+
+  container.addEventListener('pointerleave', () => { px = 0; py = 0; });
+
+  const loop = () => {
+    tx += (px - tx) * 0.08;
+    ty += (py - ty) * 0.08;
+    const rotX = (-ty * 6).toFixed(2);
+    const rotY = (tx * 6).toFixed(2);
+
+    feature.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(${(-ty * 6)}px)`;
+    if (left) left.style.transform = `translate3d(${tx * 12}px, ${ty * 8}px, 0)`;
+
+    requestAnimationFrame(loop);
+  };
+
+  // Reveal now that we have interactivity
+  setTimeout(() => ui && ui.classList.add('revealed'), 120);
+  loop();
 }
 
 function mkParticle(w, h) {
