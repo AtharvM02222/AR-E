@@ -340,7 +340,7 @@ video {
   position: relative;
   height: 100vh;
   height: 100dvh;
-  min-height: 600px;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -417,6 +417,8 @@ video {
   width: min(90%, 1080px);
   margin: 0 auto;
   text-align: center;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 
@@ -1838,11 +1840,7 @@ footer {
   #particle-canvas,
   .ticker-inner,
   .marquee-content,
-  .scan-line,
-  .hero-eyebrow,
-  #hero-title .line,
-  .hero-subtitle,
-  .hero-actions {
+  .scan-line {
     display: none !important;
   }
 }

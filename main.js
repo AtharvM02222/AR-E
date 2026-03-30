@@ -4,25 +4,36 @@
 
 const OWNER_WA_NUMBER = '918595237299';
 
+// Add 'js' class immediately to avoid layout shifts and ensure reveal logic works
+document.documentElement.classList.add('js');
+
 document.addEventListener('DOMContentLoaded', () => {
-  try { document.documentElement.classList.add('js'); } catch (e) { }
+  const safely = (fn, name) => {
+    try {
+      fn();
+    } catch (e) {
+      console.warn(`Module failed to init: ${name}`, e);
+    }
+  };
 
-  initCursor();
-  initNavigation();
-  initHero();
-  initHeroUI();
-  initThreeHero();
-  initUIWidgets();
-  initVideoModal();
-  renderProducts();
-  initStats();
-  initScrollReveals();
-  initForm();
-  document.getElementById('year').textContent = new Date().getFullYear();
+  safely(initCursor, 'Cursor');
+  safely(initNavigation, 'Navigation');
+  safely(initHero, 'Hero');
+  safely(initHeroUI, 'HeroUI');
+  safely(initThreeHero, 'ThreeHero');
+  safely(initUIWidgets, 'UIWidgets');
+  safely(initVideoModal, 'VideoModal');
+  safely(renderProducts, 'Products');
+  safely(initStats, 'Stats');
+  safely(initScrollReveals, 'ScrollReveals');
+  safely(initForm, 'Form');
 
-  try { injectStructuredData(); } catch (_) { }
-  try { initDroneFallbackCheck(); } catch (_) { }
-  try { registerServiceWorker(); } catch (_) { }
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  safely(injectStructuredData, 'SEO');
+  safely(initDroneFallbackCheck, 'DroneFallback');
+  safely(registerServiceWorker, 'PWA');
 });
 
 /* ─── STUB: missing function definitions (prevents ReferenceError) ── */
@@ -136,21 +147,29 @@ function initHero() {
   const subtitle = document.querySelector('.hero-subtitle');
   const actions = document.querySelector('.hero-actions');
 
+  // Immediately set a short timeout to reveal
   setTimeout(() => {
     if (title) title.classList.add('revealed');
     if (eyebrow) eyebrow.classList.add('revealed');
     if (actions) actions.classList.add('revealed');
     if (subtitle) {
       const text = subtitle.textContent.trim();
+      if (!text) {
+        subtitle.classList.add('revealed');
+        return;
+      }
       subtitle.textContent = '';
       subtitle.classList.add('revealed');
       let i = 0;
       const type = () => {
-        if (i < text.length) { subtitle.textContent += text.charAt(i++); setTimeout(type, 15); }
+        if (i < text.length) { 
+          subtitle.textContent += text.charAt(i++); 
+          setTimeout(type, 15); 
+        }
       };
-      setTimeout(type, 800);
+      setTimeout(type, 600);
     }
-  }, 80);
+  }, 50);
 
   if (window.innerWidth < 768) return;
 
@@ -160,7 +179,7 @@ function initHero() {
   document.querySelectorAll('a[href^="#"]').forEach(a => {
     a.addEventListener('click', e => {
       const href = a.getAttribute('href');
-      if (!href || href === '#') return;
+      if (!href || href === "#") return;
       const target = document.querySelector(href);
       if (!target) return;
       e.preventDefault();
@@ -183,13 +202,11 @@ function initHero() {
   window.addEventListener('resize', throttleRAF(resize), { passive: true });
   resize();
 
-  /* Adaptive particle count based on device capability */
   const COUNT = getAdaptiveCount(55, 30, 18);
   const particles = Array.from({ length: COUNT }, () => mkParticle(w, h));
   let mx = -1000, my = -1000;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
 
-  /* Gate particles with IntersectionObserver — stop when hero is off-screen */
   let heroVisible = true;
   const heroSection = document.getElementById('hero');
   if (heroSection && 'IntersectionObserver' in window) {
