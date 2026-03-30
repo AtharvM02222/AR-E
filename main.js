@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveals();
   initForm();
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Inject structured data for SEO and ensure drone fallback is checked
+  try { injectStructuredData(); } catch (err) { /* noop */ }
+  try { initDroneFallbackCheck(); } catch (err) { /* noop */ }
 });
 
 /* ─── 1. CURSOR ────────────────────────────────────────────────── */
@@ -203,6 +207,15 @@ function renderProducts() {
 
     const card = document.createElement('div');
     card.className = `product-card ${cls} ${featured}`;
+    card.tabIndex = 0;
+    card.setAttribute('aria-label', `${p.name} — ${p.tag}`);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const btn = card.querySelector('.btn-card');
+        if (btn) btn.click();
+      }
+    });
 
     const badgeHTML = p.badge
       ? `<span class="badge ${p.badge.toLowerCase()}">${p.badge}</span>`
@@ -265,6 +278,11 @@ function selectProduct(name) {
   const s = document.getElementById('f-product');
   if (s) s.value = name;
   document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+  // Focus the name input after the scroll for a smoother ordering flow
+  setTimeout(() => {
+    const nameEl = document.getElementById('f-name');
+    if (nameEl) nameEl.focus({ preventScroll: true });
+  }, 600);
   showToast(`Selected: ${name} ✓`);
 }
 
