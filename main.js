@@ -18,6 +18,9 @@
 const OWNER_WA_NUMBER = '918595237299'; // ← CHANGE THIS
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Add a marker class to indicate JS is running; keeps hero content visible if JS fails
+  try { document.documentElement.classList.add('js'); } catch (e) { /* noop */ }
+
   initCursor();
   initNavigation();
   initHero();
