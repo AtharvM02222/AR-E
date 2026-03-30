@@ -1,5 +1,5 @@
 /* ════════════════════════════════════════════════════════════════
-   AR ENTERPRISE — main.js  v3.0  (cross-browser + performance)
+   AR ENTERPRISE — main.js  v4.0  (cross-browser + performance)
    ════════════════════════════════════════════════════════════════ */
 
 const OWNER_WA_NUMBER = '918595237299';
@@ -147,29 +147,35 @@ function initHero() {
   const subtitle = document.querySelector('.hero-subtitle');
   const actions = document.querySelector('.hero-actions');
 
-  // Immediately set a short timeout to reveal
-  setTimeout(() => {
+  const revealHeroElements = () => {
     if (title) title.classList.add('revealed');
     if (eyebrow) eyebrow.classList.add('revealed');
     if (actions) actions.classList.add('revealed');
     if (subtitle) {
       const text = subtitle.textContent.trim();
-      if (!text) {
-        subtitle.classList.add('revealed');
-        return;
-      }
       subtitle.textContent = '';
       subtitle.classList.add('revealed');
+      void subtitle.offsetHeight; // force repaint — Safari needs this
       let i = 0;
       const type = () => {
-        if (i < text.length) { 
-          subtitle.textContent += text.charAt(i++); 
-          setTimeout(type, 15); 
-        }
+        if (i < text.length) { subtitle.textContent += text.charAt(i++); setTimeout(type, 15); }
       };
       setTimeout(type, 600);
     }
-  }, 50);
+  };
+
+  // Primary reveal
+  setTimeout(revealHeroElements, 80);
+
+  // Hard safety net — if primary fails for any reason, force-show at 2.5s
+  setTimeout(() => {
+    [title, eyebrow, subtitle, actions].forEach(el => {
+      if (el && !el.classList.contains('revealed')) {
+        el.style.cssText += ';opacity:1!important;transform:none!important;transition:opacity 0.6s,transform 0.6s';
+        el.classList.add('revealed');
+      }
+    });
+  }, 2500);
 
   if (window.innerWidth < 768) return;
 

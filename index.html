@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=2.0">
+  <link rel="stylesheet" href="style.css?v=3.0">
 </head>
 <body>
 
@@ -417,10 +417,23 @@
   </div>
 
   <!-- Scripts — order matters -->
-  <script src="https://unpkg.com/three@0.158.0/build/three.min.js" defer></script>
-  <script src="https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js" defer onerror="console.warn('GLTFLoader unavailable')"></script>
-  <script src="products.js?v=2.0" defer></script>
-  <script src="main.js?v=2.0" defer></script>
+  <!-- Async dynamic loader with cdnjs fallback (Brave-safe) -->
+  <script>
+    (function() {
+      var s = document.createElement('script');
+      s.src = 'https://unpkg.com/three@0.158.0/build/three.min.js';
+      s.async = true;
+      s.onerror = function() {
+        var s2 = document.createElement('script');
+        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js';
+        s2.async = true;
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+  <script src="products.js?v=3.0" defer></script>
+  <script src="main.js?v=3.0" defer></script>
 
 
 </body>

@@ -1,15 +1,15 @@
-/* AR ENTERPRISE — Service Worker v4 (cross-browser)
+/* AR ENTERPRISE — Service Worker v5 (cross-browser)
    Caches core assets and serves an offline fallback for navigation requests.
 */
 
-const CACHE_NAME = 'are-static-v4';
+const CACHE_NAME = 'are-static-v5';
 const PRECACHE_URLS = [
   './',
   './index.html',
   './offline.html',
-  './style.css?v=2.0',
-  './main.js?v=2.0',
-  './products.js?v=2.0',
+  './style.css?v=3.0',
+  './main.js?v=3.0',
+  './products.js?v=3.0',
   './favicon.svg'
 ];
 

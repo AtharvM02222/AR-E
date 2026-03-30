@@ -1880,22 +1880,20 @@ footer {
   50% { opacity: 0.32; transform: scale(1.06); }
 }
 
-/* JS-failure safety net — if 'revealed' never fires, fade text
-   in after 2s via pure CSS so the page isn't permanently blank */
-.js .hero-eyebrow:not(.revealed),
-.js #hero-title:not(.revealed) .line,
-.js .hero-subtitle:not(.revealed),
-.js .hero-actions:not(.revealed) {
-  animation: heroFallback 0.8s ease forwards;
-  animation-delay: 2s;
+/* Safari/Brave safe fallback — transition only, no animation conflict */
+.js .hero-eyebrow,
+.js #hero-title .line,
+.js .hero-subtitle,
+.js .hero-actions {
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes heroFallback {
-  to {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-  }
-}
+/* If JS never fires revealed, show after 3.5s via transition-delay */
+.js .hero-eyebrow:not(.revealed)      { transition-delay: 3.5s; }
+.js #hero-title:not(.revealed) .line  { transition-delay: 3.6s; }
+.js .hero-subtitle:not(.revealed)     { transition-delay: 3.7s; }
+.js .hero-actions:not(.revealed)      { transition-delay: 3.8s; }
 
 /* Mobile: restore centered layout */
 @media (max-width: 767px) {
