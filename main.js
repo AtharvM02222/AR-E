@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initHero();
   initHeroUI();
+  initThreeHero();
+  initUIWidgets();
   initVideoModal();
   renderProducts();
   initStats();
@@ -535,6 +537,39 @@ function registerServiceWorker() {
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
 
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
+function initUIWidgets() {
+  // Tabs
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabs.forEach(b => b.setAttribute('aria-selected','false'));
+      btn.setAttribute('aria-selected','true');
+      document.querySelectorAll('.tab-panel').forEach(p => p.hidden = true);
+      const target = document.querySelector(btn.dataset.tabTarget);
+      if (target) target.hidden = false;
+    });
+  });
+
+  // Accent switch toggles CSS theme-alt class which flips variables
+  const switchEl = document.getElementById('accent-switch');
+  if (switchEl) {
+    switchEl.addEventListener('change', () => {
+      document.documentElement.classList.toggle('theme-alt', switchEl.checked);
+      showToast(switchEl.checked ? 'Accent switched' : 'Accent restored');
+    });
+  }
+
+  const searchBtn = document.getElementById('search-btn');
+  if (searchBtn) searchBtn.addEventListener('click', () => {
+    const q = (document.getElementById('demo-search')||{}).value || '';
+    showToast(q ? `Searching: ${q}` : 'Search (demo)');
+  });
+
+  // Select demo: show toast on change
+  const sel = document.getElementById('demo-select');
+  if (sel) sel.addEventListener('change', () => showToast(`Selected: ${sel.value}`));
+}
+
 function initVideoModal() {
   const btn = document.getElementById('watch-action');
   const modal = document.getElementById('video-modal');

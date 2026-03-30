@@ -124,6 +124,67 @@
       </div>
     </section>
 
+    <!-- ── UI WIDGETS (from HyperUI/Flowbite/DaisyUI inspiration) ── -->
+    <section id="widgets">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">━━ UI / COMPONENTS</span>
+          <h2>Interactive UI<br><em>Widgets</em></h2>
+        </div>
+
+        <div class="widgets-grid">
+          <!-- Card (HyperUI-like) -->
+          <div class="widget-card card">
+            <div class="card-media">
+              <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="24" r="12" fill="#00ff88" opacity=".12"/><rect x="8" y="36" width="48" height="16" rx="4" fill="#0b1220"/></svg>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">Pro Flight Controller</h3>
+              <p class="card-desc">Low-latency control, fail-safe, and swappable motors — ready for competition.</p>
+              <div class="card-actions">
+                <button class="btn-primary" type="button">Buy Now</button>
+                <button class="btn-ghost" type="button">Details</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs (Flowbite-like) -->
+          <div class="widget-tabs">
+            <div class="tabs" role="tablist" aria-label="Example tabs">
+              <button role="tab" aria-selected="true" data-tab-target="#tab1" class="tab">Overview</button>
+              <button role="tab" aria-selected="false" data-tab-target="#tab2" class="tab">Specs</button>
+              <button role="tab" aria-selected="false" data-tab-target="#tab3" class="tab">Reviews</button>
+            </div>
+            <div class="tab-panels">
+              <div id="tab1" class="tab-panel">High-performance hardware optimized for contest conditions.</div>
+              <div id="tab2" class="tab-panel" hidden>Sensor: IMU-10K • MCU: 180MHz • Ports: 6 PWM</div>
+              <div id="tab3" class="tab-panel" hidden>★★★★★ — Trusted by builders worldwide.</div>
+            </div>
+          </div>
+
+          <!-- Switch (DaisyUI-like) & Select -->
+          <div class="widget-controls">
+            <label class="switch">
+              <input type="checkbox" id="accent-switch" aria-label="Toggle accent color">
+              <span class="switch-slider"></span>
+            </label>
+            <label class="select-label">
+              <select id="demo-select">
+                <option value="basic">Basic Kit</option>
+                <option value="pro">Pro Kit</option>
+                <option value="swarm">Swarm Pack</option>
+              </select>
+            </label>
+            <div class="input-row">
+              <input type="text" placeholder="Search components" id="demo-search">
+              <button class="btn-card" id="search-btn" type="button">Go</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
     <!-- ── PRODUCTS ───────────────────────────────────────────────── -->
     <section id="products">
       <div class="container">
