@@ -277,7 +277,7 @@ function initHeroUI() {
 }
 
 /* ─── 3D COMBAT CORE HERO (cross-browser + performance) ────────── */
-/* ─── 3D COMBAT CORE HERO (Ultra-Premium Three.js) ────────── */
+/* ─── 3D COMBAT CORE HERO (Ultra-Premium X-Config) ────────── */
 function initThreeHero() {
   if (typeof THREE === 'undefined') {
     let tries = 0;
@@ -299,13 +299,13 @@ function initThreeHero() {
   renderer.setSize(W, H);
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.6; // High contrast cinematic
+  renderer.toneMappingExposure = 1.8;
   if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 2000);
-  camera.position.set(0, 30, 240); 
+  const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 2500);
+  camera.position.set(0, 40, 300); 
   camera.lookAt(0, 0, 0);
 
   /* ── ENVIRONMENT MAP FOR HYPER-REAL REFLECTIONS ── */
@@ -327,18 +327,16 @@ function initThreeHero() {
       varying vec3 vWorldPosition;
       void main() {
         vec3 p = normalize(vWorldPosition);
-        float y = p.y;
-        vec3 top = vec3(0.08, 0.10, 0.15); // Cool overhead studio
-        vec3 mid = vec3(0.02, 0.02, 0.03); // Dark horizon
-        vec3 bot = vec3(0.00, 0.05, 0.08); // Cyan bounce from floor
-        vec3 col = mix(bot, mid, smoothstep(-1.0, 0.0, y));
-        col = mix(col, top, smoothstep(0.0, 1.0, y));
+        vec3 top = vec3(0.05, 0.15, 0.1); 
+        vec3 mid = vec3(0.02, 0.02, 0.03); 
+        vec3 bot = vec3(0.00, 0.08, 0.15); 
+        vec3 col = mix(bot, mid, smoothstep(-1.0, 0.0, p.y));
+        col = mix(col, top, smoothstep(0.0, 1.0, p.y));
         
-        // Add harsh studio tube lights
         float light1 = smoothstep(0.96, 0.98, dot(p, normalize(vec3(1.0, 1.0, -1.0))));
         float light2 = smoothstep(0.96, 0.98, dot(p, normalize(vec3(-1.0, 1.2, 0.5))));
-        col += vec3(2.0, 2.5, 3.0) * light1; // Blueish rim reflection
-        col += vec3(3.0, 3.0, 2.8) * light2; // Warm key reflection
+        col += vec3(1.0, 3.0, 2.0) * light1; 
+        col += vec3(0.5, 2.0, 4.0) * light2; 
 
         gl_FragColor = vec4(col, 1.0);
       }
@@ -347,199 +345,203 @@ function initThreeHero() {
   envScene.add(new THREE.Mesh(envGeo, envMat));
   scene.environment = pmrem.fromScene(envScene, 0.04).texture;
 
-  /* ── KICKASS LIGHTING ── */
-  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  /* ── CLASSIC NEON LIGHTING ── */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
   
-  const keyLight = new THREE.DirectionalLight(0xffffff, 3.5);
-  keyLight.position.set(40, 80, 80);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 3.0);
+  keyLight.position.set(40, 100, 80);
   scene.add(keyLight);
 
-  const rimBlue = new THREE.DirectionalLight(0x0088ff, 4.0);
-  rimBlue.position.set(-80, 50, -60);
+  const rimBlue = new THREE.DirectionalLight(0x3b82f6, 5.0);
+  rimBlue.position.set(-100, 50, -80);
   scene.add(rimBlue);
 
-  const rimCyan = new THREE.PointLight(0x00ffaa, 4.0, 300);
-  rimCyan.position.set(100, -20, 20);
-  scene.add(rimCyan);
+  const rimGreen = new THREE.PointLight(0x00ff88, 5.0, 400);
+  rimGreen.position.set(120, -40, 40);
+  scene.add(rimGreen);
 
-  /* ── PREMIUM MATERIALS ── */
-  const carbonMat = new THREE.MeshPhysicalMaterial({ color: 0x08080a, metalness: 0.9, roughness: 0.4, clearcoat: 0.3, clearcoatRoughness: 0.15 });
-  const paintMat = new THREE.MeshPhysicalMaterial({ color: 0x020202, metalness: 0.6, roughness: 0.1, clearcoat: 1.0, clearcoatRoughness: 0.05, emissive: 0x010203 });
-  const metalMat = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, metalness: 1.0, roughness: 0.25 });
-  const darkMetalMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.5 });
-  const goldMat = new THREE.MeshStandardMaterial({ color: 0xffaa00, metalness: 1.0, roughness: 0.3 });
-  const canopyMat = new THREE.MeshPhysicalMaterial({ color: 0x050a15, metalness: 0.2, roughness: 0.0, transmission: 0.9, thickness: 1.5, clearcoat: 1.0 });
-  const neonCyan = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 2.0 });
-  const neonRed = new THREE.MeshStandardMaterial({ color: 0xff0044, emissive: 0xff0044, emissiveIntensity: 2.0 });
+  /* ── MATERIALS & DYNAMIC DECAL ── */
+  const darkMetal = new THREE.MeshPhysicalMaterial({ color: 0x0f1419, metalness: 0.9, roughness: 0.25, clearcoat: 0.6, clearcoatRoughness: 0.1 });
+  const midMetal = new THREE.MeshStandardMaterial({ color: 0x242e39, metalness: 0.7, roughness: 0.5 });
+  const silverMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 1.0, roughness: 0.2 });
+  const neonGreen = new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: 0x00ff88, emissiveIntensity: 2.5 });
+  const neonBlue = new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x3b82f6, emissiveIntensity: 2.5 });
+  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0x051a1a, metalness: 0.2, roughness: 0.0, transmission: 0.9, thickness: 2.0 });
+
+  // Generate Canvas "AR ENTERPRISE" Decal
+  const cvs = document.createElement('canvas');
+  cvs.width = 1024; cvs.height = 256;
+  const ctx = cvs.getContext('2d');
+  ctx.fillStyle = '#0f1419';
+  ctx.fillRect(0, 0, 1024, 256);
+  ctx.font = '900 115px "Inter", "Segoe UI", sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#00ff88'; // Neon Green Text
+  ctx.fillText('AR ENTERPRISE', 512, 132);
+  ctx.strokeStyle = '#3b82f6'; // Bright Blue Border
+  ctx.lineWidth = 12;
+  ctx.strokeRect(30, 30, 964, 196);
+  ctx.fillStyle = '#3b82f6';
+  ctx.fillRect(50, 60, 20, 136);
+  ctx.fillRect(954, 60, 20, 136);
+
+  const decalTex = new THREE.CanvasTexture(cvs);
+  decalTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const decalMat = new THREE.MeshPhysicalMaterial({ map: decalTex, metalness: 0.6, roughness: 0.2, clearcoat: 0.8 });
 
   /* ── CONSTRUCT DRONE ── */
   const droneGroup = new THREE.Group();
   
-  // Right-aligned positioning
   const calculateBaseX = (cam) => {
     const vFov = cam.fov * Math.PI / 180;
     const visibleWidth = 2 * Math.tan(vFov / 2) * cam.position.z * cam.aspect;
-    return (visibleWidth / 2) * 0.65;
+    return (visibleWidth / 2) * 0.6;
   };
   let baseX = calculateBaseX(camera);
-  droneGroup.position.set(baseX, -5, 0);
+  droneGroup.position.set(baseX, -10, 0);
 
-  // 1. Central Chassis (Multi-layered aggressive sports-car look)
+  // 1. Central Chassis (Max Detail Core)
   const chassisGroup = new THREE.Group();
   
-  const mainCore = new THREE.Mesh(new THREE.BoxGeometry(18, 6, 26), darkMetalMat);
-  chassisGroup.add(mainCore);
-  
-  const topShell = new THREE.Mesh(new THREE.CapsuleGeometry(10, 22, 16, 32), paintMat);
-  topShell.rotation.x = Math.PI / 2;
-  topShell.scale.set(1, 1, 0.4);
-  topShell.position.set(0, 3, -1);
-  chassisGroup.add(topShell);
+  // Main Hull
+  const coreMesh = new THREE.Mesh(new THREE.BoxGeometry(22, 12, 34), darkMetal);
+  chassisGroup.add(coreMesh);
 
-  const sideVents1 = new THREE.Mesh(new THREE.BoxGeometry(22, 4, 14), carbonMat);
-  sideVents1.position.set(0, 0, 5);
-  chassisGroup.add(sideVents1);
+  // Side Engraved Plates
+  const decalPlaneGeom = new THREE.PlaneGeometry(32, 8);
+  const decalR = new THREE.Mesh(decalPlaneGeom, decalMat);
+  decalR.position.set(11.1, 0, 0);
+  decalR.rotation.y = Math.PI / 2;
+  chassisGroup.add(decalR);
 
-  // Glowing core engine vent in the back
-  const rearVent = new THREE.Mesh(new THREE.BoxGeometry(12, 3, 4), neonCyan);
-  rearVent.position.set(0, 1.5, -13);
-  chassisGroup.add(rearVent);
-  const rearLight = new THREE.PointLight(0x00ffff, 2.0, 50);
-  rearLight.position.set(0, 1.5, -15);
-  chassisGroup.add(rearLight);
+  const decalL = new THREE.Mesh(decalPlaneGeom, decalMat);
+  decalL.position.set(-11.1, 0, 0);
+  decalL.rotation.y = -Math.PI / 2;
+  // Flip texture horizontally for the left side so text isn't backwards
+  decalL.scale.x = -1; 
+  chassisGroup.add(decalL);
 
-  // Canopy / Cockpit dome (sleek dark glass)
-  const canopy = new THREE.Mesh(new THREE.CapsuleGeometry(6, 10, 16, 16), canopyMat);
-  canopy.rotation.x = Math.PI / 2;
-  canopy.scale.set(1, 1, 0.5);
-  canopy.position.set(0, 5, 4);
-  chassisGroup.add(canopy);
+  // Top Armor & Battery Pack
+  const topArmor = new THREE.Mesh(new THREE.BoxGeometry(18, 5, 26), midMetal);
+  topArmor.position.set(0, 8.5, -2);
+  chassisGroup.add(topArmor);
 
-  // Details: Carbon plating strips
-  const plate1 = new THREE.Mesh(new THREE.BoxGeometry(6, 0.5, 12), metalMat);
-  plate1.position.set(0, 6.2, -4);
-  chassisGroup.add(plate1);
+  // Glowing Battery Cores
+  const batt1 = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 14, 16), neonGreen);
+  batt1.rotation.z = Math.PI / 2;
+  batt1.position.set(0, 11, -5);
+  chassisGroup.add(batt1);
+  const batt2 = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 14, 16), neonBlue);
+  batt2.rotation.z = Math.PI / 2;
+  batt2.position.set(0, 11, 2);
+  chassisGroup.add(batt2);
+
+  // Heat Sinks
+  for(let i=0; i<6; i++) {
+    const vent = new THREE.Mesh(new THREE.BoxGeometry(14, 1.5, 1.5), darkMetal);
+    vent.position.set(0, 9, -12 + i*4);
+    chassisGroup.add(vent);
+  }
 
   droneGroup.add(chassisGroup);
 
-  // 2. High-Tech Camera Gimbal (Front)
+  // 2. Gimbal Sensor Eye (Front)
   const gimbalGroup = new THREE.Group();
-  gimbalGroup.position.set(0, -3, 14);
+  gimbalGroup.position.set(0, -2, 19);
   
-  const gimbalMount = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 4, 16), metalMat);
+  const gimbalMount = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 8, 16), silverMat);
   gimbalMount.rotation.z = Math.PI / 2;
   gimbalGroup.add(gimbalMount);
 
-  const gimbalArm = new THREE.Mesh(new THREE.BoxGeometry(4, 8, 1), carbonMat);
-  gimbalArm.position.set(-2.5, -3, 2);
-  gimbalGroup.add(gimbalArm);
-  const gimbalArm2 = new THREE.Mesh(new THREE.BoxGeometry(4, 8, 1), carbonMat);
-  gimbalArm2.position.set(2.5, -3, 2);
-  gimbalGroup.add(gimbalArm2);
+  const sensorHousing = new THREE.Mesh(new THREE.SphereGeometry(4.5, 32, 32), darkMetal);
+  sensorHousing.position.set(0, -4, 3);
+  sensorHousing.scale.set(1, 0.9, 1.2);
+  gimbalGroup.add(sensorHousing);
 
-  const gimbalSensorCore = new THREE.Group();
-  gimbalSensorCore.position.set(0, -5, 2);
-  
-  const sensorHousing = new THREE.Mesh(new THREE.SphereGeometry(3.5, 32, 32), paintMat);
-  sensorHousing.scale.set(1.2, 1, 1);
-  gimbalSensorCore.add(sensorHousing);
+  const sensorGlass = new THREE.Mesh(new THREE.CylinderGeometry(3, 3, 2, 32), glassMat);
+  sensorGlass.rotation.x = Math.PI / 2;
+  sensorGlass.position.set(0, -4, 7);
+  gimbalGroup.add(sensorGlass);
 
-  const sensorGlass = new THREE.Mesh(new THREE.SphereGeometry(2.4, 32, 32), canopyMat);
-  sensorGlass.position.set(0, 0, 2);
-  sensorGlass.scale.set(1, 1, 0.5);
-  gimbalSensorCore.add(sensorGlass);
+  const eyeLight1 = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.4, 16, 32), neonBlue);
+  eyeLight1.position.set(0, -4, 7.5);
+  gimbalGroup.add(eyeLight1);
+  const pLight = new THREE.PointLight(0x3b82f6, 3.0, 60);
+  pLight.position.set(0, -4, 10);
+  gimbalGroup.add(pLight);
 
-  const sensorEye = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 0.5, 16), neonCyan);
-  sensorEye.rotation.x = Math.PI / 2;
-  sensorEye.position.set(0, 0, 2.5);
-  gimbalSensorCore.add(sensorEye);
-
-  const eyeLight = new THREE.PointLight(0x00ffff, 1.5, 40);
-  eyeLight.position.set(0, 0, 3);
-  gimbalSensorCore.add(eyeLight);
-
-  gimbalGroup.add(gimbalSensorCore);
   droneGroup.add(gimbalGroup);
 
-  // 3. Exposed Mechanical Arms & Rotors
+  // 3. Exposed Mechanical Arms & Rotors (Classic X-Config)
   const dRotors = [];
   const armsData = [
-    { x: 20, z: 20, rot: -Math.PI / 4, color: neonCyan },   // Front Right (Cyan)
-    { x: -20, z: 20, rot: Math.PI / 4, color: neonCyan },  // Front Left (Cyan)
-    { x: 20, z: -20, rot: Math.PI / 4, color: neonRed },    // Back Right (Red)
-    { x: -20, z: -20, rot: -Math.PI / 4, color: neonRed }, // Back Left (Red)
+    { x: 1, z: 1, rot: Math.PI / 4, colorMat: neonGreen, lCol: 0x00ff88 },   // FR
+    { x:-1, z: 1, rot: -Math.PI / 4, colorMat: neonBlue, lCol: 0x3b82f6 },  // FL
+    { x: 1, z:-1, rot: Math.PI * 0.75, colorMat: neonBlue, lCol: 0x3b82f6 }, // BR
+    { x:-1, z:-1, rot: -Math.PI * 0.75, colorMat: neonGreen, lCol: 0x00ff88 } // BL
   ];
 
   armsData.forEach(armConf => {
     const armGroup = new THREE.Group();
-    armGroup.position.set(armConf.x * 0.4, 0, armConf.z * 0.4);
+    // Move base outwards from center
+    armGroup.position.set(armConf.x * 8, 0, armConf.z * 12);
     armGroup.rotation.y = armConf.rot;
 
-    // Heavy truss arm
-    const truss = new THREE.Mesh(new THREE.BoxGeometry(3, 2.5, 18), carbonMat);
-    truss.position.set(0, 0, 9);
+    // Heavy Truss main arm extending outward (along its local +Z)
+    const truss = new THREE.Mesh(new THREE.BoxGeometry(5, 4, 32), darkMetal);
+    truss.position.set(0, 0, 16);
     armGroup.add(truss);
 
-    // Inner mechanical details
-    const piston = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 16, 8), goldMat);
-    piston.rotation.x = Math.PI / 2;
-    piston.position.set(1.5, 1, 9);
-    armGroup.add(piston);
+    // Hydraulic side cylinders
+    const cyl1 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 30, 12), silverMat);
+    cyl1.rotation.x = Math.PI/2;
+    cyl1.position.set(3, 0.5, 16);
+    armGroup.add(cyl1);
+    const cyl2 = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 30, 12), silverMat);
+    cyl2.rotation.x = Math.PI/2;
+    cyl2.position.set(-3, 0.5, 16);
+    armGroup.add(cyl2);
 
     // Motor Hub
     const hub = new THREE.Group();
-    hub.position.set(0, 1.5, 18);
+    hub.position.set(0, 3, 32);
 
-    const baseMotor = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 4.5, 4, 32), metalMat);
+    const baseMotor = new THREE.Mesh(new THREE.CylinderGeometry(6, 6, 6, 32), midMetal);
     hub.add(baseMotor);
-    
-    // Motor cooling fins (black ridges)
-    const finGeom = new THREE.CylinderGeometry(4.8, 4.8, 0.2, 32);
-    for (let f = 0; f < 4; f++) {
-      const motorFin = new THREE.Mesh(finGeom, darkMetalMat);
-      motorFin.position.y = -1 + f * 0.6;
-      hub.add(motorFin);
-    }
 
-    // Underside thruster / glowing ring
-    const thruster = new THREE.Mesh(new THREE.TorusGeometry(3.5, 0.6, 16, 32), armConf.color);
+    // Underside glowing thruster ring
+    const thruster = new THREE.Mesh(new THREE.TorusGeometry(4.5, 1.0, 16, 32), armConf.colorMat);
     thruster.rotation.x = Math.PI / 2;
-    thruster.position.y = -2;
+    thruster.position.y = -3;
     hub.add(thruster);
-    
-    const thrustLight = new THREE.PointLight(armConf.color.color, 2.0, 40);
-    thrustLight.position.set(0, -3, 0);
+    const thrustLight = new THREE.PointLight(armConf.lCol, 2.5, 50);
+    thrustLight.position.set(0, -5, 0);
     hub.add(thrustLight);
 
-    // Propeller Assembly
+    // Rotor Assembly
     const rotorGroup = new THREE.Group();
-    rotorGroup.position.y = 2.5;
+    rotorGroup.position.y = 4;
 
-    // Center spinner cap
-    const spinner = new THREE.Mesh(new THREE.ConeGeometry(2, 2.5, 16), paintMat);
-    spinner.position.y = 1;
+    const spinner = new THREE.Mesh(new THREE.ConeGeometry(3, 4, 16), silverMat);
+    spinner.position.y = 2;
     rotorGroup.add(spinner);
 
-    // Sleek swept aerodynamic blades (3-blade config)
-    const bladeGeom = new THREE.BoxGeometry(1.2, 0.1, 16);
-    bladeGeom.translate(0, 0, 8); // Shift center of rotation
-    const bladeMat = new THREE.MeshPhysicalMaterial({ color: 0x1a2530, metalness: 0.5, roughness: 0.2, clearcoat: 0.5 });
-    
-    // Transparent blur disk
-    const blurMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.05, side: THREE.DoubleSide });
-    const blurDisk = new THREE.Mesh(new THREE.CylinderGeometry(16, 16, 0.05, 32), blurMat);
+    const bladeGeom = new THREE.BoxGeometry(2, 0.2, 22);
+    bladeGeom.translate(0, 0, 11); 
+    const bladeMat = new THREE.MeshPhysicalMaterial({ color: 0x080808, metalness: 0.5, roughness: 0.2 });
+
+    const blurMat = new THREE.MeshBasicMaterial({ color: armConf.lCol, transparent: true, opacity: 0.1, side: THREE.DoubleSide });
+    const blurDisk = new THREE.Mesh(new THREE.CylinderGeometry(22, 22, 0.05, 32), blurMat);
     rotorGroup.add(blurDisk);
 
-    for (let b = 0; b < 3; b++) {
+    for (let b = 0; b < 4; b++) {
       const blade = new THREE.Mesh(bladeGeom, bladeMat);
-      blade.rotation.y = (Math.PI * 2 / 3) * b;
-      blade.rotation.x = 0.15; // Blade pitch
+      blade.rotation.y = (Math.PI / 2) * b;
+      blade.rotation.x = 0.25; 
       
-      // Paint stripe on the tip
-      const tip = new THREE.Mesh(new THREE.BoxGeometry(1.25, 0.12, 2), armConf.color);
-      tip.position.set(0, 0, 14.5);
+      const tip = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.25, 4), armConf.colorMat);
+      tip.position.set(0, 0, 20);
       blade.add(tip);
-
       rotorGroup.add(blade);
     }
 
@@ -549,65 +551,63 @@ function initThreeHero() {
     dRotors.push({ group: rotorGroup, dir: armConf.x * armConf.z > 0 ? 1 : -1 });
   });
 
-  // 4. Heavy-duty Landing Skids
-  [-8, 8].forEach(x => {
+  // 4. Combat Skids (Landing Gear)
+  [-12, 12].forEach(x => {
     const skidGroup = new THREE.Group();
-    skidGroup.position.set(x, -6, 0);
+    skidGroup.position.set(x, -10, 0);
 
-    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 26, 16), carbonMat);
+    const pipe = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 36, 16), midMetal);
     pipe.rotation.x = Math.PI / 2;
     skidGroup.add(pipe);
 
-    // Skid glowing pads
-    const pad1 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 4), neonCyan);
-    pad1.position.set(0, -0.6, 10);
+    const pad1 = new THREE.Mesh(new THREE.BoxGeometry(2, 0.6, 6), x > 0 ? neonGreen : neonBlue);
+    pad1.position.set(0, -0.9, 14);
     skidGroup.add(pad1);
-    const pad2 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 4), neonCyan);
-    pad2.position.set(0, -0.6, -10);
+    const pad2 = new THREE.Mesh(new THREE.BoxGeometry(2, 0.6, 6), x > 0 ? neonGreen : neonBlue);
+    pad2.position.set(0, -0.9, -14);
     skidGroup.add(pad2);
 
-    // Struts connecting to main body
-    const strutGeom = new THREE.CylinderGeometry(0.6, 0.6, 7, 12);
-    const strutF = new THREE.Mesh(strutGeom, metalMat);
-    strutF.position.set(x > 0 ? -2 : 2, 3, 6);
-    strutF.rotation.z = x > 0 ? Math.PI / 6 : -Math.PI / 6;
+    const strutGeom = new THREE.CylinderGeometry(0.8, 0.8, 12, 12);
+    const strutF = new THREE.Mesh(strutGeom, silverMat);
+    strutF.position.set(x > 0 ? -3 : 3, 5, 8);
+    strutF.rotation.z = x > 0 ? Math.PI / 5 : -Math.PI / 5;
     skidGroup.add(strutF);
 
-    const strutB = new THREE.Mesh(strutGeom, metalMat);
-    strutB.position.set(x > 0 ? -2 : 2, 3, -6);
-    strutB.rotation.z = x > 0 ? Math.PI / 6 : -Math.PI / 6;
+    const strutB = new THREE.Mesh(strutGeom, silverMat);
+    strutB.position.set(x > 0 ? -3 : 3, 5, -8);
+    strutB.rotation.z = x > 0 ? Math.PI / 5 : -Math.PI / 5;
     skidGroup.add(strutB);
 
     droneGroup.add(skidGroup);
   });
 
-  droneGroup.scale.setScalar(W < 900 ? 0.75 : 0.95); // Adjusted scale for bigger model
+  droneGroup.scale.setScalar(W < 900 ? 0.6 : 0.85);
   scene.add(droneGroup);
 
   /* ── GRID/ORBIT EFFECT (Background Technological HUD) ── */
-  const gridHelper = new THREE.PolarGridHelper(180, 24, 8, 48, 0x00ff88, 0x0a1a3a);
-  gridHelper.position.set(baseX, -30, -50);
+  const gridHelper = new THREE.PolarGridHelper(240, 32, 8, 64, 0x00ff88, 0x0a1a3a);
+  gridHelper.position.set(baseX, -40, -80);
   gridHelper.material.transparent = true;
-  gridHelper.material.opacity = 0.15;
+  gridHelper.material.opacity = 0.2;
   scene.add(gridHelper);
 
-  const ringGeo = new THREE.TorusGeometry(120, 0.2, 16, 100);
-  const ringMat = new THREE.MeshBasicMaterial({ color: 0x0088ff, transparent: true, opacity: 0.3 });
+  const ringGeo = new THREE.TorusGeometry(160, 0.3, 16, 120);
+  const ringMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.3 });
   const hudRing = new THREE.Mesh(ringGeo, ringMat);
-  hudRing.position.set(baseX, 0, -80);
+  hudRing.position.set(baseX, 0, -120);
   scene.add(hudRing);
 
   /* ── AMBIENT PARTICLES (Spores/Dust) ── */
-  const DUST = getAdaptiveCount(900, 450, 200);
+  const DUST = getAdaptiveCount(1000, 500, 200);
   const dustPos = new Float32Array(DUST * 3);
   for (let i = 0; i < DUST; i++) {
-    dustPos[i * 3] = (Math.random() - 0.5) * 1400;
-    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 800;
-    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 900 - 100;
+    dustPos[i * 3] = (Math.random() - 0.5) * 1600;
+    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 1000;
+    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 1200 - 100;
   }
   const dustGeo = new THREE.BufferGeometry();
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-  const dustMat = new THREE.PointsMaterial({ color: 0xaaccff, size: 0.8, transparent: true, opacity: 0.15, sizeAttenuation: true });
+  const dustMat = new THREE.PointsMaterial({ color: 0xaaccff, size: 1.0, transparent: true, opacity: 0.2, sizeAttenuation: true });
   const dustSystem = new THREE.Points(dustGeo, dustMat);
   scene.add(dustSystem);
 
@@ -627,7 +627,6 @@ function initThreeHero() {
     obs.observe(heroEl);
   }
 
-  // Camera look target for Gimbal
   const gimbalTarget = new THREE.Vector3();
 
   /* ── MASTER ANIMATION LOOP ── */
@@ -638,41 +637,39 @@ function initThreeHero() {
       smxN += (mxN - smxN) * 0.05;
       smyN += (myN - smyN) * 0.05;
 
-      // Organic hover + high frequency micro-vibration
-      const sweepX = Math.sin(t * 0.4) * 20;
-      const sweepY = Math.sin(t * 0.6) * 12;
-      const sweepZ = Math.cos(t * 0.5) * 15;
-      const vibrate = Math.sin(t * 60) * 0.1;
+      const sweepX = Math.sin(t * 0.3) * 25;
+      const sweepY = Math.sin(t * 0.5) * 15;
+      const sweepZ = Math.cos(t * 0.4) * 20;
+      const vibrate = Math.sin(t * 80) * 0.15; // Engine idle shake
       
-      droneGroup.position.x = baseX + sweepX + smxN * 25;
-      droneGroup.position.y = -5 + sweepY - smyN * 18 + vibrate;
+      droneGroup.position.x = baseX + sweepX + smxN * 30;
+      droneGroup.position.y = -10 + sweepY - smyN * 20 + vibrate;
       droneGroup.position.z = sweepZ;
 
-      const velocityX = Math.cos(t * 0.4) * 20 * 0.4;
-      const targetRoll = -velocityX * 0.04;
+      const velocityX = Math.cos(t * 0.3) * 25 * 0.3;
+      const targetRoll = -velocityX * 0.03;
 
-      droneGroup.rotation.y = -0.4 + smxN * 0.4;
-      droneGroup.rotation.x = (smyN * -0.2);
-      droneGroup.rotation.z += (targetRoll + (smxN * -0.1) - droneGroup.rotation.z) * 0.1;
+      droneGroup.rotation.y = -0.3 + smxN * 0.5;
+      droneGroup.rotation.x = (smyN * -0.25);
+      droneGroup.rotation.z += (targetRoll + (smxN * -0.15) - droneGroup.rotation.z) * 0.1;
 
-      // Blur-inducing fast rotors
-      dRotors.forEach(r => r.group.rotation.y += 0.8 * r.dir);
+      // Blur rotors
+      dRotors.forEach(r => r.group.rotation.y += 0.9 * r.dir);
 
-      // Gimbal tracks mouse
-      gimbalTarget.set(smxN * 200, smyN * -200, 150);
+      // Gimbal tracks mouse aggressively
+      gimbalTarget.set(smxN * 300, smyN * -300, 200);
       gimbalGroup.lookAt(gimbalTarget);
 
-      // Environment effects
-      gridHelper.rotation.y = t * 0.03;
-      gridHelper.position.x = baseX + smxN * 15;
-      hudRing.rotation.x = t * 0.2;
+      // FX Animation
+      gridHelper.rotation.y = t * 0.02;
+      gridHelper.position.x = baseX + smxN * 20;
+      hudRing.rotation.x = t * 0.15;
       hudRing.rotation.y = t * 0.1;
-      
-      dustSystem.rotation.y = t * 0.02;
+      dustSystem.rotation.y = t * 0.015;
 
       // Parallax camera
-      camera.position.x = smxN * 15;
-      camera.position.y = 30 + smyN * -15;
+      camera.position.x = smxN * 20;
+      camera.position.y = 40 + smyN * -20;
       camera.lookAt(baseX * 0.4, 0, 0);
 
       renderer.render(scene, camera);
@@ -686,7 +683,7 @@ function initThreeHero() {
     camera.updateProjectionMatrix();
     renderer.setSize(W2, H2);
     baseX = calculateBaseX(camera);
-    droneGroup.scale.setScalar(W2 < 900 ? 0.75 : 0.95);
+    droneGroup.scale.setScalar(W2 < 900 ? 0.6 : 0.85);
   }), { passive: true });
 
   animate();
