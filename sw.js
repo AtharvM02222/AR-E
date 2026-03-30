@@ -2,7 +2,7 @@
    Caches core assets and serves an offline fallback for navigation requests.
 */
 
-const CACHE_NAME = 'are-static-v5';
+const CACHE_NAME = 'are-static-v6';
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ const PRECACHE_URLS = [
   './style.css?v=3.0',
   './main.js?v=3.0',
   './products.js?v=3.0',
-  './favicon.svg'
+  './logo.jpg'
 ];
 
 self.addEventListener('install', event => {
