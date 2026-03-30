@@ -386,60 +386,22 @@ function registerServiceWorker() {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then(reg => {
         console.log('Service worker registered:', reg);
-
-        const promptForUpdate = (registration) => {
-          const el = document.getElementById('sw-update');
-          if (!el) { showToast('Update available — refresh to apply'); return; }
-          el.hidden = false;
-          const refreshBtn = document.getElementById('sw-refresh');
-          const dismissBtn = document.getElementById('sw-dismiss');
-
-          const onRefresh = () => {
-            if (registration && registration.waiting) {
-              // Tell SW to activate immediately
-              registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-              showToast('Updating…');
-            } else if (registration) {
-              // Fallback: try to update registration and then reload
-              showToast('Checking for update…');
-              registration.update().then(() => {
-                setTimeout(() => window.location.reload(), 900);
-              }).catch(() => {
-                showToast('Could not update — reloading', true);
-                setTimeout(() => window.location.reload(), 900);
-              });
-            } else {
-              // As a last resort, reload the page
-              window.location.reload();
-            }
-          };
-
-          refreshBtn && refreshBtn.addEventListener('click', onRefresh, { once: true });
-          dismissBtn && dismissBtn.addEventListener('click', () => { el.hidden = true; });
-
-          // When the new SW takes control, reload to apply update
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            window.location.reload();
-          }, { once: true });
-        };
-
-        if (reg.waiting) {
-          promptForUpdate(reg);
-        }
-
+        // Show a simple toast when an update is waiting; no banner UI
+        if (reg.waiting) showToast('Update available — refresh to apply');
         reg.addEventListener('updatefound', () => {
           const inst = reg.installing;
           inst.addEventListener('statechange', () => {
             if (inst.state === 'installed' && navigator.serviceWorker.controller) {
-              promptForUpdate(reg);
+              showToast('New version available — refresh to update');
             }
           });
         });
-
       }).catch(err => console.warn('SW registration failed:', err));
     });
   }
 }
+
+/* ─── 8. UTILS ──────────────────────────────────────────────────── */
 
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
 function showToast(msg, isError) {
