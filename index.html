@@ -90,7 +90,7 @@
           <button type="button" class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
             Explore Arsenal →
           </button>
-          <button type="button" class="btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+          <button type="button" class="btn-ghost" id="watch-action">
             Watch in Action ▶
           </button>
         </div>
@@ -375,6 +375,16 @@
 
   <!-- Toast -->
   <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Video Modal -->
+  <div id="video-modal" class="modal" aria-hidden="true" aria-label="Watch video">
+    <div class="modal-backdrop" id="video-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="video-title">
+      <button type="button" class="modal-close" id="video-close" aria-label="Close video">✕</button>
+      <h2 id="video-title" class="visually-hidden">AR ENTERPRISE — Watch in Action</h2>
+      <video id="hero-video" src="title.mp4" controls playsinline preload="metadata" style="max-width:100%;border-radius:10px;"></video>
+    </div>
+  </div>
 
   <!-- Scripts — order matters -->
   <script src="products.js" defer></script>

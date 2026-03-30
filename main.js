@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initNavigation();
   initHero();
   initHeroUI();
+  initVideoModal();
   renderProducts();
   initStats();
   initScrollReveals();
@@ -457,6 +458,35 @@ function registerServiceWorker() {
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
 
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
+function initVideoModal() {
+  const btn = document.getElementById('watch-action');
+  const modal = document.getElementById('video-modal');
+  const backdrop = document.getElementById('video-backdrop');
+  const close = document.getElementById('video-close');
+  const video = document.getElementById('hero-video');
+  if (!btn || !modal) return;
+
+  const open = () => {
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    try { if (video) { video.currentTime = 0; video.muted = false; video.play().catch(()=>{}); } } catch(e){}
+    if (close) close.focus();
+  };
+
+  const closeModal = () => {
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    try { if (video) { video.pause(); video.currentTime = 0; } } catch(e){}
+    btn.focus();
+  };
+
+  btn.addEventListener('click', open);
+  if (close) close.addEventListener('click', closeModal);
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal(); });
+  if (video) video.addEventListener('ended', closeModal);
+}
+
 function showToast(msg, isError) {
   const t = document.getElementById('toast');
   if (!t) return;
