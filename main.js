@@ -373,7 +373,10 @@ function renderProducts() {
         <p class="p-desc">${p.desc}</p>
         <div class="p-footer">
           <span class="price">${priceFormatted}</span>
-          <button type="button" class="btn-card" data-product="${p.name}">ORDER →</button>
+          <div class="p-actions">
+            <button type="button" class="btn-card" data-product="${p.name}">ORDER →</button>
+            <button type="button" class="btn-ghost btn-3d" data-model="${p.model || ''}" aria-label="3D Preview">3D Preview</button>
+          </div>
         </div>
       </div>
     `;
@@ -606,6 +609,112 @@ function initVideoModal() {
     closeModal();
     document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
   });
+}
+
+// 3D Preview: open a modal and render a glTF or fallback mesh
+function open3DPreview(product) {
+  const modal = document.getElementById('model-modal');
+  const viewer = document.getElementById('model-viewer');
+  const backdrop = document.getElementById('model-backdrop');
+  const close = document.getElementById('model-close');
+  if (!modal || !viewer) return;
+  modal.setAttribute('aria-hidden','false');
+  document.body.style.overflow = 'hidden';
+
+  // cleanup previous
+  if (window._previewCleanup) { try { window._previewCleanup(); } catch(e){} window._previewCleanup = null; }
+
+  if (typeof THREE === 'undefined') {
+    viewer.innerHTML = '<div style="color:#fff;padding:1rem">3D not available</div>';
+    return;
+  }
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  viewer.innerHTML = '';
+  viewer.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
+  camera.position.set(0, 0, 120);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(5, 10, 7.5);
+  scene.add(ambient, dir);
+
+  let activeObject = null;
+  const loadFallback = () => {
+    const geo = new THREE.BoxGeometry(48, 36, 24);
+    const mat = new THREE.MeshStandardMaterial({ color: 0x00ff88, metalness: 0.2, roughness: 0.4 });
+    activeObject = new THREE.Mesh(geo, mat);
+    scene.add(activeObject);
+  };
+
+  const tryLoadGLTF = (url) => {
+    if (!url || typeof THREE.GLTFLoader === 'undefined') { loadFallback(); return; }
+    try {
+      const loader = new THREE.GLTFLoader();
+      loader.load(url, gltf => {
+        activeObject = gltf.scene;
+        scene.add(activeObject);
+        const box = new THREE.Box3().setFromObject(activeObject);
+        const size = box.getSize(new THREE.Vector3()).length();
+        const center = box.getCenter(new THREE.Vector3());
+        activeObject.position.sub(center);
+        const scale = 90 / Math.max(size, 1);
+        activeObject.scale.setScalar(scale);
+      }, undefined, err => { console.warn('gltf load err', err); loadFallback(); });
+    } catch (e) { console.warn('gltf loader err', e); loadFallback(); }
+  };
+
+  tryLoadGLTF(product && product.model);
+
+  let px = 0, py = 0;
+  viewer.addEventListener('pointermove', e => {
+    const r = viewer.getBoundingClientRect();
+    px = (e.clientX - r.left) / r.width - 0.5;
+    py = (e.clientY - r.top) / r.height - 0.5;
+  }, { passive: true });
+  viewer.addEventListener('pointerleave', () => { px = 0; py = 0; });
+
+  let visible = !document.hidden;
+  document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+  const animate = () => {
+    if (visible) {
+      if (activeObject) {
+        activeObject.rotation.y += 0.01 + px * 0.02;
+        activeObject.rotation.x += 0.005 + py * 0.01;
+      }
+      renderer.render(scene, camera);
+    }
+    window._previewRAF = requestAnimationFrame(animate);
+  };
+  animate();
+
+  const cleanup = () => {
+    cancelAnimationFrame(window._previewRAF);
+    try { renderer.dispose(); } catch (e) {}
+    if (activeObject) try { scene.remove(activeObject); } catch (e) {}
+    viewer.innerHTML = '';
+  };
+  window._previewCleanup = cleanup;
+
+  const closeModal = () => {
+    modal.setAttribute('aria-hidden','true');
+    document.body.style.overflow = '';
+    cleanup();
+  };
+
+  if (close) close.addEventListener('click', closeModal);
+  if (backdrop) backdrop.addEventListener('click', closeModal);
+  const escHandler = (e) => { if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') { closeModal(); document.removeEventListener('keydown', escHandler); } };
+  document.addEventListener('keydown', escHandler);
+
+  window.addEventListener('resize', () => { if (renderer && viewer) { renderer.setSize(viewer.clientWidth, viewer.clientHeight); camera.aspect = viewer.clientWidth / viewer.clientHeight; camera.updateProjectionMatrix(); } }, { passive: true });
 }
 
 function showToast(msg, isError) {

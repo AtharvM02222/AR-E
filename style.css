@@ -337,6 +337,8 @@ section { padding: 9rem 0; }
 .p-desc { font-size: .84rem; color: var(--text-2); line-height: 1.65; margin-bottom: 1.6rem; }
 
 .p-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.p-actions { display:flex; gap:.6rem; align-items:center; }
+.btn-3d { padding:.6rem .9rem; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--text-2); }
 
 /* FIX: price uses JS-rendered ₹ text, no ::before, gradient works cleanly */
 .price {

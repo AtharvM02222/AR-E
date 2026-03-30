@@ -466,8 +466,19 @@
     </div>
   </div>
 
+  <!-- Model Modal (3D preview) -->
+  <div id="model-modal" class="modal" aria-hidden="true" aria-label="3D preview">
+    <div class="modal-backdrop" id="model-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="model-title">
+      <button type="button" class="modal-close" id="model-close" aria-label="Close 3D viewer">✕</button>
+      <h2 id="model-title" class="visually-hidden">3D Preview</h2>
+      <div id="model-viewer" style="width:100%;height:520px;"></div>
+    </div>
+  </div>
+
   <!-- Scripts — order matters -->
   <script src="https://unpkg.com/three@0.158.0/build/three.min.js" defer></script>
+  <script src="https://unpkg.com/three@0.158.0/examples/js/loaders/GLTFLoader.js" defer></script>
   <script src="products.js" defer></script>
   <script src="main.js" defer></script>
 
