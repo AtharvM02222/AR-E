@@ -15,7 +15,7 @@
    Change the number below to your WhatsApp number (with country
    code, no spaces, no + sign). Example: 919876543210
    ──────────────────────────────────────────────────────────────── */
-var OWNER_WA_NUMBER = '918595237299'; // ← CHANGE THIS
+const OWNER_WA_NUMBER = '918595237299'; // ← CHANGE THIS
 
 document.addEventListener('DOMContentLoaded', () => {
   initCursor();
@@ -50,13 +50,13 @@ function initCursor() {
   };
   loop();
 
-  document.body.addEventListener('mouseenter', e => {
+  document.body.addEventListener('pointerover', e => {
     if (e.target.closest('a, button, .product-card, input, select, textarea')) {
       cursor.classList.add('hover');
     }
   }, true);
 
-  document.body.addEventListener('mouseleave', e => {
+  document.body.addEventListener('pointerout', e => {
     if (e.target.closest('a, button, .product-card, input, select, textarea')) {
       cursor.classList.remove('hover');
     }
@@ -208,7 +208,7 @@ function renderProducts() {
         <p class="p-desc">${p.desc}</p>
         <div class="p-footer">
           <span class="price">${priceFormatted}</span>
-          <button class="btn-card" data-product="${p.name}">ORDER →</button>
+          <button type="button" class="btn-card" data-product="${p.name}">ORDER →</button>
         </div>
       </div>
     `;
@@ -336,7 +336,8 @@ function initForm() {
     ].filter(Boolean).join('\n');
 
     const url = `https://wa.me/${OWNER_WA_NUMBER}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank', 'noopener');
+    const win = window.open(url, '_blank', 'noopener,noreferrer');
+    if (win) win.opener = null;
 
     showToast('Opening WhatsApp... 💬');
     form.reset();
