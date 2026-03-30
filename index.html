@@ -264,93 +264,229 @@
                 <div class="feature-media" aria-hidden="true">
                   <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="feature-svg">
                     <defs>
-                      <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#00ff88" stop-opacity="1"/>
-                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="1"/>
+                      <!-- Primary gradients -->
+                      <linearGradient id="frameGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#00ff88"/>
+                        <stop offset="100%" stop-color="#3b82f6"/>
                       </linearGradient>
-                      <radialGradient id="metallic" cx="40%" cy="40%">
-                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
-                        <stop offset="70%" stop-color="#ffffff" stop-opacity="0.05"/>
-                        <stop offset="100%" stop-color="#000000" stop-opacity="0.2"/>
+                      
+                      <!-- Body metallic gradients -->
+                      <radialGradient id="bodyMetallic" cx="35%" cy="35%">
+                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25"/>
+                        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.08"/>
+                        <stop offset="100%" stop-color="#000000" stop-opacity="0.3"/>
                       </radialGradient>
-                      <filter id="glow">
-                        <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                      
+                      <linearGradient id="bodyShade" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#2a3a4e" stop-opacity="1"/>
+                        <stop offset="100%" stop-color="#0f1419" stop-opacity="1"/>
+                      </linearGradient>
+                      
+                      <!-- Motor gradients -->
+                      <radialGradient id="motorMetal" cx="35%" cy="35%">
+                        <stop offset="0%" stop-color="#d4d4d8"/>
+                        <stop offset="60%" stop-color="#71717a"/>
+                        <stop offset="100%" stop-color="#27272a"/>
+                      </radialGradient>
+                      
+                      <!-- Propeller gradients -->
+                      <linearGradient id="propGreen" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#00ff88" stop-opacity="0.7"/>
+                        <stop offset="50%" stop-color="#00dd77" stop-opacity="0.5"/>
+                        <stop offset="100%" stop-color="#00ff88" stop-opacity="0.2"/>
+                      </linearGradient>
+                      
+                      <linearGradient id="propBlue" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.7"/>
+                        <stop offset="50%" stop-color="#2563eb" stop-opacity="0.5"/>
+                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.2"/>
+                      </linearGradient>
+                      
+                      <!-- Advanced glow filter -->
+                      <filter id="propGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="1.8" result="coloredBlur"/>
                         <feMerge>
                           <feMergeNode in="coloredBlur"/>
                           <feMergeNode in="SourceGraphic"/>
                         </feMerge>
                       </filter>
+                      
+                      <filter id="motorGlow" x="-40%" y="-40%" width="180%" height="180%">
+                        <feGaussianBlur stdDeviation="0.8" result="blur"/>
+                        <feMerge>
+                          <feMergeNode in="blur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
+                      
+                      <!-- Shadow filter -->
+                      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+                        <feOffset dx="0" dy="1" result="offsetblur"/>
+                        <feComponentTransfer>
+                          <feFuncA type="linear" slope="0.3"/>
+                        </feComponentTransfer>
+                        <feMerge>
+                          <feMergeNode in="offsetblur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                      </filter>
+                      
+                      <style>
+                        @keyframes propSpin { 
+                          0% { transform: rotate(0deg); } 
+                          100% { transform: rotate(360deg); } 
+                        }
+                        .prop-spinner { animation: propSpin 2s linear infinite; }
+                      </style>
                     </defs>
                     
-                    <!-- Outer frame -->
-                    <rect x="2" y="2" width="216" height="216" rx="18" stroke="url(#g1)" stroke-width="3" fill="rgba(255,255,255,0.02)"/>
+                    <!-- Outer premium frame -->
+                    <rect x="1" y="1" width="218" height="218" rx="20" stroke="url(#frameGrad)" stroke-width="2.5" fill="rgba(255,255,255,0.015)"/>
+                    <rect x="3" y="3" width="214" height="214" rx="18" stroke="rgba(0,255,136,0.15)" stroke-width="1" fill="none"/>
                     
-                    <!-- Main drone body -->
-                    <g transform="translate(60, 50)">
-                      <!-- Center body with metallic effect -->
-                      <ellipse cx="50" cy="50" rx="28" ry="32" fill="#1a1a2e" stroke="url(#g1)" stroke-width="2"/>
-                      <ellipse cx="50" cy="50" rx="28" ry="32" fill="url(#metallic)" opacity="0.6"/>
+                    <!-- Main drone assembly -->
+                    <g transform="translate(110, 110)" filter="url(#shadow)">
                       
-                      <!-- Camera gimbal -->
-                      <circle cx="50" cy="68" r="8" fill="rgba(0,0,0,0.4)" stroke="#00ff88" stroke-width="1.5"/>
-                      <circle cx="50" cy="68" r="5" fill="rgba(0, 255, 136, 0.3)"/>
+                      <!-- BODY SECTION -->
+                      <!-- Main fuselage -->
+                      <ellipse cx="0" cy="0" rx="18" ry="22" fill="url(#bodyShade)" stroke="url(#frameGrad)" stroke-width="1.5"/>
+                      <ellipse cx="0" cy="0" rx="18" ry="22" fill="url(#bodyMetallic)" opacity="0.7"/>
                       
-                      <!-- Top antenna/sensor -->
-                      <rect x="47" y="12" width="6" height="12" rx="3" fill="#3b82f6" opacity="0.7"/>
+                      <!-- Body panel lines (carbon fiber effect) -->
+                      <line x1="-10" y1="-8" x2="10" y2="-8" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+                      <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
+                      <line x1="-10" y1="8" x2="10" y2="8" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
                       
-                      <!-- Motor arms - Left & Right -->
-                      <g id="motor-group">
-                        <!-- Left arm -->
-                        <line x1="15" y1="50" x2="2" y2="50" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
-                        <!-- Left motor housing -->
-                        <circle cx="2" cy="50" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
-                        <circle cx="2" cy="50" r="7" fill="url(#metallic)" opacity="0.5"/>
-                        <!-- Left propeller -->
-                        <g transform="translate(2, 50)" filter="url(#glow)">
-                          <ellipse cx="0" cy="-12" rx="3" ry="14" fill="#00ff88" opacity="0.4" transform="rotate(-25)"/>
-                          <ellipse cx="0" cy="12" rx="3" ry="14" fill="#3b82f6" opacity="0.4" transform="rotate(-25)"/>
-                        </g>
-                        
-                        <!-- Right arm -->
-                        <line x1="85" y1="50" x2="98" y2="50" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
-                        <!-- Right motor housing -->
-                        <circle cx="98" cy="50" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
-                        <circle cx="98" cy="50" r="7" fill="url(#metallic)" opacity="0.5"/>
-                        <!-- Right propeller -->
-                        <g transform="translate(98, 50)" filter="url(#glow)">
-                          <ellipse cx="0" cy="-12" rx="3" ry="14" fill="#3b82f6" opacity="0.4" transform="rotate(25)"/>
-                          <ellipse cx="0" cy="12" rx="3" ry="14" fill="#00ff88" opacity="0.4" transform="rotate(25)"/>
-                        </g>
+                      <!-- Battery housing indicator -->
+                      <rect x="-8" y="2" width="16" height="6" rx="2" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.8"/>
+                      <text x="0" y="6.5" font-size="2.5" font-weight="bold" text-anchor="middle" fill="#00ff88" opacity="0.6">⚡</text>
+                      
+                      <!-- CENTER CAMERA GIMBAL -->
+                      <!-- Gimbal ring 1 -->
+                      <circle cx="0" cy="18" r="9" fill="none" stroke="rgba(0,255,136,0.4)" stroke-width="1" opacity="0.7"/>
+                      <!-- Gimbal ring 2 -->
+                      <circle cx="0" cy="18" r="7" fill="none" stroke="rgba(0,255,136,0.3)" stroke-width="0.8" opacity="0.6"/>
+                      <!-- Camera lens housing -->
+                      <circle cx="0" cy="18" r="5" fill="rgba(0,0,0,0.5)" stroke="#3b82f6" stroke-width="1.2"/>
+                      <!-- Lens element -->
+                      <circle cx="0" cy="18" r="3.5" fill="radial-gradient(circle at 35% 35%, rgba(100,150,255,0.6), rgba(20,40,100,0.4))"/>
+                      <!-- Lens reflection -->
+                      <circle cx="-1" cy="17" r="1" fill="#ffffff" opacity="0.4"/>
+                      
+                      <!-- ANTENNA/RECEIVER -->
+                      <g transform="translate(0, -24)">
+                        <rect x="-2" y="0" width="4" height="8" rx="2" fill="#3b82f6" opacity="0.8"/>
+                        <circle cx="0" cy="-1" r="2.5" fill="#00ff88" opacity="0.6" filter="url(#motorGlow)"/>
                       </g>
                       
-                      <!-- Top & Bottom arms (front & back) -->
+                      <!-- ARM ASSEMBLY (Left-Right) -->
                       <g>
-                        <!-- Front arm -->
-                        <line x1="50" y1="20" x2="50" y2="4" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
-                        <!-- Front motor -->
-                        <circle cx="50" cy="4" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
-                        <circle cx="50" cy="4" r="7" fill="url(#metallic)" opacity="0.5"/>
-                        <!-- Front propeller -->
-                        <g transform="translate(50, 4)" filter="url(#glow)">
-                          <ellipse cx="-12" cy="0" rx="14" ry="3" fill="#00ff88" opacity="0.4" transform="rotate(-35)"/>
-                          <ellipse cx="12" cy="0" rx="14" ry="3" fill="#3b82f6" opacity="0.4" transform="rotate(-35)"/>
+                        <!-- LEFT ARM -->
+                        <line x1="-2" y1="0" x2="-32" y2="0" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Left arm connector ring -->
+                        <circle cx="-3" cy="0" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
+                        <!-- Left motor bracket -->
+                        <rect x="-37" y="-4.5" width="6" height="9" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
+                        <!-- Left motor housing -->
+                        <circle cx="-34" cy="0" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
+                        <!-- Motor cooling fins -->
+                        <g opacity="0.5">
+                          <line x1="-34" y1="-5.5" x2="-34" y2="-8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="-34" y1="5.5" x2="-34" y2="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="-31" y1="-4" x2="-28" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                          <line x1="-37" y1="-4" x2="-40" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
                         </g>
                         
-                        <!-- Rear arm -->
-                        <line x1="50" y1="80" x2="50" y2="96" stroke="#4a5568" stroke-width="4" stroke-linecap="round"/>
-                        <!-- Rear motor -->
-                        <circle cx="50" cy="96" r="7" fill="#2a2a3e" stroke="url(#g1)" stroke-width="1.5"/>
-                        <circle cx="50" cy="96" r="7" fill="url(#metallic)" opacity="0.5"/>
-                        <!-- Rear propeller -->
-                        <g transform="translate(50, 96)" filter="url(#glow)">
-                          <ellipse cx="-12" cy="0" rx="14" ry="3" fill="#3b82f6" opacity="0.4" transform="rotate(35)"/>
-                          <ellipse cx="12" cy="0" rx="14" ry="3" fill="#00ff88" opacity="0.4" transform="rotate(35)"/>
+                        <!-- RIGHT ARM -->
+                        <line x1="2" y1="0" x2="32" y2="0" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Right arm connector ring -->
+                        <circle cx="3" cy="0" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
+                        <!-- Right motor bracket -->
+                        <rect x="31" y="-4.5" width="6" height="9" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
+                        <!-- Right motor housing -->
+                        <circle cx="34" cy="0" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
+                        <!-- Motor cooling fins -->
+                        <g opacity="0.5">
+                          <line x1="34" y1="-5.5" x2="34" y2="-8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="34" y1="5.5" x2="34" y2="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="31" y1="-4" x2="28" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                          <line x1="37" y1="-4" x2="40" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
                         </g>
                       </g>
                       
-                      <!-- Status indicator lights -->
-                      <circle cx="40" cy="42" r="2.5" fill="#00ff88" opacity="0.8" filter="url(#glow)"/>
-                      <circle cx="60" cy="42" r="2.5" fill="#3b82f6" opacity="0.8" filter="url(#glow)"/>
+                      <!-- ARM ASSEMBLY (Front-Back) -->
+                      <g>
+                        <!-- FRONT ARM -->
+                        <line x1="0" y1="-2" x2="0" y2="-32" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Front arm connector -->
+                        <circle cx="0" cy="-3" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
+                        <!-- Front motor bracket -->
+                        <rect x="-4.5" y="-37" width="9" height="6" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
+                        <!-- Front motor -->
+                        <circle cx="0" cy="-34" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
+                        <!-- Front motor fins -->
+                        <g opacity="0.5">
+                          <line x1="-5.5" y1="-34" x2="-8" y2="-34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="5.5" y1="-34" x2="8" y2="-34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="-4" y1="-31" x2="-5.5" y2="-28" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                          <line x1="-4" y1="-37" x2="-5.5" y2="-40" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                        </g>
+                        
+                        <!-- REAR ARM -->
+                        <line x1="0" y1="2" x2="0" y2="32" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Rear arm connector -->
+                        <circle cx="0" cy="3" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
+                        <!-- Rear motor bracket -->
+                        <rect x="-4.5" y="31" width="9" height="6" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
+                        <!-- Rear motor -->
+                        <circle cx="0" cy="34" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
+                        <!-- Rear motor fins -->
+                        <g opacity="0.5">
+                          <line x1="-5.5" y1="34" x2="-8" y2="34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="5.5" y1="34" x2="8" y2="34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
+                          <line x1="-4" y1="31" x2="-5.5" y2="28" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                          <line x1="-4" y1="37" x2="-5.5" y2="40" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+                        </g>
+                      </g>
+                      
+                      <!-- PROPELLERS -->
+                      <!-- Left propeller (green/blue) -->
+                      <g transform="translate(-34, 0)" class="prop-spinner" filter="url(#propGlow)">
+                        <ellipse cx="0" cy="-16" rx="4.5" ry="16" fill="url(#propGreen)" opacity="0.75"/>
+                        <ellipse cx="0" cy="16" rx="4.5" ry="16" fill="url(#propBlue)" opacity="0.75"/>
+                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
+                      </g>
+                      
+                      <!-- Right propeller (blue/green) -->
+                      <g transform="translate(34, 0)" class="prop-spinner" filter="url(#propGlow)" style="animation-direction: reverse;">
+                        <ellipse cx="0" cy="-16" rx="4.5" ry="16" fill="url(#propBlue)" opacity="0.75"/>
+                        <ellipse cx="0" cy="16" rx="4.5" ry="16" fill="url(#propGreen)" opacity="0.75"/>
+                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
+                      </g>
+                      
+                      <!-- Front propeller (green/blue) -->
+                      <g transform="translate(0, -34)" class="prop-spinner" filter="url(#propGlow)">
+                        <ellipse cx="-16" cy="0" rx="16" ry="4.5" fill="url(#propGreen)" opacity="0.75"/>
+                        <ellipse cx="16" cy="0" rx="16" ry="4.5" fill="url(#propBlue)" opacity="0.75"/>
+                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
+                      </g>
+                      
+                      <!-- Rear propeller (blue/green) -->
+                      <g transform="translate(0, 34)" class="prop-spinner" filter="url(#propGlow)" style="animation-direction: reverse;">
+                        <ellipse cx="-16" cy="0" rx="16" ry="4.5" fill="url(#propBlue)" opacity="0.75"/>
+                        <ellipse cx="16" cy="0" rx="16" ry="4.5" fill="url(#propGreen)" opacity="0.75"/>
+                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
+                      </g>
+                      
+                      <!-- STATUS LED INDICATORS -->
+                      <!-- Front-left status -->
+                      <circle cx="-8" cy="-6" r="2" fill="#00ff88" opacity="0.7" filter="url(#motorGlow)"/>
+                      <circle cx="-8" cy="-6" r="1.2" fill="#ffffff" opacity="0.4"/>
+                      
+                      <!-- Front-right status -->
+                      <circle cx="8" cy="-6" r="2" fill="#3b82f6" opacity="0.7" filter="url(#motorGlow)"/>
+                      <circle cx="8" cy="-6" r="1.2" fill="#ffffff" opacity="0.4"/>
                     </g>
                   </svg>
                 </div>
