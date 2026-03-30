@@ -50,12 +50,19 @@ function initCursor() {
   if (!cursor || !cursorDot) return;
 
   let mx = 0, my = 0, cx = 0, cy = 0;
+  let targetX = 0, targetY = 0;
+  let isMagnetic = false;
 
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 
   const loop = () => {
-    cx += (mx - cx) * 0.12;
-    cy += (my - cy) * 0.12;
+    if (isMagnetic) {
+      cx += (targetX - cx) * 0.15;
+      cy += (targetY - cy) * 0.15;
+    } else {
+      cx += (mx - cx) * 0.12;
+      cy += (my - cy) * 0.12;
+    }
     cursor.style.transform    = `translate(${cx - 20}px, ${cy - 20}px)`;
     cursorDot.style.transform = `translate(${mx - 3}px,  ${my - 3}px)`;
     requestAnimationFrame(loop);
@@ -63,14 +70,22 @@ function initCursor() {
   loop();
 
   document.body.addEventListener('pointerover', e => {
-    if (e.target.closest('a, button, .product-card, input, select, textarea')) {
+    const el = e.target.closest('a, button, .product-card, input, select, textarea');
+    if (el) {
       cursor.classList.add('hover');
+      if (el.classList.contains('btn-primary') || el.classList.contains('btn-ghost') || el.tagName === 'A') {
+        const rect = el.getBoundingClientRect();
+        targetX = rect.left + rect.width / 2;
+        targetY = rect.top + rect.height / 2;
+        isMagnetic = true;
+      }
     }
   }, true);
 
   document.body.addEventListener('pointerout', e => {
     if (e.target.closest('a, button, .product-card, input, select, textarea')) {
       cursor.classList.remove('hover');
+      isMagnetic = false;
     }
   }, true);
 }
@@ -132,8 +147,23 @@ function initHero() {
   setTimeout(() => {
     if (title)    title.classList.add('revealed');
     if (eyebrow)  eyebrow.classList.add('revealed');
-    if (subtitle) subtitle.classList.add('revealed');
     if (actions)  actions.classList.add('revealed');
+    
+    // Typewriter for subtitle
+    if (subtitle) {
+      const text = subtitle.textContent.trim();
+      subtitle.textContent = '';
+      subtitle.classList.add('revealed');
+      let i = 0;
+      const type = () => {
+        if (i < text.length) {
+          subtitle.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, 15);
+        }
+      };
+      setTimeout(type, 800);
+    }
   }, 80);
 
   // Particle canvas (desktop only)
@@ -261,7 +291,6 @@ function initHeroUI() {
 }
 
 function initThreeHero() {
-  // Require THREE from CDN; fail gracefully if not available
   if (typeof THREE === 'undefined') return;
   const container = document.getElementById('hero-3d');
   if (!container) return;
@@ -277,33 +306,95 @@ function initThreeHero() {
   container.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(48, w / h, 0.1, 1000);
-  camera.position.set(0, 0, 120);
+  const camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 2000);
+  camera.position.set(0, 0, 300);
 
-  const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-  const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+  const dir = new THREE.DirectionalLight(0x00ff88, 1.5);
   dir.position.set(5, 10, 7.5);
-  scene.add(ambient, dir);
+  scene.add(dir);
+  const dir2 = new THREE.DirectionalLight(0x3b82f6, 1.0);
+  dir2.position.set(-8, -4, 3);
+  scene.add(dir2);
+  const pLight = new THREE.PointLight(0xa855f7, 2, 500);
+  pLight.position.set(0, 50, 50);
+  scene.add(pLight);
 
-  const geo = new THREE.IcosahedronGeometry(32, 2);
-  const mat = new THREE.MeshStandardMaterial({ color: 0x00ff88, metalness: 0.25, roughness: 0.35, emissive: 0x002211 });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.scale.set(0.8,0.8,0.8);
-  scene.add(mesh);
+  // Main Assembly: Core + Rings + Outer Fragments
+  const group = new THREE.Group();
+  group.position.set(180, 0, -50);
+  scene.add(group);
 
-  // subtle particle field
-  const ptsGeo = new THREE.BufferGeometry();
-  const count = 220;
-  const positions = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    positions[i*3] = (Math.random() - 0.5) * 800;
-    positions[i*3+1] = (Math.random() - 0.5) * 400;
-    positions[i*3+2] = (Math.random() - 0.5) * 400;
+  // Core Octahedron
+  const coreGeo = new THREE.OctahedronGeometry(60, 0);
+  const coreMat = new THREE.MeshStandardMaterial({
+    color: 0x00ff88, metalness: 0.8, roughness: 0.1,
+    emissive: 0x00ff88, emissiveIntensity: 0.2
+  });
+  const core = new THREE.Mesh(coreGeo, coreMat);
+  group.add(core);
+
+  // Wireframe Core
+  const coreWire = new THREE.Mesh(coreGeo, new THREE.MeshBasicMaterial({ color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.15 }));
+  group.add(coreWire);
+
+  // Outer Rings
+  const rings = [];
+  for (let i = 0; i < 3; i++) {
+    const rGeo = new THREE.TorusGeometry(85 + i * 15, 0.8, 16, 100);
+    const rMat = new THREE.MeshStandardMaterial({ color: i === 1 ? 0x3b82f6 : 0x00ff88, transparent: true, opacity: 0.4 });
+    const ring = new THREE.Mesh(rGeo, rMat);
+    ring.rotation.x = Math.random() * Math.PI;
+    ring.rotation.y = Math.random() * Math.PI;
+    group.add(ring);
+    rings.push(ring);
   }
-  ptsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  const ptsMat = new THREE.PointsMaterial({ color: 0x00ff88, size: 2, transparent: true, opacity: 0.08 });
-  const points = new THREE.Points(ptsGeo, ptsMat);
-  scene.add(points);
+
+  // Floating Fragments
+  const fragGeo = new THREE.IcosahedronGeometry(12, 0);
+  const fragMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, metalness: 0.7, roughness: 0.2 });
+  const fragments = [];
+  for (let i = 0; i < 12; i++) {
+    const frag = new THREE.Mesh(fragGeo, fragMat);
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = 140;
+    frag.position.set(Math.cos(angle) * dist, Math.sin(angle) * dist, (Math.random() - 0.5) * 50);
+    frag.rotation.set(Math.random(), Math.random(), Math.random());
+    group.add(frag);
+    fragments.push(frag);
+  }
+
+  // Sparkles (Starfield)
+  const sparkGeo = new THREE.BufferGeometry();
+  const sparkCount = 400;
+  const sparkPos = new Float32Array(sparkCount * 3);
+  const sparkVels = new Float32Array(sparkCount * 3);
+  for (let i = 0; i < sparkCount; i++) {
+    sparkPos[i*3] = (Math.random() - 0.5) * 1500;
+    sparkPos[i*3+1] = (Math.random() - 0.5) * 1000;
+    sparkPos[i*3+2] = (Math.random() - 0.5) * 800;
+    sparkVels[i*3] = (Math.random() - 0.5) * 0.2;
+    sparkVels[i*3+1] = (Math.random() - 0.5) * 0.2;
+    sparkVels[i*3+2] = (Math.random() - 0.5) * 0.2;
+  }
+  sparkGeo.setAttribute('position', new THREE.BufferAttribute(sparkPos, 3));
+  const sparkMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.2, transparent: true, opacity: 0.4, blending: THREE.AdditiveBlending });
+  const sparkles = new THREE.Points(sparkGeo, sparkMat);
+  scene.add(sparkles);
+
+  // Background Beams
+  const beamCount = 6;
+  const beams = [];
+  for (let i = 0; i < beamCount; i++) {
+    const bGeo = new THREE.BoxGeometry(2, 600, 2);
+    const bMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.05 });
+    const beam = new THREE.Mesh(bGeo, bMat);
+    beam.position.set((Math.random() - 0.5) * 1200, (Math.random() - 0.5) * 800, -300);
+    beam.rotation.z = (Math.random() - 0.5) * 0.5;
+    scene.add(beam);
+    beams.push({ mesh: beam, speed: 0.5 + Math.random() * 1.5 });
+  }
 
   let px = 0, py = 0;
   container.addEventListener('pointermove', e => {
@@ -312,18 +403,49 @@ function initThreeHero() {
     py = (e.clientY - r.top) / r.height - 0.5;
   }, { passive: true });
 
-  container.addEventListener('pointerleave', () => { px = 0; py = 0; });
-
   let visible = !document.hidden;
   document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
   const animate = () => {
     if (visible) {
-      mesh.rotation.x += 0.006;
-      mesh.rotation.y += 0.008;
-      mesh.rotation.x += px * 0.02;
-      mesh.rotation.y += py * 0.02;
-      points.rotation.y += 0.002;
+      const time = Date.now() * 0.001;
+      
+      group.rotation.y += 0.003 + px * 0.02;
+      group.rotation.x += 0.002 + py * 0.02;
+      
+      core.rotation.y -= 0.01;
+      coreWire.rotation.y -= 0.01;
+      
+      rings.forEach((r, i) => {
+        r.rotation.x += 0.005 * (i + 1);
+        r.rotation.y += 0.003 * (i + 1);
+      });
+      
+      fragments.forEach((f, i) => {
+        f.position.y += Math.sin(time + i) * 0.15;
+        f.rotation.x += 0.01;
+        f.rotation.y += 0.015;
+      });
+      
+      // Animate sparkles
+      const positions = sparkles.geometry.attributes.position.array;
+      for (let i = 0; i < sparkCount; i++) {
+        positions[i*3] += sparkVels[i*3];
+        positions[i*3+1] += sparkVels[i*3+1];
+        positions[i*3+2] += sparkVels[i*3+2];
+        
+        if (Math.abs(positions[i*3]) > 800) positions[i*3] *= -0.98;
+        if (Math.abs(positions[i*3+1]) > 500) positions[i*3+1] *= -0.98;
+      }
+      sparkles.geometry.attributes.position.needsUpdate = true;
+      
+      // Animate beams
+      beams.forEach(b => {
+        b.mesh.position.y -= b.speed;
+        if (b.mesh.position.y < -600) b.mesh.position.y = 600;
+        b.mesh.material.opacity = 0.02 + Math.sin(time * 2 + b.mesh.position.x) * 0.03;
+      });
+
       renderer.render(scene, camera);
     }
     requestAnimationFrame(animate);
@@ -610,36 +732,14 @@ function registerServiceWorker() {
 
 /* ─── 8. UTILS ──────────────────────────────────────────────────── */
 function initUIWidgets() {
-  // Tabs
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabs.forEach(b => b.setAttribute('aria-selected','false'));
-      btn.setAttribute('aria-selected','true');
-      document.querySelectorAll('.tab-panel').forEach(p => p.hidden = true);
-      const target = document.querySelector(btn.dataset.tabTarget);
-      if (target) target.hidden = false;
-    });
-  });
-
-  // Accent switch toggles CSS theme-alt class which flips variables
+  // Accent switch in nav — toggles CSS theme-alt class
   const switchEl = document.getElementById('accent-switch');
   if (switchEl) {
     switchEl.addEventListener('change', () => {
       document.documentElement.classList.toggle('theme-alt', switchEl.checked);
-      showToast(switchEl.checked ? 'Accent switched' : 'Accent restored');
+      showToast(switchEl.checked ? '🔵 Blue accent active' : '🟢 Green accent restored');
     });
   }
-
-  const searchBtn = document.getElementById('search-btn');
-  if (searchBtn) searchBtn.addEventListener('click', () => {
-    const q = (document.getElementById('demo-search')||{}).value || '';
-    showToast(q ? `Searching: ${q}` : 'Search (demo)');
-  });
-
-  // Select demo: show toast on change
-  const sel = document.getElementById('demo-select');
-  if (sel) sel.addEventListener('change', () => showToast(`Selected: ${sel.value}`));
 }
 
 function initVideoModal() {

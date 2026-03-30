@@ -2,15 +2,14 @@
    Caches core assets and serves an offline fallback for navigation requests.
 */
 
-const CACHE_NAME = 'roboverse-static-v1';
+const CACHE_NAME = 'roboverse-static-v2';
 const PRECACHE_URLS = [
   './',
-  './index.html',
+  './index.html?v=1.1',
   './offline.html',
-  './style.css',
-  './main.js',
-  './products.js',
-  /* './drone.js', 3D viewer removed */
+  './style.css?v=1.1',
+  './main.js?v=1.1',
+  './products.js?v=1.1',
   './favicon.svg'
 ];
 
