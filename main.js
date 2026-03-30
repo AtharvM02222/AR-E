@@ -300,24 +300,19 @@ function initThreeHero() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
     renderer.setSize(W, H);
     renderer.setClearColor(0x000000, 0);
-    // Use ACES filmic for sleek look
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
-    if ('outputColorSpace' in renderer) {
-      renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
-    } else if ('outputEncoding' in renderer) {
-      renderer.outputEncoding = THREE.sRGBEncoding || 3001;
-    }
+    renderer.toneMappingExposure = 1.3; // Make slightly brighter
+    if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace || 'srgb';
     container.appendChild(renderer.domElement);
   } catch (e) {
-    console.warn('3D Hero blocked or unsupported.', e);
+    console.warn('3D Hero blocked.', e);
     return;
   }
 
   const scene = new THREE.Scene();
-  // Camera scaled for the core
-  const camera = new THREE.PerspectiveCamera(52, W / H, 0.1, 3000);
-  camera.position.set(0, 0, 420);
+  const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 2000);
+  camera.position.set(0, 30, 220); // Closer view to appreciate the drone properly
+  camera.lookAt(0, 0, 0);
 
   /* ── ENVIRONMENT MAP FOR DRONE REFLECTIONS ── */
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -355,101 +350,32 @@ function initThreeHero() {
   /* ── LIGHTS ── */
   scene.add(new THREE.AmbientLight(0xffffff, 0.15));
 
-  const lGreen = new THREE.PointLight(0x00ff88, 12, 600);
-  lGreen.position.set(0, 0, 80);
-  scene.add(lGreen);
-
-  const lBlue = new THREE.PointLight(0x3b82f6, 6, 500);
-  lBlue.position.set(-180, 120, 60);
-  scene.add(lBlue);
-
-  const lPurple = new THREE.PointLight(0xa855f7, 4, 400);
-  lPurple.position.set(160, -140, 100);
-  scene.add(lPurple);
-  
-  // Drone specific light
-  const keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
   keyLight.position.set(60, 100, 120);
   scene.add(keyLight);
 
-  /* ════════════════════════════════════════════════════════════
-     1. ORIGINAL CORE SYSTEM
-     ════════════════════════════════════════════════════════════ */
-  const group = new THREE.Group();
-  let coreBaseX = W > 1000 ? W * 0.20 : W > 700 ? W * 0.12 : 0;
-  group.position.set(coreBaseX, 0, -40); // slightly back
-  scene.add(group);
+  const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.0);
+  rimLight.position.set(-80, 60, -60);
+  scene.add(rimLight);
 
-  const coreGeo = new THREE.IcosahedronGeometry(52, 1);
-  const coreMat = new THREE.MeshStandardMaterial({
-    color: 0x050e1a, metalness: 0.98, roughness: 0.04, emissive: 0x00ff88, emissiveIntensity: 1.4,
-  });
-  const core = new THREE.Mesh(coreGeo, coreMat);
-  group.add(core);
+  const underLight = new THREE.PointLight(0x00ff88, 1.2, 300);
+  underLight.position.set(0, -60, 40);
+  scene.add(underLight);
 
-  const wire = new THREE.Mesh(new THREE.IcosahedronGeometry(55, 1), new THREE.MeshBasicMaterial({
-    color: 0x00ff88, wireframe: true, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending,
-  }));
-  group.add(wire);
+  const accentLight = new THREE.PointLight(0xa855f7, 2, 400);
+  accentLight.position.set(100, 30, -80);
+  scene.add(accentLight);
 
-  const wire2 = new THREE.Mesh(new THREE.DodecahedronGeometry(65, 0), new THREE.MeshBasicMaterial({
-    color: 0x3b82f6, wireframe: true, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending,
-  }));
-  group.add(wire2);
-
-  const haloMat = new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.05, side: THREE.BackSide, blending: THREE.AdditiveBlending });
-  group.add(new THREE.Mesh(new THREE.SphereGeometry(78, 32, 32), haloMat));
-  group.add(new THREE.Mesh(new THREE.SphereGeometry(105, 32, 32), new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.025, side: THREE.BackSide, blending: THREE.AdditiveBlending })));
-
-  const RINGS = [
-    { r: 108, tube: 0.9, color: 0x00ff88, opacity: 0.75, rx: 0.3, ry: 0, rz: 0, sz: 0.007, sx: 0.002 },
-    { r: 145, tube: 0.55, color: 0x3b82f6, opacity: 0.55, rx: 1.25, ry: 0.2, rz: 0.4, sz: -0.005, sx: 0.003 },
-    { r: 182, tube: 0.4, color: 0xa855f7, opacity: 0.40, rx: 0.7, ry: 0.9, rz: 1.0, sz: 0.003, sx: -0.002 },
-  ];
-  const rings = RINGS.map(d => {
-    const mesh = new THREE.Mesh(new THREE.TorusGeometry(d.r, d.tube, 16, 160), new THREE.MeshBasicMaterial({ color: d.color, transparent: true, opacity: d.opacity, blending: THREE.AdditiveBlending }));
-    mesh.rotation.set(d.rx, d.ry, d.rz);
-    group.add(mesh);
-    return { mesh, ...d };
-  });
-
-  const scanRing = new THREE.Mesh(new THREE.TorusGeometry(62, 0.35, 8, 80), new THREE.MeshBasicMaterial({ color: 0x00ff88, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending }));
-  group.add(scanRing);
-  const scan2Ring = new THREE.Mesh(new THREE.TorusGeometry(56, 0.25, 6, 64), new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending }));
-  group.add(scan2Ring);
-
-  const SIZES = [18, 14, 10, 14, 10, 18, 10, 14, 18, 10, 14, 10];
-  const COLORS = [0x00ff88, 0x3b82f6, 0xa855f7];
-  const moduleCount = 12;
-  const modules = [];
-  for (let i = 0; i < moduleCount; i++) {
-    const sz = SIZES[i];
-    const col = COLORS[i % 3];
-    const baseR = 100 + Math.floor(i / 4) * 38;
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(sz, sz * 0.55, sz * 0.38), new THREE.MeshStandardMaterial({ color: col, metalness: 0.92, roughness: 0.08, emissive: col, emissiveIntensity: 0.3 }));
-    const initAngle = (i / moduleCount) * Math.PI * 2;
-    mesh.position.set(Math.cos(initAngle) * baseR, (Math.random() - 0.5) * 90, Math.sin(initAngle) * baseR * 0.35);
-    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-    group.add(mesh);
-    modules.push({ mesh, angle: initAngle, radius: baseR, speed: 0.003 + i * 0.0005 });
-  }
-
-  const beams = [];
-  for (let i = 0; i < 6; i++) {
-    const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), modules[i * 2].mesh.position.clone()]);
-    const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: i % 2 === 0 ? 0x00ff88 : 0x3b82f6, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending }));
-    group.add(line);
-    beams.push({ line, modIdx: i * 2 });
-  }
-
-  /* ════════════════════════════════════════════════════════════
-     2. DRONE SYSTEM (FUSED)
-     ════════════════════════════════════════════════════════════ */
+  /* ── DRONE ONLY ── */
   const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.98, roughness: 0.04 });
   const darkMat = new THREE.MeshStandardMaterial({ color: 0x050505, metalness: 0.95, roughness: 0.08 });
   const glossMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 1.0, roughness: 0.01 });
 
   const droneGroup = new THREE.Group();
+  
+  // Right side of screen position! (Same as widget)
+  let baseX = W > 1000 ? W * 0.18 : W > 700 ? W * 0.10 : 0;
+  droneGroup.position.set(baseX, -10, 0); 
   
   const dBody = new THREE.Mesh(new THREE.CapsuleGeometry(9, 24, 16, 32), bodyMat);
   dBody.rotation.z = Math.PI / 2;
@@ -531,21 +457,20 @@ function initThreeHero() {
     droneGroup.add(mesh);
   });
 
-  // Scale up because camera is further out (420 vs 220)
-  droneGroup.scale.setScalar(2.0);
+  droneGroup.scale.setScalar(1.6);
   scene.add(droneGroup);
 
   /* ── BACKGROUND DUST ── */
   const DUST = getAdaptiveCount(700, 350, 150);
   const dustPos = new Float32Array(DUST * 3);
   for (let i = 0; i < DUST; i++) {
-    dustPos[i * 3] = (Math.random() - 0.5) * 2200;
-    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 1400;
+    dustPos[i * 3] = (Math.random() - 0.5) * 1200;
+    dustPos[i * 3 + 1] = (Math.random() - 0.5) * 800;
     dustPos[i * 3 + 2] = (Math.random() - 0.5) * 900 - 200;
   }
   const dustGeo = new THREE.BufferGeometry();
   dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
-  const dustMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true, opacity: 0.10, sizeAttenuation: true });
+  const dustMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true, opacity: 0.15, sizeAttenuation: true });
   scene.add(new THREE.Points(dustGeo, dustMat));
 
   /* ── MOUSE PARALLAX & VISIBILITY ── */
@@ -573,71 +498,27 @@ function initThreeHero() {
       smxN += (mxN - smxN) * 0.04;
       smyN += (myN - smyN) * 0.04;
 
-      // 1. CORE ANIMATION
-      group.rotation.y = smxN * 0.25;
-      group.rotation.x = -smyN * 0.12;
-
-      core.rotation.y += 0.007; core.rotation.z += 0.003;
-      wire.rotation.y -= 0.005; wire.rotation.x += 0.003;
-      wire2.rotation.y += 0.004; wire2.rotation.z -= 0.002;
-
-      haloMat.opacity = 0.04 + Math.sin(t * 3) * 0.02;
-      coreMat.emissiveIntensity = 1.2 + Math.sin(t * 4) * 0.4;
-      lGreen.intensity = 10 + Math.sin(t * 5) * 3;
-
-      for (let i = 0; i < rings.length; i++) {
-        rings[i].mesh.rotation.z += rings[i].sz;
-        rings[i].mesh.rotation.x += rings[i].sx;
-      }
-
-      scanRing.rotation.x = t * 1.6; scanRing.rotation.y = t * 0.6;
-      scanRing.material.opacity = 0.5 + Math.sin(t * 5) * 0.4;
-      scan2Ring.rotation.x = -t * 2.4; scan2Ring.rotation.z = t * 1.1;
-      scan2Ring.material.opacity = 0.4 + Math.sin(t * 7 + 1) * 0.35;
-
-      for (let i = 0; i < modules.length; i++) {
-        const m = modules[i];
-        m.angle += m.speed;
-        m.mesh.position.x = Math.cos(m.angle) * m.radius;
-        m.mesh.position.z = Math.sin(m.angle) * m.radius * 0.35;
-        m.mesh.rotation.x += 0.014; m.mesh.rotation.y += 0.020;
-      }
-      for (let i = 0; i < beams.length; i++) {
-        const b = beams[i];
-        const arr = b.line.geometry.attributes.position.array;
-        const mp = modules[b.modIdx].mesh.position;
-        arr[3] = mp.x; arr[4] = mp.y; arr[5] = mp.z;
-        b.line.geometry.attributes.position.needsUpdate = true;
-        b.line.material.opacity = 0.08 + Math.sin(t * 6 + b.modIdx) * 0.07;
-      }
-
-      // 2. DRONE ANIMATION
-      // Orbiting around the core!
-      const droneOrbitRadius = 140;
-      const droneSpeed = 0.3;
+      // Drone sweeps organically around "baseX" location, effectively replacing core behavior with more movement
+      const sweepX = Math.sin(t * 0.4) * 45;
+      const sweepY = Math.sin(t * 0.7) * 12;
+      const sweepZ = Math.cos(t * 0.5) * 15;
       
-      // Drone sweeps back and forth + depth movement
-      const sweepX = Math.sin(t * 0.4) * 120;
-      const sweepY = Math.sin(t * 0.9) * 30;
-      const sweepZ = Math.cos(t * 0.3) * 80 + 100; // Hovering forward
-      
-      droneGroup.position.x = coreBaseX + sweepX + smxN * 30;
-      droneGroup.position.y = sweepY - smyN * 15 + 15;
+      droneGroup.position.x = baseX + sweepX + smxN * 20;
+      droneGroup.position.y = sweepY - smyN * 15;
       droneGroup.position.z = sweepZ;
 
-      const velocityX = Math.cos(t * 0.4) * 120 * 0.4; // derivative
-      const targetRoll = -velocityX * 0.015;
+      const velocityX = Math.cos(t * 0.4) * 45 * 0.4;
+      const targetRoll = -velocityX * 0.02;
 
-      droneGroup.rotation.y = -0.3 + smxN * 0.4;
+      droneGroup.rotation.y = -0.3 + smxN * 0.3;
       droneGroup.rotation.x = -0.1 + (smyN * -0.2);
-      droneGroup.rotation.z += (targetRoll + (smxN * -0.2) - droneGroup.rotation.z) * 0.1;
+      droneGroup.rotation.z += (targetRoll + (smxN * -0.15) - droneGroup.rotation.z) * 0.1;
 
       dRotors.forEach((r, i) => r.rotation.y += 0.4 + (i * 0.06));
 
-      // 3. CAMERA PARALLAX
-      camera.position.x = smxN * 20;
-      camera.position.y = smyN * -20;
-      camera.lookAt(coreBaseX * 0.5, 0, 0);
+      camera.position.x = smxN * 10;
+      camera.position.y = 30 + smyN * -10;
+      camera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
     }
@@ -649,9 +530,8 @@ function initThreeHero() {
     camera.aspect = W2 / H2;
     camera.updateProjectionMatrix();
     renderer.setSize(W2, H2);
-    coreBaseX = W2 > 1000 ? W2 * 0.20 : W2 > 700 ? W2 * 0.12 : 0;
-    group.position.x = coreBaseX;
-    droneGroup.scale.setScalar(W2 < 900 ? 1.5 : 2.0);
+    baseX = W2 > 1000 ? W2 * 0.18 : W2 > 700 ? W2 * 0.10 : 0;
+    droneGroup.scale.setScalar(W2 < 900 ? 1.2 : 1.6);
   }), { passive: true });
 
   animate();
