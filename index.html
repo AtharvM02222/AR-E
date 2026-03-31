@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=12.0">
+  <link rel="stylesheet" href="style.css?v=13.0">
 </head>
 <body>
 
@@ -204,10 +204,10 @@
     <div class="stats-strip">
       <div class="stat-block">
         <div class="stat-row">
-          <span class="stat-number" data-target="850">0</span>
+          <span class="stat-number" data-target="6">0</span>
           <span class="stat-suffix">+</span>
         </div>
-        <div class="stat-label">HAPPY CUSTOMERS</div>
+        <div class="stat-label">YEARS FLYING</div>
       </div>
       <div class="stat-block">
         <div class="stat-row">
@@ -218,10 +218,10 @@
       </div>
       <div class="stat-block">
         <div class="stat-row">
-          <span class="stat-number" data-target="6">0</span>
+          <span class="stat-number" data-target="50">0</span>
           <span class="stat-suffix">+</span>
         </div>
-        <div class="stat-label">DRONE BUILDS</div>
+        <div class="stat-label">CUSTOM BUILDS</div>
       </div>
     </div>
 
@@ -260,44 +260,41 @@
           </div>
         </div>
 
-        <!-- Static hero media (3D viewer removed) -->
-        <div class="drone-static" id="drone-static" role="img" aria-label="AR ENTERPRISE">
-          <!-- New hero UI: left copy + right feature card -->
-          <div class="hero-ui">
-            <div class="hero-ui-left">
+        <!-- Robotics Legacy Section (Replaces 3D/SVG section) -->
+        <div class="legacy-gallery-container" id="legacy-gallery">
+          <div class="legacy-header">
+            <div class="legacy-info">
               <h3 class="hero-ui-kicker">The Engineering Pedigree</h3>
               <h2 class="hero-ui-head">From Combat Arenas to the Open Sky</h2>
-              <p class="hero-ui-lead">A legacy built on competition-winning combat robots and heavy-duty RC machines. AR ENTERPRISE brings years of mechanical engineering and electronics expertise from the arena directly into every drone build.</p>
-              <div class="hero-ui-cta">
-                <button type="button" class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Explore Arsenal →</button>
-                <button type="button" class="btn-ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get a Quote</button>
-              </div>
+              <p class="hero-ui-lead">A legacy built on competition-winning combat robots and heavy-duty RC machines. AR ENTERPRISE brings years of mechanical engineering expertise from the arena directly into every drone build.</p>
             </div>
-            <div class="hero-ui-right">
-              <div class="feature-card">
-                <div class="feature-media" aria-hidden="true">
-                  <svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg" class="feature-svg">
-                    <defs>
-                      <!-- Primary gradients -->
-                      <linearGradient id="frameGrad" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#00ff88"/>
-                        <stop offset="100%" stop-color="#3b82f6"/>
-                      </linearGradient>
-                      
-                      <!-- Body metallic gradients -->
-                      <radialGradient id="bodyMetallic" cx="35%" cy="35%">
-                        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25"/>
-                        <stop offset="50%" stop-color="#ffffff" stop-opacity="0.08"/>
-                        <stop offset="100%" stop-color="#000000" stop-opacity="0.3"/>
-                      </radialGradient>
-                      
-                      <linearGradient id="bodyShade" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#2a3a4e" stop-opacity="1"/>
-                        <stop offset="100%" stop-color="#0f1419" stop-opacity="1"/>
-                      </linearGradient>
-                      
-                      <!-- Motor gradients -->
-                      <radialGradient id="motorMetal" cx="35%" cy="35%">
+            <div class="legacy-actions">
+               <button type="button" class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Explore Arsenal →</button>
+            </div>
+          </div>
+          
+          <div class="legacy-grid">
+            <div class="legacy-item main-legacy">
+              <img src="legacy.webp" alt="Full Robotics Collection" loading="lazy">
+              <div class="legacy-overlay"><span>The Collection</span></div>
+            </div>
+            <div class="legacy-item side-legacy-1">
+              <img src="yadavE.webp" alt="Combat Robot Build" loading="lazy">
+              <div class="legacy-overlay"><span>Combat Robotics</span></div>
+            </div>
+            <div class="legacy-item side-legacy-2">
+              <img src="yadavE0.webp" alt="RC Engineering" loading="lazy">
+              <div class="legacy-overlay"><span>RC Machines</span></div>
+            </div>
+            <div class="legacy-item side-legacy-3">
+              <img src="yadavE07.webp" alt="Drone Fleet" loading="lazy">
+              <div class="legacy-overlay"><span>FPV Fleet</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
                         <stop offset="0%" stop-color="#d4d4d8"/>
                         <stop offset="60%" stop-color="#71717a"/>
                         <stop offset="100%" stop-color="#27272a"/>
@@ -657,8 +654,8 @@
       document.head.appendChild(s);
     })();
   </script>
-  <script src="products.js?v=4.0" defer></script>
-  <script src="main.js?v=12.0" defer></script>
+  <script src="products.js?v=13.0" defer></script>
+  <script src="main.js?v=13.0" defer></script>
 
 
 </body>
