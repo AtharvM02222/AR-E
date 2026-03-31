@@ -14,59 +14,57 @@
 
 var PRODUCTS = [
   {
-    name: "RoboSoccer Pro",
-    tag: "Soccer Bot",
-    desc: "Bluetooth-controlled soccer robot. 360° spin, rubber grip wheels, LED headlights. Built for competition.",
-    price: 2499,
-    icon: "⚽",
+    name: "FPV Racing Drone",
+    tag: "FPV Racer",
+    desc: "High-speed FPV racing build on a carbon fiber frame. Betaflight-tuned for maximum agility. 10km radio range. Hand-soldered FC + ESC stack.",
+    price: 12999,
+    icon: "⚡",
     image: "",
     badge: "BESTSELLER"
   },
   {
-    name: "SkyDrone X1",
-    tag: "Drone",
-    desc: "Foldable mini drone. Altitude hold, 720p camera, 20-min flight time. Perfect for beginners.",
-    price: 4999,
-    icon: "🚁",
+    name: "3.5\" Freestyle Mini",
+    tag: "Freestyle",
+    desc: "Compact 3.5-inch freestyle drone. Nimble, punchy and built for tricks. Carbon fiber frame, tuned on Betaflight for precise stick response.",
+    price: 8499,
+    icon: "🛸",
     image: "",
-    model: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF-Binary/Box.glb",
     badge: "NEW"
   },
   {
-    name: "LineTracer Bot",
-    tag: "Starter Kit",
-    desc: "IR sensor line-following robot. Learn robotics basics. Fully programmable via Arduino.",
-    price: 899,
-    icon: "🤖",
+    name: "Dead-Cat Aerial Rig",
+    tag: "Videography",
+    desc: "Dead-cat frame layout for clean prop-free footage. Stable flight characteristics tuned on INAV. Built for cinematic aerial videography.",
+    price: 14999,
+    icon: "🎥",
     image: "",
-    badge: ""
-  },
-  {
-    name: "ArmBot 6-Axis",
-    tag: "Robotic Arm",
-    desc: "6-DOF robotic arm with servo motors and joystick controller. Precision pick-and-place.",
-    price: 6499,
-    icon: "🦾",
-    image: "",
-    model: "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Cube/glTF-Binary/Cube.glb",
     badge: "PRO"
   },
   {
-    name: "RacerBot Turbo",
-    tag: "RC Car",
-    desc: "High-speed RC car. 2.4GHz remote, shock absorbers, 30km/h top speed. Built for rough terrain.",
-    price: 1799,
-    icon: "🏎️",
+    name: "Beginner FPV Kit",
+    tag: "Starter",
+    desc: "Everything you need to start FPV — pre-built, pre-tuned and ready to fly. Includes goggles and controller recommendation guide.",
+    price: 5999,
+    icon: "🚀",
     image: "",
     badge: ""
   },
   {
-    name: "SwarmBot Kit",
-    tag: "Advanced",
-    desc: "Build a swarm of 3 mini bots that communicate via IR. Explore swarm intelligence.",
-    price: 3299,
-    icon: "🔬",
+    name: "Custom Build — Commission",
+    tag: "Custom Order",
+    desc: "Spec your own drone. Choose frame size, motors, camera system and firmware. Aryaman builds it, tunes it and ships it tested.",
+    price: 18999,
+    icon: "🔧",
     image: "",
     badge: "LIMITED"
+  },
+  {
+    name: "Spare Parts Bundle",
+    tag: "Parts & Repair",
+    desc: "Props, motors, ESC replacements and connectors. Competition-grade components sourced and tested. Get back in the air fast.",
+    price: 1299,
+    icon: "🛠️",
+    image: "",
+    badge: ""
   }
 ];
