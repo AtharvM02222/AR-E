@@ -165,7 +165,7 @@ video {
 }
 
 .nav-container {
-  width: min(92%, var(--container));
+  width: min(90%, 800px);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -173,18 +173,17 @@ video {
   gap: 2rem;
   padding: 0.7rem 1.5rem;
   transition: all .4s var(--ease);
-  border-radius: 0;
-}
-
-#nav.scrolled .nav-container {
+  border-radius: 999px;
   background: rgba(3, 7, 18, .65);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid var(--border);
-  border-radius: 999px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, .4), 0 0 0 1px rgba(0, 255, 136, .05);
-  width: min(90%, 800px);
   margin-top: 1rem;
+}
+
+#nav.scrolled .nav-container {
+  width: min(90%, 800px);
 }
 
 .logo {
@@ -297,7 +296,6 @@ video {
   background: rgba(3, 7, 18, .96);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
 }
 
 .mobile-menu.open {
