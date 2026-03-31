@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=14.0">
+  <link rel="stylesheet" href="style.css?v=15.0">
 </head>
 <body>
 
@@ -279,372 +279,76 @@
         </div>
       </div>
     </section>
-
-                        <stop offset="0%" stop-color="#d4d4d8"/>
-                        <stop offset="60%" stop-color="#71717a"/>
-                        <stop offset="100%" stop-color="#27272a"/>
-                      </radialGradient>
-                      
-                      <!-- Propeller gradients -->
-                      <linearGradient id="propGreen" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#00ff88" stop-opacity="0.7"/>
-                        <stop offset="50%" stop-color="#00dd77" stop-opacity="0.5"/>
-                        <stop offset="100%" stop-color="#00ff88" stop-opacity="0.2"/>
-                      </linearGradient>
-                      
-                      <linearGradient id="propBlue" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.7"/>
-                        <stop offset="50%" stop-color="#2563eb" stop-opacity="0.5"/>
-                        <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.2"/>
-                      </linearGradient>
-                      
-                      <!-- Advanced glow filter -->
-                      <filter id="propGlow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur stdDeviation="1.8" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                      
-                      <filter id="motorGlow" x="-40%" y="-40%" width="180%" height="180%">
-                        <feGaussianBlur stdDeviation="0.8" result="blur"/>
-                        <feMerge>
-                          <feMergeNode in="blur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                      
-                      <!-- Shadow filter -->
-                      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                        <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
-                        <feOffset dx="0" dy="1" result="offsetblur"/>
-                        <feComponentTransfer>
-                          <feFuncA type="linear" slope="0.3"/>
-                        </feComponentTransfer>
-                        <feMerge>
-                          <feMergeNode in="offsetblur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                      
-                      <style>
-                        @keyframes propSpin { 
-                          0% { transform: rotate(0deg); } 
-                          100% { transform: rotate(360deg); } 
-                        }
-                        .prop-spinner { animation: propSpin 2s linear infinite; }
-                      </style>
-                    </defs>
-                    
-                    <!-- Outer premium frame -->
-                    <rect x="1" y="1" width="218" height="218" rx="20" stroke="url(#frameGrad)" stroke-width="2.5" fill="rgba(255,255,255,0.015)"/>
-                    <rect x="3" y="3" width="214" height="214" rx="18" stroke="rgba(0,255,136,0.15)" stroke-width="1" fill="none"/>
-                    
-                    <!-- Main drone assembly -->
-                    <g transform="translate(110, 110)" filter="url(#shadow)">
-                      
-                      <!-- BODY SECTION -->
-                      <!-- Main fuselage -->
-                      <ellipse cx="0" cy="0" rx="18" ry="22" fill="url(#bodyShade)" stroke="url(#frameGrad)" stroke-width="1.5"/>
-                      <ellipse cx="0" cy="0" rx="18" ry="22" fill="url(#bodyMetallic)" opacity="0.7"/>
-                      
-                      <!-- Body panel lines (carbon fiber effect) -->
-                      <line x1="-10" y1="-8" x2="10" y2="-8" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
-                      <line x1="-12" y1="0" x2="12" y2="0" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
-                      <line x1="-10" y1="8" x2="10" y2="8" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
-                      
-                      <!-- Battery housing indicator -->
-                      <rect x="-8" y="2" width="16" height="6" rx="2" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.8"/>
-                      <text x="0" y="6.5" font-size="2.5" font-weight="bold" text-anchor="middle" fill="#00ff88" opacity="0.6">⚡</text>
-                      
-                      <!-- CENTER CAMERA GIMBAL -->
-                      <!-- Gimbal ring 1 -->
-                      <circle cx="0" cy="18" r="9" fill="none" stroke="rgba(0,255,136,0.4)" stroke-width="1" opacity="0.7"/>
-                      <!-- Gimbal ring 2 -->
-                      <circle cx="0" cy="18" r="7" fill="none" stroke="rgba(0,255,136,0.3)" stroke-width="0.8" opacity="0.6"/>
-                      <!-- Camera lens housing -->
-                      <circle cx="0" cy="18" r="5" fill="rgba(0,0,0,0.5)" stroke="#3b82f6" stroke-width="1.2"/>
-                      <!-- Lens element -->
-                      <circle cx="0" cy="18" r="3.5" fill="radial-gradient(circle at 35% 35%, rgba(100,150,255,0.6), rgba(20,40,100,0.4))"/>
-                      <!-- Lens reflection -->
-                      <circle cx="-1" cy="17" r="1" fill="#ffffff" opacity="0.4"/>
-                      
-                      <!-- ANTENNA/RECEIVER -->
-                      <g transform="translate(0, -24)">
-                        <rect x="-2" y="0" width="4" height="8" rx="2" fill="#3b82f6" opacity="0.8"/>
-                        <circle cx="0" cy="-1" r="2.5" fill="#00ff88" opacity="0.6" filter="url(#motorGlow)"/>
-                      </g>
-                      
-                      <!-- ARM ASSEMBLY (Left-Right) -->
-                      <g>
-                        <!-- LEFT ARM -->
-                        <line x1="-2" y1="0" x2="-32" y2="0" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
-                        <!-- Left arm connector ring -->
-                        <circle cx="-3" cy="0" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
-                        <!-- Left motor bracket -->
-                        <rect x="-37" y="-4.5" width="6" height="9" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
-                        <!-- Left motor housing -->
-                        <circle cx="-34" cy="0" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
-                        <!-- Motor cooling fins -->
-                        <g opacity="0.5">
-                          <line x1="-34" y1="-5.5" x2="-34" y2="-8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="-34" y1="5.5" x2="-34" y2="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="-31" y1="-4" x2="-28" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                          <line x1="-37" y1="-4" x2="-40" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                        </g>
-                        
-                        <!-- RIGHT ARM -->
-                        <line x1="2" y1="0" x2="32" y2="0" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
-                        <!-- Right arm connector ring -->
-                        <circle cx="3" cy="0" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
-                        <!-- Right motor bracket -->
-                        <rect x="31" y="-4.5" width="6" height="9" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
-                        <!-- Right motor housing -->
-                        <circle cx="34" cy="0" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
-                        <!-- Motor cooling fins -->
-                        <g opacity="0.5">
-                          <line x1="34" y1="-5.5" x2="34" y2="-8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="34" y1="5.5" x2="34" y2="8" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="31" y1="-4" x2="28" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                          <line x1="37" y1="-4" x2="40" y2="-5.5" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                        </g>
-                      </g>
-                      
-                      <!-- ARM ASSEMBLY (Front-Back) -->
-                      <g>
-                        <!-- FRONT ARM -->
-                        <line x1="0" y1="-2" x2="0" y2="-32" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
-                        <!-- Front arm connector -->
-                        <circle cx="0" cy="-3" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
-                        <!-- Front motor bracket -->
-                        <rect x="-4.5" y="-37" width="9" height="6" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
-                        <!-- Front motor -->
-                        <circle cx="0" cy="-34" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
-                        <!-- Front motor fins -->
-                        <g opacity="0.5">
-                          <line x1="-5.5" y1="-34" x2="-8" y2="-34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="5.5" y1="-34" x2="8" y2="-34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="-4" y1="-31" x2="-5.5" y2="-28" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                          <line x1="-4" y1="-37" x2="-5.5" y2="-40" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                        </g>
-                        
-                        <!-- REAR ARM -->
-                        <line x1="0" y1="2" x2="0" y2="32" stroke="#3a4a5e" stroke-width="3" stroke-linecap="round"/>
-                        <!-- Rear arm connector -->
-                        <circle cx="0" cy="3" r="3" fill="rgba(255,255,255,0.05)" stroke="rgba(0,255,136,0.2)" stroke-width="0.8"/>
-                        <!-- Rear motor bracket -->
-                        <rect x="-4.5" y="31" width="9" height="6" rx="1.5" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.08)" stroke-width="0.7"/>
-                        <!-- Rear motor -->
-                        <circle cx="0" cy="34" r="7.5" fill="url(#motorMetal)" stroke="url(#frameGrad)" stroke-width="1.2" filter="url(#motorGlow)"/>
-                        <!-- Rear motor fins -->
-                        <g opacity="0.5">
-                          <line x1="-5.5" y1="34" x2="-8" y2="34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="5.5" y1="34" x2="8" y2="34" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>
-                          <line x1="-4" y1="31" x2="-5.5" y2="28" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                          <line x1="-4" y1="37" x2="-5.5" y2="40" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
-                        </g>
-                      </g>
-                      
-                      <!-- PROPELLERS -->
-                      <!-- Left propeller (green/blue) -->
-                      <g transform="translate(-34, 0)" class="prop-spinner" filter="url(#propGlow)">
-                        <ellipse cx="0" cy="-16" rx="4.5" ry="16" fill="url(#propGreen)" opacity="0.75"/>
-                        <ellipse cx="0" cy="16" rx="4.5" ry="16" fill="url(#propBlue)" opacity="0.75"/>
-                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
-                      </g>
-                      
-                      <!-- Right propeller (blue/green) -->
-                      <g transform="translate(34, 0)" class="prop-spinner" filter="url(#propGlow)" style="animation-direction: reverse;">
-                        <ellipse cx="0" cy="-16" rx="4.5" ry="16" fill="url(#propBlue)" opacity="0.75"/>
-                        <ellipse cx="0" cy="16" rx="4.5" ry="16" fill="url(#propGreen)" opacity="0.75"/>
-                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
-                      </g>
-                      
-                      <!-- Front propeller (green/blue) -->
-                      <g transform="translate(0, -34)" class="prop-spinner" filter="url(#propGlow)">
-                        <ellipse cx="-16" cy="0" rx="16" ry="4.5" fill="url(#propGreen)" opacity="0.75"/>
-                        <ellipse cx="16" cy="0" rx="16" ry="4.5" fill="url(#propBlue)" opacity="0.75"/>
-                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
-                      </g>
-                      
-                      <!-- Rear propeller (blue/green) -->
-                      <g transform="translate(0, 34)" class="prop-spinner" filter="url(#propGlow)" style="animation-direction: reverse;">
-                        <ellipse cx="-16" cy="0" rx="16" ry="4.5" fill="url(#propBlue)" opacity="0.75"/>
-                        <ellipse cx="16" cy="0" rx="16" ry="4.5" fill="url(#propGreen)" opacity="0.75"/>
-                        <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.1)"/>
-                      </g>
-                      
-                      <!-- STATUS LED INDICATORS -->
-                      <!-- Front-left status -->
-                      <circle cx="-8" cy="-6" r="2" fill="#00ff88" opacity="0.7" filter="url(#motorGlow)"/>
-                      <circle cx="-8" cy="-6" r="1.2" fill="#ffffff" opacity="0.4"/>
-                      
-                      <!-- Front-right status -->
-                      <circle cx="8" cy="-6" r="2" fill="#3b82f6" opacity="0.7" filter="url(#motorGlow)"/>
-                      <circle cx="8" cy="-6" r="1.2" fill="#ffffff" opacity="0.4"/>
-                    </g>
-                  </svg>
-                </div>
-                <div class="feature-body">
-                  <div class="feature-title">Betaflight-tuned from scratch</div>
-                  <div class="feature-desc">FC + ESC hand-soldered, firmware configured by the builder. Carbon fiber frame, LiPo power — ready for race day.</div>
-                  <div class="feature-meta">
-                    <span class="pill">Carbon Frame</span>
-                    <span class="pill">Betaflight Tuned</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ── CONTACT ────────────────────────────────────────────────── -->
     <section id="contact">
       <div class="container">
         <div class="contact-grid">
-
           <div class="contact-left">
-            <span class="section-tag">━━ 03 / CONNECT</span>
-            <h2>Start Your<br><em>Journey.</em></h2>
+            <span class="section-tag">━━ 03 / CONTACT</span>
+            <h2>Let's build<br>your <em>dream rig.</em></h2>
             <p class="contact-manifesto">
               Ready to order or want a custom build? Fill the form and we'll open
               WhatsApp with your inquiry pre-written — Aryaman will get back to you directly.
             </p>
-            <div class="wa-badge">
-              <span class="wa-icon">💬</span>
-              <div>
-                <div class="wa-label">DIRECT WHATSAPP</div>
-                <!-- ⬇ OWNER: change this number -->
-                <div class="wa-num" id="wa-display">+91 XXXXX XXXXX</div>
-              </div>
-            </div>
           </div>
-
           <div class="contact-right">
-            <form id="contact-form" novalidate>
-              <div class="form-row">
-                <div class="form-field">
-                  <label for="f-name">YOUR NAME</label>
-                  <input type="text" id="f-name" name="name" placeholder="Rahul Sharma" required>
-                </div>
-                <div class="form-field">
-                  <label for="f-phone">YOUR PHONE</label>
-                  <input type="tel" id="f-phone" name="phone" placeholder="+91 98765 43210" inputmode="tel" pattern="[0-9+\s()\-]{6,}" aria-required="true" required>
-                </div>
+            <form id="contact-form" class="glass-form">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" placeholder="John Doe" required>
               </div>
-              <div class="form-field">
-                <label for="f-product">WHICH PRODUCT?</label>
-                <select id="f-product" name="product" required>
-                  <option value="">Select a product...</option>
-                  <!-- Populated by main.js -->
+              <div class="form-group">
+                <label for="interest">I'm interested in...</label>
+                <select id="interest" required>
+                  <option value="" disabled selected>Select a category</option>
+                  <option value="FPV Racer">FPV Racing Drone</option>
+                  <option value="Freestyle">3.5\" Freestyle Mini</option>
+                  <option value="Videography">Dead-Cat Aerial Rig</option>
+                  <option value="Custom">Custom Commission</option>
+                  <option value="Other">General Inquiry</option>
                 </select>
               </div>
-              <div class="form-field">
-                <label for="f-msg">MESSAGE</label>
-                <textarea id="f-msg" name="message" placeholder="Bulk inquiries, custom orders, or just say hi!" rows="4"></textarea>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" rows="4" placeholder="Tell us about your build requirements..." required></textarea>
               </div>
-              <button type="submit" class="btn-primary full">
-                <span class="btn-text">Send via WhatsApp 💬</span>
-              </button>
+              <button type="submit" class="btn-primary w-full">Send Message →</button>
             </form>
           </div>
-
         </div>
       </div>
     </section>
-
   </main>
-
-  <!-- ── FOOTER ────────────────────────────────────────────────────── -->
-  <footer>
+  <!-- ── FOOTER ─────────────────────────────────────────────────── -->
+  <footer id="footer">
     <div class="container">
       <div class="footer-top">
-        <a href="#" class="logo">
-          <span class="logo-icon">◉</span>
-          AR ENTERPRISE
-        </a>
-        <div class="footer-nav">
+        <div class="footer-brand">
+          <a href="#" class="logo">◉ AR ENTERPRISE</a>
+          <p class="footer-tagline">
+            Custom FPV drones, hand-built in Gurugram. Flying since 2019.
+          </p>
+        </div>
+        <div class="footer-links">
           <a href="#products">Shop</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
         </div>
       </div>
-      <div class="footer-mid">
-        <p class="footer-tagline">Custom FPV drones, hand-built in Gurugram. Flying since 2019.</p>
-      </div>
       <div class="footer-bottom">
-        <p>© <span id="year"></span> AR ENTERPRISE · Built with precision 🚀</p>
+        <p>&copy; <span id="year">2024</span> AR ENTERPRISE. All rights reserved.</p>
         <p>MADE TO FLY · INDIA BUILT · GURUGRAM</p>
       </div>
     </div>
   </footer>
-
-  <!-- Toast -->
-  <div id="toast" role="status" aria-live="polite"></div>
-
-  <!-- Video / Promo Modal (video removed - promotional card) -->
-  <div id="video-modal" class="modal" aria-hidden="true" aria-label="Watch demo">
-    <div class="modal-backdrop" id="video-backdrop"></div>
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="video-title">
-      <button type="button" class="modal-close" id="video-close" aria-label="Close">✕</button>
-      <h2 id="video-title">AR ENTERPRISE — Watch Demo</h2>
-      <div class="modal-promo">
-        <svg width="120" height="120" viewBox="0 0 120 120" class="promo-svg" aria-hidden="true">
-          <defs>
-            <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#00ff88"/>
-              <stop offset="100%" stop-color="#3b82f6"/>
-            </linearGradient>
-          </defs>
-          <rect x="6" y="6" width="108" height="108" rx="14" fill="rgba(255,255,255,0.02)" stroke="url(#pg)" stroke-width="2"/>
-          <circle cx="60" cy="44" r="18" fill="rgba(0,0,0,0.18)" stroke="url(#pg)" stroke-width="1.8"/>
-        </svg>
-        <div class="modal-copy">
-          <p class="modal-lead">Video has been removed. Request a live demo or explore our product line — no watermarks, no external embeds.</p>
-          <div class="modal-cta-wrap">
-            <button type="button" id="modal-cta-contact" class="btn-primary">Request Demo</button>
-            <button type="button" id="modal-cta-products" class="btn-ghost">Explore Arsenal</button>
-          </div>
-        </div>
-      </div>
+  <!-- Modal structure for Video/Content -->
+  <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal-content glass-card">
+      <button type="button" class="modal-close" id="modal-close" aria-label="Close modal">&times;</button>
+      <div id="modal-body"></div>
     </div>
   </div>
-
-  <!-- Model Modal (3D preview) -->
-  <div id="model-modal" class="modal" aria-hidden="true" aria-label="3D preview">
-    <div class="modal-backdrop" id="model-backdrop"></div>
-    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="model-title">
-      <button type="button" class="modal-close" id="model-close" aria-label="Close 3D viewer">✕</button>
-      <h2 id="model-title" class="visually-hidden">3D Preview</h2>
-      <div id="model-viewer" style="width:100%;height:520px;"></div>
-    </div>
-  </div>
-
-  <!-- Scripts — order matters -->
-  <!-- Async dynamic loader with cdnjs fallback (Brave-safe) -->
-  <script>
-    (function() {
-      var s = document.createElement('script');
-      s.src = 'https://unpkg.com/three@0.158.0/build/three.min.js';
-      s.async = true;
-      s.onerror = function() {
-        var s2 = document.createElement('script');
-        s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r158/three.min.js';
-        s2.async = true;
-        document.head.appendChild(s2);
-      };
-      document.head.appendChild(s);
-    })();
-  </script>
-  <script src="products.js?v=14.0" defer></script>
-  <script src="main.js?v=14.0" defer></script>
-
-
+  <script src="products.js?v=15.0" defer></script>
+  <script src="main.js?v=15.0" defer></script>
 </body>
 </html>
-
-
-
