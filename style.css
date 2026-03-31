@@ -2054,3 +2054,53 @@ footer {
   .side-legacy-1, .side-legacy-2, .side-legacy-3 { height: 250px; }
   .legacy-gallery-container { padding: 2rem; }
 }
+
+/* ── BLUEPRINT MARQUEE ───────────────────────────────────────── */
+.blueprint-marquee {
+  padding: 1.2rem 0;
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.blueprint-marquee::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    linear-gradient(90deg, var(--bg-2) 0%, transparent 15%, transparent 85%, var(--bg-2) 100%),
+    radial-gradient(circle at center, rgba(0, 255, 136, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.blueprint-track {
+  display: flex;
+  white-space: nowrap;
+}
+
+.blueprint-content {
+  display: flex;
+  align-items: center;
+  animation: marquee 45s linear infinite;
+}
+
+.blueprint-content span {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: .15em;
+  padding: 0 2rem;
+  opacity: 0.6;
+}
+
+.bp-sep {
+  width: 30px;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.3;
+  display: inline-block;
+  margin: 0 1rem;
+}
