@@ -42,7 +42,7 @@
         <a href="#about">ABOUT</a>
         <a href="#contact">CONTACT</a>
       </div>
-      <button type="button" class="nav-cta btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+      <button type="button" class="nav-cta btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'}); document.getElementById('interest').value='Custom';">
         Order Now →
       </button>
       <button type="button" class="nav-mobile-toggle" id="mobile-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
@@ -55,7 +55,7 @@
         <a href="#products">Shop</a>
         <a href="#about">About</a>
         <a href="#contact">Contact</a>
-        <a href="#contact" class="mobile-cta">Order Now →</a>
+        <a href="#contact" class="mobile-cta" onclick="setTimeout(()=>document.getElementById('interest').value='Custom',400)">Order Now →</a>
       </div>
     </div>
   </nav>
