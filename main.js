@@ -395,7 +395,7 @@ function initThreeHero() {
   const calculateBaseX = (cam) => {
     const vFov = cam.fov * Math.PI / 180;
     const visibleWidth = 2 * Math.tan(vFov / 2) * cam.position.z * cam.aspect;
-    return (visibleWidth / 2) * 0.6;
+    return (visibleWidth / 2) * 0.52; // right side
   };
   let baseX = calculateBaseX(camera);
   droneGroup.position.set(baseX, -10, 0);
@@ -729,17 +729,14 @@ function renderProducts() {
     const priceFormatted = '₹' + Number(p.price).toLocaleString('en-IN');
 
     card.innerHTML = `
-      <div class="p-header">${badgeHTML}<span class="p-tag">${p.tag}</span></div>
+      <div class="p-header"><span class="p-tag">${p.tag}</span>${badgeHTML}</div>
       <div class="p-media">${mediaHTML}</div>
       <div class="p-info">
         <h3 class="p-name">${p.name}</h3>
         <p class="p-desc">${p.desc}</p>
         <div class="p-footer">
           <span class="price">${priceFormatted}</span>
-          <div class="p-actions">
-            <button type="button" class="btn-card" data-product="${p.name}">ORDER →</button>
-            <button type="button" class="btn-ghost btn-3d" data-model="${p.model || ''}" aria-label="3D Preview">3D Preview</button>
-          </div>
+          <button type="button" class="btn-card" data-product="${p.name}">Order →</button>
         </div>
       </div>`;
 
@@ -749,7 +746,6 @@ function renderProducts() {
       card.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
     });
     card.querySelector('.btn-card').addEventListener('click', () => selectProduct(p.name));
-    card.querySelector('.btn-3d')?.addEventListener('click', () => open3DPreview(p));
 
     grid.appendChild(card);
 
@@ -864,18 +860,16 @@ function initForm() {
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const name = form.querySelector('[name="name"]').value.trim();
-    const phone = form.querySelector('[name="phone"]').value.trim();
-    const product = form.querySelector('[name="product"]').value;
-    const message = form.querySelector('[name="message"]').value.trim();
+    const name    = (form.querySelector('[name="name"]')?.value    || '').trim();
+    const product = (form.querySelector('[name="product"]')?.value || '').trim();
+    const message = (form.querySelector('[name="message"]')?.value || '').trim();
 
-    if (!name || !phone || !product) { showToast('⚠️ Please fill all required fields.', true); return; }
+    if (!name || !product) { showToast('⚠️ Please fill all required fields.', true); return; }
 
     const text = [
-      `Hi! I found *AR ENTERPRISE* 🤖`, ``,
+      `Hi! I found *AR ENTERPRISE* 🚁`, ``,
       `*Name:* ${name}`,
-      `*Phone:* ${phone}`,
-      `*Product:* ${product}`,
+      `*Interested in:* ${product}`,
       message ? `*Message:* ${message}` : '',
     ].filter(Boolean).join('\n');
 

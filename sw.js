@@ -2,14 +2,14 @@
    Caches core assets and serves an offline fallback for navigation requests.
 */
 
-const CACHE_NAME = 'are-static-v15';
+const CACHE_NAME = 'are-static-v16';
 const PRECACHE_URLS = [
   './',
   './index.html',
   './offline.html',
-  './style.css?v=15.0',
-  './main.js?v=15.0',
-  './products.js?v=15.0',
+  './style.css?v=16.0',
+  './main.js?v=16.0',
+  './products.js?v=16.0',
   './logo.jpg'
 ];
 

@@ -1851,39 +1851,190 @@ footer {
 /* ════════════════════════════════════════════════════════════════
    ════════════════════════════════════════════════════════════════ */
 
-/* ── HERO 3D LAYOUT OVERRIDES ─────────────────────────────────── */
+/* ── HERO LAYOUT — centered, drone floats right via Three.js ──── */
 .hero-3d {
   pointer-events: none !important;
 }
 
+/* Hero content: fully centered like the screenshot */
 .hero-content {
-  text-align: left;
-  padding-left: 2%;
-  margin-left: 0;
-  margin-right: auto;
-  width: min(90%, 700px);
+  text-align: center;
+  padding-left: 0;
+  margin: 0 auto;
+  width: min(90%, 1080px);
 }
 
-.hero-eyebrow { text-align: left; }
-#hero-title { text-align: left; }
+.hero-eyebrow { text-align: center; }
+#hero-title   { text-align: center; }
 
 .hero-subtitle {
-  text-align: left;
-  margin-left: 0;
+  text-align: center;
+  margin-left: auto;
   margin-right: auto;
-  max-width: 520px;
+  max-width: 560px;
 }
 
-.hero-actions { justify-content: flex-start; }
+.hero-actions { justify-content: center; }
 
 #hero { min-height: 680px; }
 
-@keyframes coreRingPulse {
-  0%, 100% { opacity: 0.18; transform: scale(1); }
-  50% { opacity: 0.32; transform: scale(1.06); }
+/* Nav: always show pill shape (not just on scroll) */
+.nav-container {
+  background: rgba(3, 7, 18, .55) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 999px !important;
+  width: min(90%, 820px) !important;
+  margin-top: 1rem !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(0,255,136,.05) !important;
 }
 
-/* Safari/Brave safe fallback — transition only, no animation conflict */
+/* "Order Now" button in nav — green pill */
+.nav-cta.btn-primary {
+  background: linear-gradient(90deg, #00ff88, #3b82f6);
+  color: #030712;
+  border-radius: 999px;
+  padding: .75rem 1.6rem;
+  font-size: .72rem;
+}
+
+/* WhatsApp send button — full-width gradient pill */
+.btn-wa {
+  width: 100%;
+  display: block;
+  text-align: center;
+  background: linear-gradient(90deg, #00ff88, #3b82f6);
+  color: #030712;
+  border-radius: 999px;
+  padding: 1.1rem 2rem;
+  font-size: .78rem;
+  margin-top: .5rem;
+}
+.btn-wa:hover {
+  opacity: .9;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,255,136,.3);
+}
+
+/* Contact form: dark card with rounded corners */
+#contact-form {
+  background: #0d1117;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  padding: 2.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.4rem;
+}
+
+.form-group label {
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .12em;
+  color: var(--text-3);
+  display: block;
+  margin-bottom: .6rem;
+  font-weight: 700;
+}
+
+/* Contact left heading — large sans-serif like screenshot */
+.contact-left h2 {
+  font-family: var(--font-sans);
+  font-size: clamp(2.6rem, 5.5vw, 4.2rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+  margin: 1rem 0 1.5rem;
+}
+
+.contact-left h2 em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--text-3);
+  font-weight: 100;
+  text-transform: none;
+}
+
+/* Product cards — aurora gradient background like screenshot */
+.product-card {
+  background: linear-gradient(160deg, #0a1628 0%, #071020 60%, #030712 100%);
+}
+
+.product-card.featured {
+  background: linear-gradient(160deg, #0d1f35 0%, #091828 50%, #030e1a 100%);
+}
+
+/* Aurora blob inside cards */
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -10%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(ellipse, rgba(0,180,120,.18) 0%, rgba(59,130,246,.12) 40%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(30px);
+}
+
+.product-card.featured::before {
+  background: radial-gradient(ellipse, rgba(0,200,140,.22) 0%, rgba(59,130,246,.18) 40%, transparent 70%);
+}
+
+/* Ensure card content sits above aurora */
+.p-header, .p-media, .p-info { position: relative; z-index: 1; }
+
+/* Products section header — left-aligned like screenshot */
+.section-header {
+  margin-bottom: 4rem;
+}
+
+.section-header h2 {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.04em;
+  text-transform: uppercase;
+}
+
+.section-header h2 em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--text-2);
+  font-weight: 100;
+  text-transform: none;
+  display: block;
+  font-size: .85em;
+}
+
+/* Footer links spacing */
+.footer-links {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.footer-links a {
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  color: var(--text-2);
+  letter-spacing: .1em;
+  font-weight: 700;
+  transition: color .2s;
+}
+
+.footer-links a:hover { color: var(--accent); }
+
+@keyframes coreRingPulse {
+  0%, 100% { opacity: 0.18; transform: scale(1); }
+  50%       { opacity: 0.32; transform: scale(1.06); }
+}
+
+/* Safari/Brave safe fallback */
 .js .hero-eyebrow,
 .js #hero-title .line,
 .js .hero-subtitle,
@@ -1892,13 +2043,11 @@ footer {
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* If JS never fires revealed, show after 3.5s via transition-delay */
-.js .hero-eyebrow:not(.revealed)      { transition-delay: 3.5s; }
-.js #hero-title:not(.revealed) .line  { transition-delay: 3.6s; }
-.js .hero-subtitle:not(.revealed)     { transition-delay: 3.7s; }
-.js .hero-actions:not(.revealed)      { transition-delay: 3.8s; }
+.js .hero-eyebrow:not(.revealed)     { transition-delay: 3.5s; }
+.js #hero-title:not(.revealed) .line { transition-delay: 3.6s; }
+.js .hero-subtitle:not(.revealed)    { transition-delay: 3.7s; }
+.js .hero-actions:not(.revealed)     { transition-delay: 3.8s; }
 
-/* Mobile: restore centered layout */
 @media (max-width: 767px) {
   .hero-content {
     text-align: center;

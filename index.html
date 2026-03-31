@@ -20,13 +20,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=15.0">
+  <link rel="stylesheet" href="style.css?v=16.0">
 </head>
 <body>
 
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Custom Cursor (desktop only) -->
+  <!-- Custom Cursor -->
   <div id="cursor" aria-hidden="true"></div>
   <div id="cursor-dot" aria-hidden="true"></div>
 
@@ -38,25 +38,18 @@
         AR ENTERPRISE
       </a>
       <div class="nav-links">
-        <a href="#products">Shop</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <a href="#products">SHOP</a>
+        <a href="#about">ABOUT</a>
+        <a href="#contact">CONTACT</a>
       </div>
       <button type="button" class="nav-cta btn-primary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
         Order Now →
       </button>
-      <!-- Accent colour toggle -->
-      <label class="nav-accent-switch" title="Toggle accent colour" aria-label="Toggle accent colour">
-        <input type="checkbox" id="accent-switch">
-        <span class="switch-slider"></span>
-      </label>
       <button type="button" class="nav-mobile-toggle" id="mobile-toggle" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
         <span></span>
         <span></span>
       </button>
     </div>
-
-    <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
       <div class="mobile-links">
         <a href="#products">Shop</a>
@@ -78,7 +71,7 @@
         <canvas id="particle-canvas"></canvas>
       </div>
 
-      <!-- 3D canvas — sits between bg and content -->
+      <!-- 3D drone canvas -->
       <div id="hero-3d" class="hero-3d" aria-hidden="true"></div>
 
       <div class="hero-content">
@@ -91,7 +84,7 @@
         </h1>
 
         <p class="hero-subtitle">
-          Custom FPV racing drones, freestyle builds & aerial rigs —
+          Custom FPV racing drones, freestyle builds &amp; aerial rigs —
           hand-assembled in Gurugram by a builder who's been flying since 2019.
           No off-the-shelf compromise. Betaflight-tuned. Competition-proven.
         </p>
@@ -110,25 +103,22 @@
       <div class="hero-ticker">
         <div class="ticker-track">
           <div class="ticker-inner">
-            <span>⚡ FPV RACING</span><span class="dot">•</span>
-            <span>🎥 AERIAL VIDEOGRAPHY</span><span class="dot">•</span>
-            <span>🛠️ CUSTOM BUILDS</span><span class="dot">•</span>
+            <span>⚡ BUILDS</span><span class="dot">•</span>
             <span>🏁 COMPETITION DRONES</span><span class="dot">•</span>
             <span>🔧 BETAFLIGHT TUNED</span><span class="dot">•</span>
             <span>📡 10KM RANGE</span><span class="dot">•</span>
             <span>🏆 IIT TRYST · NYRC · EXUN</span><span class="dot">•</span>
             <span>⚡ FPV RACING</span><span class="dot">•</span>
-            <span>🎥 AERIAL VIDEOGRAPHY</span><span class="dot">•</span>
-            <span>🛠️ CUSTOM BUILDS</span><span class="dot">•</span>
+            <span>⚡ BUILDS</span><span class="dot">•</span>
             <span>🏁 COMPETITION DRONES</span><span class="dot">•</span>
             <span>🔧 BETAFLIGHT TUNED</span><span class="dot">•</span>
             <span>📡 10KM RANGE</span><span class="dot">•</span>
             <span>🏆 IIT TRYST · NYRC · EXUN</span><span class="dot">•</span>
+            <span>⚡ FPV RACING</span><span class="dot">•</span>
           </div>
         </div>
       </div>
 
-      <!-- Scroll hint -->
       <div class="hero-scroll">
         <span>SCROLL</span>
         <div class="scroll-line"></div>
@@ -140,11 +130,9 @@
       <div class="container">
         <div class="section-header">
           <span class="section-tag">━━ 01 / DRONE ARSENAL</span>
-          <h2>The Drone<br><em>Arsenal.</em></h2>
+          <h2>THE DRONE<br><em>Arsenal.</em></h2>
         </div>
-        <div class="products-grid" id="products-grid">
-          <!-- Injected by main.js from products.js -->
-        </div>
+        <div class="products-grid" id="products-grid"></div>
       </div>
     </section>
 
@@ -166,7 +154,6 @@
           <span class="bp-sep"></span>
           <span>TUNE: BETAFLIGHT 4.5+</span>
           <span class="bp-sep"></span>
-          <!-- Duplicate for loop -->
           <span>FRAME: TORAY T700 CARBON</span>
           <span class="bp-sep"></span>
           <span>FC: STM32F722 RET6</span>
@@ -245,7 +232,7 @@
           </div>
         </div>
 
-        <!-- Robotics Legacy Section (Replaces 3D/SVG section) -->
+        <!-- Legacy Gallery -->
         <div class="legacy-gallery-container" id="legacy-gallery">
           <div class="legacy-header">
             <div class="legacy-info">
@@ -254,10 +241,9 @@
               <p class="hero-ui-lead">A legacy built on competition-winning combat robots and heavy-duty RC machines. AR ENTERPRISE brings years of mechanical engineering expertise from the arena directly into every drone build.</p>
             </div>
             <div class="legacy-actions">
-               <button type="button" class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Explore Arsenal →</button>
+              <button type="button" class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Explore Arsenal →</button>
             </div>
           </div>
-          
           <div class="legacy-grid">
             <div class="legacy-item main-legacy">
               <img src="legacy.webp" alt="Full Robotics Collection" loading="lazy">
@@ -279,13 +265,14 @@
         </div>
       </div>
     </section>
+
     <!-- ── CONTACT ────────────────────────────────────────────────── -->
     <section id="contact">
       <div class="container">
         <div class="contact-grid">
           <div class="contact-left">
             <span class="section-tag">━━ 03 / CONTACT</span>
-            <h2>Let's build<br>your <em>dream rig.</em></h2>
+            <h2>LET'S BUILD<br>YOUR <em>dream rig.</em></h2>
             <p class="contact-manifesto">
               Ready to order or want a custom build? Fill the form and we'll open
               WhatsApp with your inquiry pre-written — Aryaman will get back to you directly.
@@ -295,14 +282,14 @@
             <form id="contact-form" class="glass-form">
               <div class="form-group">
                 <label for="name">Name</label>
-                <input type="text" id="name" placeholder="John Doe" required>
+                <input type="text" id="name" name="name" placeholder="John Doe" required>
               </div>
               <div class="form-group">
                 <label for="interest">I'm interested in...</label>
-                <select id="interest" required>
+                <select id="interest" name="product" required>
                   <option value="" disabled selected>Select a category</option>
                   <option value="FPV Racer">FPV Racing Drone</option>
-                  <option value="Freestyle">3.5\" Freestyle Mini</option>
+                  <option value="Freestyle">3.5" Freestyle Mini</option>
                   <option value="Videography">Dead-Cat Aerial Rig</option>
                   <option value="Custom">Custom Commission</option>
                   <option value="Other">General Inquiry</option>
@@ -310,47 +297,43 @@
               </div>
               <div class="form-group">
                 <label for="message">Message</label>
-                <textarea id="message" rows="4" placeholder="Tell us about your build requirements..." required></textarea>
+                <textarea id="message" name="message" rows="4" placeholder="Tell us about your build requirements..."></textarea>
               </div>
-              <button type="submit" class="btn-primary w-full">Send Message →</button>
+              <button type="submit" class="btn-primary btn-wa">Send via WhatsApp →</button>
             </form>
           </div>
         </div>
       </div>
     </section>
   </main>
+
   <!-- ── FOOTER ─────────────────────────────────────────────────── -->
   <footer id="footer">
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
           <a href="#" class="logo">◉ AR ENTERPRISE</a>
-          <p class="footer-tagline">
-            Custom FPV drones, hand-built in Gurugram. Flying since 2019.
-          </p>
+          <p class="footer-tagline">Custom FPV drones, hand-built in Gurugram. Flying since 2019.</p>
         </div>
         <div class="footer-links">
-          <a href="#products">Shop</a>
-          <a href="#about">About</a>
-          <a href="#contact">Contact</a>
+          <a href="#products">SHOP</a>
+          <a href="#about">ABOUT</a>
+          <a href="#contact">CONTACT</a>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; <span id="year">2024</span> AR ENTERPRISE. All rights reserved.</p>
+        <p>&copy; <span id="year">2026</span> AR ENTERPRISE. All rights reserved.</p>
         <p>MADE TO FLY · INDIA BUILT · GURUGRAM</p>
       </div>
     </div>
   </footer>
-  <!-- Modal structure for Video/Content -->
-  <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
-    <div class="modal-content glass-card">
-      <button type="button" class="modal-close" id="modal-close" aria-label="Close modal">&times;</button>
-      <div id="modal-body"></div>
-    </div>
-  </div>
+
+  <!-- Toast -->
+  <div id="toast" role="status" aria-live="polite"></div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="products.js?v=15.0" defer></script>
-  <script src="main.js?v=15.0" defer></script>
+  <script src="products.js?v=16.0" defer></script>
+  <script src="main.js?v=16.0" defer></script>
 </body>
 </html>
